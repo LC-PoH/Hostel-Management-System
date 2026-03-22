@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receptionist Dashboard - Hostel Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dashboard">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            Hostel Management System
+        </div>
+        <div class="navbar-user">
+            <div class="user-info">
+                <div class="user-name" id="userName">Receptionist</div>
+                <div class="user-role" id="userRole">receptionist</div>
+            </div>
+            <button class="btn btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#" data-page="dashboardPage" onclick="setActivePage('dashboardPage')" class="active">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-page="checkInOutPage" onclick="setActivePage('checkInOutPage')">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                            <polyline points="10 17 15 12 10 7"></polyline>
+                            <line x1="15" y1="12" x2="3" y2="12"></line>
+                        </svg>
+                        Check-In/Out
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-page="studentsPage" onclick="setActivePage('studentsPage')">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        Students
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-page="roomsPage" onclick="setActivePage('roomsPage')">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        </svg>
+                        Rooms
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page">
+                <div class="page-header">
+                    <h1>Reception Dashboard</h1>
+                    <p>Manage check-ins, check-outs, and room assignments</p>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-3">
+                    <div class="card quick-action green" onclick="openModal('checkInModal')">
+                        <div class="action-content">
+                            <div class="action-icon green">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                    <polyline points="10 17 15 12 10 7"></polyline>
+                                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                                </svg>
+                            </div>
+                            <div>
+                                <p style="color: #666; font-size: 0.875rem;">Quick Action</p>
+                                <h3>Check-In Student</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card quick-action orange" onclick="openModal('checkOutModal')">
+                        <div class="action-content">
+                            <div class="action-icon orange">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                            </div>
+                            <div>
+                                <p style="color: #666; font-size: 0.875rem;">Quick Action</p>
+                                <h3>Check-Out Student</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card quick-action blue" onclick="openModal('registerModal')">
+                        <div class="action-content">
+                            <div class="action-icon blue">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="8.5" cy="7" r="4"></circle>
+                                    <line x1="20" y1="8" x2="20" y2="14"></line>
+                                    <line x1="23" y1="11" x2="17" y2="11"></line>
+                                </svg>
+                            </div>
+                            <div>
+                                <p style="color: #666; font-size: 0.875rem;">Quick Action</p>
+                                <h3>Register Student</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-4">
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>3</h3>
+                                <p>Available Rooms</p>
+                                <small style="color: #666;">45 occupied</small>
+                            </div>
+                            <div class="stat-icon green">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>2</h3>
+                                <p>Pending Check-Ins</p>
+                                <small style="color: #f59e0b;">Expected today</small>
+                            </div>
+                            <div class="stat-icon orange">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>3</h3>
+                                <p>Today Check-Ins</p>
+                                <small style="color: #22c55e;">1 check-out</small>
+                            </div>
+                            <div class="stat-icon blue">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                    <polyline points="10 17 15 12 10 7"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>45</h3>
+                                <p>Total Occupancy</p>
+                                <small style="color: #667eea;">90% capacity</small>
+                            </div>
+                            <div class="stat-icon">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search -->
+                <div class="card">
+                    <h2 class="card-title">Quick Search</h2>
+                    <p class="card-description">Search for students or rooms</p>
+                    <div class="input-group">
+                        <input type="text" placeholder="Search by name, room number, or phone...">
+                        <button class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-2">
+                    <!-- Pending Check-Ins -->
+                    <div class="card">
+                        <h2 class="card-title">Pending Check-Ins</h2>
+                        <p class="card-description">Students expected to check-in soon</p>
+                        <ul class="activity-list">
+                            <li class="activity-item">
+                                <div class="activity-icon blue">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                </div>
+                                <div style="flex: 1;">
+                                    <p><strong>Neha Gupta</strong> - Room A-204</p>
+                                    <p style="font-size: 0.875rem; color: #666;">Expected: 22 Mar 2026</p>
+                                </div>
+                                <button class="btn btn-sm btn-primary" onclick="openModal('checkInModal')">Check-In</button>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon blue">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                </div>
+                                <div style="flex: 1;">
+                                    <p><strong>Vikram Singh</strong> - Room B-102</p>
+                                    <p style="font-size: 0.875rem; color: #666;">Expected: 23 Mar 2026</p>
+                                </div>
+                                <button class="btn btn-sm btn-primary" onclick="openModal('checkInModal')">Check-In</button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="card">
+                        <h2 class="card-title">Recent Activity</h2>
+                        <p class="card-description">Latest check-ins and check-outs</p>
+                        <ul class="activity-list">
+                            <li class="activity-item">
+                                <div class="activity-icon green">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                        <polyline points="10 17 15 12 10 7"></polyline>
+                                    </svg>
+                                </div>
+                                <div style="flex: 1;">
+                                    <p><strong>Rahul Verma</strong> - A-305</p>
+                                    <p style="font-size: 0.875rem; color: #666;">2 hours ago</p>
+                                </div>
+                                <span class="badge badge-success">Check-In</span>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon orange">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                        <polyline points="16 17 21 12 16 7"></polyline>
+                                    </svg>
+                                </div>
+                                <div style="flex: 1;">
+                                    <p><strong>Anjali Reddy</strong> - B-201</p>
+                                    <p style="font-size: 0.875rem; color: #666;">5 hours ago</p>
+                                </div>
+                                <span class="badge badge-warning">Check-Out</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Check-In/Out Page -->
+            <div id="checkInOutPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>Check-In / Check-Out Management</h1>
+                    <p>Process student check-ins and check-outs</p>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h2 class="card-title">Today's Check-Ins</h2>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Room</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Rahul Verma</td>
+                                    <td>A-305</td>
+                                    <td>10:30 AM</td>
+                                    <td><span class="badge badge-success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Priya Sharma</td>
+                                    <td>B-102</td>
+                                    <td>11:45 AM</td>
+                                    <td><span class="badge badge-success">Completed</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card">
+                        <h2 class="card-title">Today's Check-Outs</h2>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Room</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Anjali Reddy</td>
+                                    <td>B-201</td>
+                                    <td>09:15 AM</td>
+                                    <td><span class="badge badge-success">Completed</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students Page -->
+            <div id="studentsPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>Student Management</h1>
+                    <p>View and manage all students</p>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Current Occupancy</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Room</th>
+                                <th>Phone</th>
+                                <th>Check-In Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Raj Kumar</td>
+                                <td>A-101</td>
+                                <td>+91 98765 43210</td>
+                                <td>01 Sep 2025</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Priya Sharma</td>
+                                <td>A-102</td>
+                                <td>+91 98765 43211</td>
+                                <td>01 Sep 2025</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Amit Patel</td>
+                                <td>B-201</td>
+                                <td>+91 98765 43212</td>
+                                <td>15 Sep 2025</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Rooms Page -->
+            <div id="roomsPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>Room Availability</h1>
+                    <p>Check room status and availability</p>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">All Rooms</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Room</th>
+                                <th>Type</th>
+                                <th>Occupant</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>A-101</td>
+                                <td>Double</td>
+                                <td>Raj Kumar</td>
+                                <td><span class="badge badge-warning">Occupied</span></td>
+                            </tr>
+                            <tr>
+                                <td>A-102</td>
+                                <td>Single</td>
+                                <td>-</td>
+                                <td><span class="badge badge-success">Available</span></td>
+                            </tr>
+                            <tr>
+                                <td>B-201</td>
+                                <td>Triple</td>
+                                <td>Amit Patel</td>
+                                <td><span class="badge badge-warning">Occupied</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Check-In Modal -->
+    <div id="checkInModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal('checkInModal')">&times;</button>
+                <h2>Student Check-In</h2>
+                <p style="color: #666; font-size: 0.875rem;">Record a new student check-in</p>
+            </div>
+            <form onsubmit="handleCheckIn(event)">
+                <div class="form-group">
+                    <label>Student Name</label>
+                    <input type="text" placeholder="Enter student name" required>
+                </div>
+                <div class="form-group">
+                    <label>Room Number</label>
+                    <input type="text" placeholder="e.g., A-101" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" placeholder="+91 XXXXX XXXXX" required>
+                </div>
+                <div class="form-group">
+                    <label>ID Proof Number</label>
+                    <input type="text" placeholder="Aadhar/Student ID" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Complete Check-In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Check-Out Modal -->
+    <div id="checkOutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal('checkOutModal')">&times;</button>
+                <h2>Student Check-Out</h2>
+                <p style="color: #666; font-size: 0.875rem;">Process student check-out</p>
+            </div>
+            <form onsubmit="handleCheckOut(event)">
+                <div class="form-group">
+                    <label>Room Number</label>
+                    <input type="text" placeholder="e.g., A-101" required>
+                </div>
+                <div class="form-group">
+                    <label>Student Name</label>
+                    <input type="text" placeholder="Verify student name" required>
+                </div>
+                <div class="form-group">
+                    <label>Room Condition</label>
+                    <select required>
+                        <option>Good</option>
+                        <option>Needs Cleaning</option>
+                        <option>Damage Reported</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Complete Check-Out</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal('registerModal')">&times;</button>
+                <h2>Register New Student</h2>
+                <p style="color: #666; font-size: 0.875rem;">Add a new student to the system</p>
+            </div>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="Enter full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="student@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" placeholder="+91 XXXXX XXXXX" required>
+                </div>
+                <div class="form-group">
+                    <label>Assign Room</label>
+                    <input type="text" placeholder="e.g., A-101" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Register Student</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

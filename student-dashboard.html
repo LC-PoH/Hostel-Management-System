@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Hostel Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dashboard">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            Hostel Management System
+        </div>
+        <div class="navbar-user">
+            <div class="user-info">
+                <div class="user-name" id="userName">Student</div>
+                <div class="user-role" id="userRole">student</div>
+            </div>
+            <button class="btn btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#" data-page="dashboardPage" onclick="setActivePage('dashboardPage')" class="active">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-page="bookingsPage" onclick="setActivePage('bookingsPage')">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 10H3M16 2v4M8 2v4M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
+                        </svg>
+                        My Bookings
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-page="paymentPage" onclick="setActivePage('paymentPage')">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                            <line x1="1" y1="10" x2="23" y2="10"></line>
+                        </svg>
+                        Payment
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-page="profilePage" onclick="setActivePage('profilePage')">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Profile
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page">
+                <div class="page-header">
+                    <h1>Student Dashboard</h1>
+                    <p>Welcome back! Here's your booking overview</p>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-4">
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>A-101</h3>
+                                <p>Current Room</p>
+                            </div>
+                            <div class="stat-icon blue">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>₹5,000</h3>
+                                <p>Pending Payment</p>
+                            </div>
+                            <div class="stat-icon orange">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>6 Months</h3>
+                                <p>Stay Duration</p>
+                            </div>
+                            <div class="stat-icon green">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>Active</h3>
+                                <p>Booking Status</p>
+                            </div>
+                            <div class="stat-icon">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Booking -->
+                <div class="card">
+                    <h2 class="card-title">Current Booking</h2>
+                    <p class="card-description">Your active room booking details</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Room Number</th>
+                                <th>Room Type</th>
+                                <th>Check-In Date</th>
+                                <th>Monthly Rent</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>A-101</td>
+                                <td>Double Sharing</td>
+                                <td>01 Sep 2025</td>
+                                <td>₹5,000</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Payment History -->
+                <div class="card">
+                    <h2 class="card-title">Recent Payments</h2>
+                    <p class="card-description">Your payment transaction history</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>01 Mar 2026</td>
+                                <td>Monthly Rent - March 2026</td>
+                                <td>₹5,000</td>
+                                <td><span class="badge badge-success">Paid</span></td>
+                            </tr>
+                            <tr>
+                                <td>01 Feb 2026</td>
+                                <td>Monthly Rent - February 2026</td>
+                                <td>₹5,000</td>
+                                <td><span class="badge badge-success">Paid</span></td>
+                            </tr>
+                            <tr>
+                                <td>01 Jan 2026</td>
+                                <td>Monthly Rent - January 2026</td>
+                                <td>₹5,000</td>
+                                <td><span class="badge badge-success">Paid</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Bookings Page -->
+            <div id="bookingsPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>My Bookings</h1>
+                    <p>View your booking history and status</p>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Booking History</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Room</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#BK001</td>
+                                <td>A-101</td>
+                                <td>01 Sep 2025</td>
+                                <td>-</td>
+                                <td>₹5,000/month</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>#BK002</td>
+                                <td>B-205</td>
+                                <td>01 Jan 2025</td>
+                                <td>31 Aug 2025</td>
+                                <td>₹4,500/month</td>
+                                <td><span class="badge badge-info">Completed</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Payment Page -->
+            <div id="paymentPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>Make Payment</h1>
+                    <p>Pay your hostel fees securely</p>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h2 class="card-title">Payment Details</h2>
+                        <form onsubmit="handlePayment(event)">
+                            <div class="form-group">
+                                <label>Payment Type</label>
+                                <select required>
+                                    <option>Monthly Rent</option>
+                                    <option>Security Deposit</option>
+                                    <option>Maintenance Fee</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount</label>
+                                <input type="number" value="5000" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Payment Method</label>
+                                <select required>
+                                    <option>UPI</option>
+                                    <option>Net Banking</option>
+                                    <option>Debit Card</option>
+                                    <option>Credit Card</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Pay Now</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <h2 class="card-title">Pending Dues</h2>
+                        <div style="margin-top: 2rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                                <span>March 2026 Rent</span>
+                                <strong>₹5,000</strong>
+                            </div>
+                            <div style="border-top: 2px solid #667eea; padding-top: 1rem; margin-top: 1rem;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <strong>Total Due</strong>
+                                    <strong style="color: #667eea; font-size: 1.5rem;">₹5,000</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profilePage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>My Profile</h1>
+                    <p>Manage your personal information</p>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Personal Information</h2>
+                    <form>
+                        <div class="grid grid-2">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" value="Raj Kumar" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" value="raj.kumar@email.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" value="+91 98765 43210" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Student ID</label>
+                                <input type="text" value="STU2025001" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Emergency Contact</label>
+                                <input type="tel" value="+91 98765 43211" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Blood Group</label>
+                                <input type="text" value="O+" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

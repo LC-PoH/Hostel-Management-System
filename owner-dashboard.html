@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard - Hostel Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dashboard">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            Hostel Management System
+        </div>
+        <div class="navbar-user">
+            <div class="user-info">
+                <div class="user-name" id="userName">Owner</div>
+                <div class="user-role" id="userRole">owner</div>
+            </div>
+            <button class="btn btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#" data-page="dashboardPage" onclick="setActivePage('dashboardPage')" class="active">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-page="roomsPage" onclick="setActivePage('roomsPage')">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        </svg>
+                        Room Management
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-page="requestsPage" onclick="setActivePage('requestsPage')">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                        </svg>
+                        Student Requests
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-page="reportsPage" onclick="setActivePage('reportsPage')">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        Reports
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page">
+                <div class="page-header">
+                    <h1>Owner Dashboard</h1>
+                    <p>Overview of your hostel operations</p>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-4">
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>₹2,25,000</h3>
+                                <p>Monthly Revenue</p>
+                                <small style="color: #22c55e;">+12% from last month</small>
+                            </div>
+                            <div class="stat-icon green">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>45/50</h3>
+                                <p>Rooms Occupied</p>
+                                <small style="color: #667eea;">90% occupancy</small>
+                            </div>
+                            <div class="stat-icon blue">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>5</h3>
+                                <p>Pending Requests</p>
+                                <small style="color: #f59e0b;">Requires attention</small>
+                            </div>
+                            <div class="stat-icon orange">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>₹25,000</h3>
+                                <p>Pending Payments</p>
+                                <small style="color: #ef4444;">5 students</small>
+                            </div>
+                            <div class="stat-icon">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Chart -->
+                <div class="card">
+                    <h2 class="card-title">Revenue Overview</h2>
+                    <p class="card-description">Monthly revenue for the past 6 months</p>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Bookings -->
+                <div class="card">
+                    <h2 class="card-title">Recent Bookings</h2>
+                    <p class="card-description">Latest student bookings</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Room</th>
+                                <th>Check-In Date</th>
+                                <th>Monthly Rent</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Rahul Verma</td>
+                                <td>A-305</td>
+                                <td>15 Mar 2026</td>
+                                <td>₹5,000</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Priya Sharma</td>
+                                <td>B-102</td>
+                                <td>10 Mar 2026</td>
+                                <td>₹4,500</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Amit Patel</td>
+                                <td>A-201</td>
+                                <td>05 Mar 2026</td>
+                                <td>₹5,500</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Rooms Page -->
+            <div id="roomsPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>Room Management</h1>
+                    <p>Manage your hostel rooms</p>
+                    <button class="btn btn-primary" onclick="openModal('addRoomModal')">Add New Room</button>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">All Rooms</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Room Number</th>
+                                <th>Type</th>
+                                <th>Capacity</th>
+                                <th>Rent</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>A-101</td>
+                                <td>Double Sharing</td>
+                                <td>2</td>
+                                <td>₹5,000</td>
+                                <td><span class="badge badge-warning">Occupied</span></td>
+                                <td><button class="btn btn-sm btn-secondary">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>A-102</td>
+                                <td>Single</td>
+                                <td>1</td>
+                                <td>₹7,000</td>
+                                <td><span class="badge badge-success">Available</span></td>
+                                <td><button class="btn btn-sm btn-secondary">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>B-201</td>
+                                <td>Triple Sharing</td>
+                                <td>3</td>
+                                <td>₹4,000</td>
+                                <td><span class="badge badge-warning">Occupied</span></td>
+                                <td><button class="btn btn-sm btn-secondary">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>B-202</td>
+                                <td>Double Sharing</td>
+                                <td>2</td>
+                                <td>₹5,000</td>
+                                <td><span class="badge badge-success">Available</span></td>
+                                <td><button class="btn btn-sm btn-secondary">View</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Requests Page -->
+            <div id="requestsPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>Student Requests</h1>
+                    <p>Manage student requests and complaints</p>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Pending Requests</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Request Type</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Neha Gupta</td>
+                                <td>Room Change</td>
+                                <td>Request to change from A-101 to B-202</td>
+                                <td>20 Mar 2026</td>
+                                <td><span class="badge badge-warning">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-success">Approve</button>
+                                    <button class="btn btn-sm btn-secondary">Reject</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Vikram Singh</td>
+                                <td>Maintenance</td>
+                                <td>AC not working in room B-305</td>
+                                <td>19 Mar 2026</td>
+                                <td><span class="badge badge-warning">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-success">Approve</button>
+                                    <button class="btn btn-sm btn-secondary">Reject</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Anjali Reddy</td>
+                                <td>Complaint</td>
+                                <td>Noise disturbance from neighboring room</td>
+                                <td>18 Mar 2026</td>
+                                <td><span class="badge badge-warning">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-success">Approve</button>
+                                    <button class="btn btn-sm btn-secondary">Reject</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reports Page -->
+            <div id="reportsPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>Transaction Reports</h1>
+                    <p>View financial reports and analytics</p>
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="card">
+                        <h3>Total Revenue (March 2026)</h3>
+                        <h2 style="color: #22c55e; margin-top: 0.5rem;">₹2,25,000</h2>
+                        <p style="color: #666; font-size: 0.875rem;">45 payments received</p>
+                    </div>
+                    <div class="card">
+                        <h3>Pending Collections</h3>
+                        <h2 style="color: #f59e0b; margin-top: 0.5rem;">₹25,000</h2>
+                        <p style="color: #666; font-size: 0.875rem;">5 pending payments</p>
+                    </div>
+                    <div class="card">
+                        <h3>Average Room Rate</h3>
+                        <h2 style="color: #667eea; margin-top: 0.5rem;">₹5,000</h2>
+                        <p style="color: #666; font-size: 0.875rem;">Per month</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Payment Transactions</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Student</th>
+                                <th>Room</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#TXN001</td>
+                                <td>Raj Kumar</td>
+                                <td>A-101</td>
+                                <td>₹5,000</td>
+                                <td>01 Mar 2026</td>
+                                <td>UPI</td>
+                                <td><span class="badge badge-success">Success</span></td>
+                            </tr>
+                            <tr>
+                                <td>#TXN002</td>
+                                <td>Priya Sharma</td>
+                                <td>A-102</td>
+                                <td>₹5,000</td>
+                                <td>01 Mar 2026</td>
+                                <td>Net Banking</td>
+                                <td><span class="badge badge-success">Success</span></td>
+                            </tr>
+                            <tr>
+                                <td>#TXN003</td>
+                                <td>Amit Patel</td>
+                                <td>B-201</td>
+                                <td>₹5,000</td>
+                                <td>02 Mar 2026</td>
+                                <td>Debit Card</td>
+                                <td><span class="badge badge-success">Success</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Room Modal -->
+    <div id="addRoomModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal('addRoomModal')">&times;</button>
+                <h2>Add New Room</h2>
+                <p style="color: #666; font-size: 0.875rem;">Enter room details</p>
+            </div>
+            <form onsubmit="handleRoomAdd(event)">
+                <div class="form-group">
+                    <label>Room Number</label>
+                    <input type="text" placeholder="e.g., A-101" required>
+                </div>
+                <div class="form-group">
+                    <label>Room Type</label>
+                    <select required>
+                        <option>Single</option>
+                        <option>Double Sharing</option>
+                        <option>Triple Sharing</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Capacity</label>
+                    <input type="number" min="1" max="4" required>
+                </div>
+                <div class="form-group">
+                    <label>Monthly Rent (₹)</label>
+                    <input type="number" placeholder="5000" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Add Room</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
