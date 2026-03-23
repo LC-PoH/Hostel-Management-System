@@ -3,7 +3,7 @@ function togglePassword() {
     const passwordInput = document.getElementById('password');
     const eyeIcon = document.getElementById('eyeIcon');
     
-    if (passwordInput.type === 'password') {
+    if (passwordInput.type === 'password1') {
         passwordInput.type = 'text';
     } else {
         passwordInput.type = 'password';
