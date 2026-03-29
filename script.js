@@ -88,7 +88,7 @@ function showNotification(message, type = 'success') {
     
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.3s ease-out';
-        setTimeout(() => notification.remove(), 30000);
+        setTimeout(() => notification.remove(), 300);
     }, 3000);
 }
 
