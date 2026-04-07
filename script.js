@@ -22,13 +22,15 @@ function handleLogin(event) {
     sessionStorage.setItem('userName', username);
     
     // Redirect based on role
-    if (role === 'student') {
-        window.location.href = 'student-dashboard.html';
-    } else if (role === 'owner') {
-        window.location.href = 'owner-dashboard.html';
-    } else if (role === 'receptionist') {
-        window.location.href = 'receptionist-dashboard.html';
-    }
+    setTimeout(() => {
+        if (role === 'student') {
+            window.location.href = 'student-dashboard.html';
+        } else if (role === 'owner') {
+            window.location.href = 'owner-dashboard.html';
+        } else if (role === 'receptionist') {
+            window.location.href = 'receptionist-dashboard.html';
+        }
+    }, 1000);
 }
 
 // Logout function
