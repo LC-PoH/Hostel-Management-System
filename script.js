@@ -33,10 +33,15 @@ function handleLogin(event) {
     }, 1000);
 }
 
-// Logout function
+// // Logout function
 function logout() {
-    sessionStorage.clear();
-    window.location.href = 'index.html';
+    if (confirm('Are you sure you want to logout?')) {
+        sessionStorage.clear();
+        showNotification('You have been logged out successfully!', 'success');
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 500);
+    }
 }
 
 // Check authentication
