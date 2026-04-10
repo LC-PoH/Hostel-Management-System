@@ -71,6 +71,15 @@ function openModal(modalId) {
     }
 }
 
+// Close modal
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+}
+
 
 //Close modal when clicking outside
 document.addEventListener('click', function(event) {
