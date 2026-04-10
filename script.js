@@ -20,6 +20,9 @@ function handleLogin(event) {
     // Store user data in sessionStorage
     sessionStorage.setItem('userRole', role);
     sessionStorage.setItem('userName', username);
+
+    // Show notification
+    showNotification(`Welcome ${username}! Logging in as ${role}...`, 'success');
     
     // Redirect based on role
     setTimeout(() => {
