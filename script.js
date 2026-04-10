@@ -37,7 +37,7 @@ function handleLogin(event) {
     }, 1000);
 }
 
-// // Logout function
+// Logout function
 function logout() {
     if (confirm('Are you sure you want to logout?')) {
         sessionStorage.clear();
@@ -80,12 +80,10 @@ function closeModal(modalId) {
     }
 }
 
-
-//Close modal when clicking outside
+// Close modal when clicking outside
 document.addEventListener('click', function(event) {
     if (event.target.classList.contains('modal')) {
-        event.target.classList.remove('active');
-        document.body.style.overflow = 'auto';
+        closeModal(event.target.id);
     }
 });
 
@@ -145,35 +143,35 @@ document.head.appendChild(style);
 // Handle form submissions
 function handleCheckIn(event) {
     event.preventDefault();
-    showNotification('Student checked in successfully!');
+    showNotification('Student checked in successfully!', 'success');
     closeModal('checkInModal');
     event.target.reset();
 }
 
 function handleCheckOut(event) {
     event.preventDefault();
-    showNotification('Student checked out successfully!');
+    showNotification('Student checked out successfully!', 'success');
     closeModal('checkOutModal');
     event.target.reset();
 }
 
 function handleRegister(event) {
     event.preventDefault();
-    showNotification('Student registered successfully!');
+    showNotification('Student registered successfully!', 'success');
     closeModal('registerModal');
     event.target.reset();
 }
 
 function handlePayment(event) {
     event.preventDefault();
-    showNotification('Payment processed successfully!');
+    showNotification('Payment processed successfully!', 'success');
     closeModal('paymentModal');
     event.target.reset();
 }
 
 function handleRoomAdd(event) {
     event.preventDefault();
-    showNotification('Room added successfully!');
+    showNotification('Room added successfully!', 'success');
     closeModal('addRoomModal');
     event.target.reset();
 }
@@ -309,11 +307,4 @@ function formatDate(dateString) {
         month: 'short', 
         day: 'numeric' 
     });
-}
-
-// Close modal when clicking outside
-window.onclick = function(event) {
-    if (event.target.classList.contains('modal')) {
-        event.target.classList.remove('active');
-    }
 }
