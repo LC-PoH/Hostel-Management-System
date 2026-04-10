@@ -22,19 +22,26 @@ function handleLogin(event) {
     sessionStorage.setItem('userName', username);
     
     // Redirect based on role
-    if (role === 'student') {
-        window.location.href = 'student-dashboard.html';
-    } else if (role === 'owner') {
-        window.location.href = 'owner-dashboard.html';
-    } else if (role === 'receptionist') {
-        window.location.href = 'receptionist-dashboard.html';
-    }
+    setTimeout(() => {
+        if (role === 'student') {
+            window.location.href = 'student-dashboard.html';
+        } else if (role === 'owner') {
+            window.location.href = 'owner-dashboard.html';
+        } else if (role === 'receptionist') {
+            window.location.href = 'receptionist-dashboard.html';
+        }
+    }, 1000);
 }
 
-// Logout function
+// // Logout function
 function logout() {
-    sessionStorage.clear();
-    window.location.href = 'index.html';
+    if (confirm('Are you sure you want to logout?')) {
+        sessionStorage.clear();
+        showNotification('You have been logged out successfully!', 'success');
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 500);
+    }
 }
 
 // Check authentication
@@ -56,6 +63,7 @@ function openModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
 }
 
