@@ -167,6 +167,26 @@ function handleRoomAdd(event) {
     closeModal('addRoomModal');
     event.target.reset();
 }
+function handleStudentAdd(event) {
+    event.preventDefault();
+    showNotification('✓ Student registered successfully!', 'success');
+    closeModal('addStudentModal');
+    event.target.reset();
+}
+
+function handleRoomChange(event) {
+    event.preventDefault();
+    showNotification('✓ Room change request submitted!', 'success');
+    closeModal('roomChangeModal');
+    event.target.reset();
+}
+
+function handleComplaint(event) {
+    event.preventDefault();
+    showNotification('✓ Your complaint has been submitted!', 'success');
+    closeModal('complaintModal');
+    event.target.reset();
+}
 
 // Navigation
 function setActivePage(pageId) {
