@@ -207,7 +207,12 @@ function initDashboard() {
     if (userRoleEl) userRoleEl.textContent = userRole;
     
     // Show dashboard page by default
-    setActivePage('dashboardPage');
+    setTimeout(() => {
+        const dashboardBtn = document.querySelector('[data-page="dashboardPage"]');
+        if (dashboardBtn) {
+            setActivePage(null, 'dashboardPage');
+        }
+    }, 100);
 }
 
 // Initialize Revenue Chart
