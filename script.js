@@ -71,12 +71,13 @@ function openModal(modalId) {
 }
 
 
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.remove('active');
+//Close modal when clicking outside
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.classList.remove('active');
+        document.body.style.overflow = 'auto';
     }
-}
+});
 
 // Show notification
 function showNotification(message, type = 'success') {
@@ -189,6 +190,7 @@ function setActivePage(pageId) {
     const currentPage = document.getElementById(pageId);
     if (currentPage) {
         currentPage.style.display = 'block';
+        currentPage.scrollIntoView({ behavior: 'smooth' });
     }
 }
 
