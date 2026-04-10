@@ -70,6 +70,7 @@ function openModal(modalId) {
     }
 }
 
+
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
