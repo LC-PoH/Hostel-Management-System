@@ -189,7 +189,11 @@ function handleComplaint(event) {
 }
 
 // Navigation
-function setActivePage(pageId) {
+Navigation
+function setActivePage(event, pageId) {
+    if (event) {
+        event.preventDefault();
+    }
     // Remove active class from all nav items
     document.querySelectorAll('.sidebar-menu a').forEach(link => {
         link.classList.remove('active');
