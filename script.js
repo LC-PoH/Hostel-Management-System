@@ -190,7 +190,6 @@ function handleComplaint(event) {
 }
 
 // Navigation
-Navigation
 function setActivePage(event, pageId) {
     if (event) {
         event.preventDefault();
