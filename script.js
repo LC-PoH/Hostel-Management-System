@@ -176,6 +176,7 @@ function handleRoomAdd(event) {
     closeModal('addRoomModal');
     event.target.reset();
 }
+
 function handleStudentAdd(event) {
     event.preventDefault();
     showNotification('✓ Student registered successfully!', 'success');
@@ -202,6 +203,7 @@ function setActivePage(event, pageId) {
     if (event) {
         event.preventDefault();
     }
+
     // Remove active class from all nav items
     document.querySelectorAll('.sidebar-menu a').forEach(link => {
         link.classList.remove('active');
@@ -235,8 +237,8 @@ function initDashboard() {
     const userNameEl = document.getElementById('userName');
     const userRoleEl = document.getElementById('userRole');
     
-    if (userNameEl) userNameEl.textContent = userName;
-    if (userRoleEl) userRoleEl.textContent = userRole;
+    if (userNameEl) userNameEl.textContent = userName ?? 'User';
+    if (userRoleEl) userRoleEl.textContent = userRole ?? 'Role';
     
     // Show dashboard page by default
     setTimeout(() => {
