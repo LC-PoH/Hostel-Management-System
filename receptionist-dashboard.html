@@ -1,939 +1,522 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reception Dashboard - Hostel Management</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aastha Vidhya Mandir – Receptionist Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body class="dashboard" onload="initDashboard()">
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="navbar-brand">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-            </svg>
-            Hostel Pro - Reception
-        </div>
-        <div class="navbar-user">
-            <div class="user-info">
-                <div class="user-name" id="userName">Reception</div>
-                <div class="user-role" id="userRole">Receptionist</div>
-            </div>
-            <button class="btn-logout" onclick="logout()">Logout</button>
-        </div>
+<body>
+<div class="dashboard-layout">
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      </div>
+      <div><div class="sidebar-brand">AVM</div><div class="sidebar-brand-sub">Reception Desk</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Main</div>
+      <button class="nav-item active" data-page="dashboard" data-title="Dashboard" onclick="showPage('dashboard')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" data-page="checkinout" data-title="Check-In / Check-Out" onclick="showPage('checkinout')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+        Check-In / Out
+      </button>
+      <button class="nav-item" data-page="visitors" data-title="Visitor Management" onclick="showPage('visitors')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        Visitors
+      </button>
+      <button class="nav-item" data-page="students-rec" data-title="Students" onclick="showPage('students-rec')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        Students
+      </button>
+      <button class="nav-item" data-page="rooms-rec" data-title="Room Status" onclick="showPage('rooms-rec')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        Room Status
+      </button>
+      <button class="nav-item" data-page="attendance" data-title="Attendance Log" onclick="showPage('attendance')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        Attendance
+      </button>
     </nav>
-
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <ul class="sidebar-menu">
-                <li>
-                    <a href="#" data-page="dashboardPage" onclick="setActivePage(event, 'dashboardPage')" class="active">
-                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <rect x="3" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="14" width="7" height="7"></rect>
-                            <rect x="3" y="14" width="7" height="7"></rect>
-                        </svg>
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-page="checkinoutPage" onclick="setActivePage(event, 'checkinoutPage')">
-                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                            <polyline points="10 17 15 12 10 7"></polyline>
-                            <line x1="15" y1="12" x2="3" y2="12"></line>
-                        </svg>
-                        Check-In/Out
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-page="studentsPage" onclick="setActivePage(event, 'studentsPage')">
-                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                        </svg>
-                        Students
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-page="roomsPage" onclick="setActivePage(event, 'roomsPage')">
-                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                        </svg>
-                        Rooms
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-page="visitorPage" onclick="setActivePage(event, 'visitorPage')">
-                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        Visitors
-                    </a>
-                </li>
-            </ul>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Dashboard Page -->
-            <div id="dashboardPage" class="page">
-                <div class="page-header">
-                    <h1>👋 Reception Dashboard</h1>
-                    <p>Manage check-ins, check-outs, and student information</p>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="grid grid-3">
-                    <div class="card quick-action green" onclick="openModal('checkInModal')">
-                        <div class="action-content">
-                            <div class="action-icon green">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                                    <polyline points="10 17 15 12 10 7"></polyline>
-                                    <line x1="15" y1="12" x2="3" y2="12"></line>
-                                </svg>
-                            </div>
-                            <div>
-                                <p style="color: var(--gray); font-size: 0.875rem;">Quick Action</p>
-                                <h3>Check-In Student</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card quick-action blue" onclick="openModal('checkOutModal')">
-                        <div class="action-content">
-                            <div class="action-icon blue">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"></path>
-                                    <polyline points="14 7 9 12 14 17"></polyline>
-                                    <line x1="9" y1="12" x2="21" y2="12"></line>
-                                </svg>
-                            </div>
-                            <div>
-                                <p style="color: var(--gray); font-size: 0.875rem;">Quick Action</p>
-                                <h3>Check-Out Student</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card quick-action orange" onclick="openModal('visitorCheckInModal')">
-                        <div class="action-content">
-                            <div class="action-icon orange">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                            </div>
-                            <div>
-                                <p style="color: var(--gray); font-size: 0.875rem;">Quick Action</p>
-                                <h3>Register Visitor</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Stats -->
-                <div class="grid grid-4">
-                    <div class="card">
-                        <div class="stat-card">
-                            <div class="stat-info">
-                                <h3>8</h3>
-                                <p>Check-Ins Today</p>
-                                <small style="color: var(--success);">↑ 3 new</small>
-                            </div>
-                            <div class="stat-icon green">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                                    <polyline points="10 17 15 12 10 7"></polyline>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="stat-card">
-                            <div class="stat-info">
-                                <h3>2</h3>
-                                <p>Check-Outs Today</p>
-                                <small style="color: var(--info);">Pending</small>
-                            </div>
-                            <div class="stat-icon blue">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"></path>
-                                    <polyline points="14 7 9 12 14 17"></polyline>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="stat-card">
-                            <div class="stat-info">
-                                <h3>12</h3>
-                                <p>Active Visitors</p>
-                                <small style="color: var(--warning);">In premises</small>
-                            </div>
-                            <div class="stat-icon orange">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="stat-card">
-                            <div class="stat-info">
-                                <h3>45</h3>
-                                <p>Present Students</p>
-                                <small style="color: var(--primary);">In hostel</small>
-                            </div>
-                            <div class="stat-icon">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="9" cy="7" r="4"></circle>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Activity -->
-                <div class="card">
-                    <h2 class="card-title">📋 Recent Activity</h2>
-                    <p class="card-description">Latest check-ins and check-outs</p>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Student</th>
-                                    <th>Room</th>
-                                    <th>Activity</th>
-                                    <th>Time</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Raj Kumar</td>
-                                    <td>A-305</td>
-                                    <td>Check-In</td>
-                                    <td>10:30 AM</td>
-                                    <td><span class="badge badge-success">✓ Done</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Priya Sharma</td>
-                                    <td>B-102</td>
-                                    <td>Check-In</td>
-                                    <td>09:15 AM</td>
-                                    <td><span class="badge badge-success">✓ Done</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Vikram Singh</td>
-                                    <td>A-201</td>
-                                    <td>Check-Out</td>
-                                    <td>08:45 AM</td>
-                                    <td><span class="badge badge-pending">⏳ Pending</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Check-In/Out Page -->
-            <div id="checkinoutPage" class="page" style="display: none;">
-                <div class="page-header">
-                    <h1>🔄 Check-In/Check-Out</h1>
-                    <p>Manage student movements</p>
-                </div>
-
-                <div class="grid grid-2">
-                    <div class="card">
-                        <h3 style="margin-bottom: 1.5rem;">📥 Quick Check-In</h3>
-                        <form onsubmit="handleCheckIn(event)">
-                            <div class="form-group">
-                                <label>Student ID / Name</label>
-                                <input type="text" placeholder="Enter ID or name" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Room</label>
-                                <input type="text" placeholder="Auto-fill" required>
-                            </div>
-                            <button type="submit" class="btn btn-success btn-block">Check-In</button>
-                        </form>
-                    </div>
-
-                    <div class="card">
-                        <h3 style="margin-bottom: 1.5rem;">📤 Quick Check-Out</h3>
-                        <form onsubmit="handleCheckOut(event)">
-                            <div class="form-group">
-                                <label>Student ID / Name</label>
-                                <input type="text" placeholder="Enter ID or name" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Reason</label>
-                                <select required>
-                                    <option>Select reason</option>
-                                    <option>On Pass</option>
-                                    <option>On Leaves</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-danger btn-block">Check-Out</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Students Page -->
-            <div id="studentsPage" class="page" style="display: none;">
-                <div class="page-header">
-                    <h1>👨‍🎓 Students</h1>
-                    <p>Student records and information</p>
-                </div>
-
-                <div class="card">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Phone</th>
-                                    <th>Room</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>STU001</td>
-                                    <td>Rahul Verma</td>
-                                    <td>98XXXXXXX1</td>
-                                    <td>A-305</td>
-                                    <td><span class="badge badge-success">✓ Present</span></td>
-                                </tr>
-                                <tr>
-                                    <td>STU002</td>
-                                    <td>Priya Sharma</td>
-                                    <td>97XXXXXXX2</td>
-                                    <td>B-102</td>
-                                    <td><span class="badge badge-success">✓ Present</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Rooms Page -->
-            <div id="roomsPage" class="page" style="display: none;">
-                <div class="page-header">
-                    <h1>🏠 Rooms</h1>
-                    <p>Room occupancy and status</p>
-                </div>
-
-                <div class="grid grid-3">
-                    <div class="card">
-                        <h3>Room A-305</h3>
-                        <p style="color: var(--gray); margin: 0.5rem 0;">2 Beds</p>
-                        <p style="font-size: 0.9rem; margin: 1rem 0;"><strong>Occupants:</strong> 2/2</p>
-                        <span class="badge badge-success">Occupied</span>
-                    </div>
-                    <div class="card">
-                        <h3>Room B-102</h3>
-                        <p style="color: var(--gray); margin: 0.5rem 0;">1 Bed</p>
-                        <p style="font-size: 0.9rem; margin: 1rem 0;"><strong>Occupants:</strong> 1/1</p>
-                        <span class="badge badge-success">Occupied</span>
-                    </div>
-                    <div class="card">
-                        <h3>Room A-201</h3>
-                        <p style="color: var(--gray); margin: 0.5rem 0;">3 Beds</p>
-                        <p style="font-size: 0.9rem; margin: 1rem 0;"><strong>Occupants:</strong> 1/3</p>
-                        <span class="badge badge-warning">1 Available</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Visitor Page -->
-            <div id="visitorPage" class="page" style="display: none;">
-                <div class="page-header">
-                    <h1>👥 Visitors</h1>
-                    <p>Visitor management</p>
-                </div>
-
-                <div style="margin-bottom: 1.5rem;">
-                    <button class="btn btn-primary" onclick="openModal('visitorCheckInModal')">+ Register Visitor</button>
-                </div>
-
-                <div class="card">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Visitor</th>
-                                    <th>For Student</th>
-                                    <th>Time</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Mrs. Sharma</td>
-                                    <td>Priya Sharma</td>
-                                    <td>2:30 PM</td>
-                                    <td><span class="badge badge-success">✓ In</span></td>
-                                    <td><button class="btn btn-sm btn-danger" onclick="showNotification('Checked out', 'success')">Out</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Modals -->
-    <div id="checkInModal" class="modal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('checkInModal')">×</button>
-            <div class="modal-header">
-                <h2>Check-In Student</h2>
-                <p>Register entry</p>
-            </div>
-            <form onsubmit="handleCheckIn(event)">
-                <div class="form-group">
-                    <label>Student ID / Name</label>
-                    <input type="text" placeholder="Enter ID" required>
-                </div>
-                <div class="form-group">
-                    <label>Room</label>
-                    <input type="text" placeholder="Auto-fill" required>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('checkInModal')">Cancel</button>
-                    <button type="submit" class="btn btn-success">Check-In</button>
-                </div>
-            </form>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar" id="sidebarUserAvatar">R</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarUserName">Receptionist</div>
+          <div class="sidebar-user-role" id="sidebarUserRole">Receptionist</div>
         </div>
+      </div>
+      <button class="sidebar-logout" onclick="logout()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Logout
+      </button>
     </div>
+  </aside>
 
-    <div id="checkOutModal" class="modal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('checkOutModal')">×</button>
-            <div class="modal-header">
-                <h2>Check-Out Student</h2>
-                <p>Register exit</p>
-            </div>
-            <form onsubmit="handleCheckOut(event)">
-                <div class="form-group">
-                    <label>Student ID / Name</label>
-                    <input type="text" placeholder="Enter ID" required>
-                </div>
-                <div class="form-group">
-                    <label>Reason</label>
-                    <select required>
-                        <option>On Pass</option>
-                        <option>On Leaves</option>
-                        <option>Permanent</option>
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('checkOutModal')">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Check-Out</button>
-                </div>
-            </form>
+  <!-- Main Content -->
+  <div class="main-content">
+    <header class="topbar">
+      <button class="topbar-menu-btn" onclick="toggleMobileSidebar()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-search">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input type="text" placeholder="Search students…" oninput="recSearch(this.value)">
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle dark/light mode">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="topbar-btn" onclick="openModal('visitorModal')" title="Register visitor">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+        </button>
+        <div class="topbar-user">
+          <div class="topbar-user-avatar" id="topbarUserAvatar">R</div>
+          <div class="topbar-user-name" id="topbarUserName">Reception</div>
         </div>
-    </div>
+      </div>
+    </header>
 
-    <div id="visitorCheckInModal" class="modal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('visitorCheckInModal')">×</button>
-            <div class="modal-header">
-                <h2>Register Visitor</h2>
-                <p>Check in a visitor</p>
-            </div>
-            <form onsubmit="handleComplaint(event)">
-                <div class="form-group">
-                    <label>Visitor Name</label>
-                    <input type="text" placeholder="Name" required>
-                </div>
-                <div class="form-group">
-                    <label>For Student</label>
-                    <input type="text" placeholder="Student name" required>
-                </div>
-                <div class="form-group">
-                    <label>Phone</label>
-                    <input type="tel" placeholder="Phone number" required>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('visitorCheckInModal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Check-In</button>
-                </div>
-            </form>
+    <main class="page-content">
+
+      <!-- ===== DASHBOARD ===== -->
+      <div class="page active" id="dashboard">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h2>Reception Desk</h2>
+            <p id="todayDate"></p>
+          </div>
+          <div class="page-header-right">
+            <button class="btn btn-secondary" onclick="window.print()">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+              Print Report
+            </button>
+          </div>
         </div>
-    </div>
 
-    <script src="script.js"></script>
-</body>
-</html>
-            <div id="dashboardPage" class="page">
-                <div class="page-header">
-                    <h1>Reception Dashboard</h1>
-                    <p>Manage check-ins, check-outs, and room assignments</p>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="grid grid-3">
-                    <div class="card quick-action green" onclick="openModal('checkInModal')">
-                        <div class="action-content">
-                            <div class="action-icon green">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                                    <polyline points="10 17 15 12 10 7"></polyline>
-                                    <line x1="15" y1="12" x2="3" y2="12"></line>
-                                </svg>
-                            </div>
-                            <div>
-                                <p style="color: #666; font-size: 0.875rem;">Quick Action</p>
-                                <h3>Check-In Student</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card quick-action orange" onclick="openModal('checkOutModal')">
-                        <div class="action-content">
-                            <div class="action-icon orange">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                    <polyline points="16 17 21 12 16 7"></polyline>
-                                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                                </svg>
-                            </div>
-                            <div>
-                                <p style="color: #666; font-size: 0.875rem;">Quick Action</p>
-                                <h3>Check-Out Student</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card quick-action blue" onclick="openModal('registerModal')">
-                        <div class="action-content">
-                            <div class="action-icon blue">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="8.5" cy="7" r="4"></circle>
-                                    <line x1="20" y1="8" x2="20" y2="14"></line>
-                                    <line x1="23" y1="11" x2="17" y2="11"></line>
-                                </svg>
-                            </div>
-                            <div>
-                                <p style="color: #666; font-size: 0.875rem;">Quick Action</p>
-                                <h3>Register Student</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Stats -->
-                <div class="grid grid-4">
-                    <div class="card">
-                        <div class="stat-card">
-                            <div class="stat-info">
-                                <h3>3</h3>
-                                <p>Available Rooms</p>
-                                <small style="color: #666;">45 occupied</small>
-                            </div>
-                            <div class="stat-icon green">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="stat-card">
-                            <div class="stat-info">
-                                <h3>2</h3>
-                                <p>Pending Check-Ins</p>
-                                <small style="color: #f59e0b;">Expected today</small>
-                            </div>
-                            <div class="stat-icon orange">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <polyline points="12 6 12 12 16 14"></polyline>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="stat-card">
-                            <div class="stat-info">
-                                <h3>3</h3>
-                                <p>Today Check-Ins</p>
-                                <small style="color: #22c55e;">1 check-out</small>
-                            </div>
-                            <div class="stat-icon blue">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                                    <polyline points="10 17 15 12 10 7"></polyline>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="stat-card">
-                            <div class="stat-info">
-                                <h3>45</h3>
-                                <p>Total Occupancy</p>
-                                <small style="color: #667eea;">90% capacity</small>
-                            </div>
-                            <div class="stat-icon">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="9" cy="7" r="4"></circle>
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Search -->
-                <div class="card">
-                    <h2 class="card-title">Quick Search</h2>
-                    <p class="card-description">Search for students or rooms</p>
-                    <div class="input-group">
-                        <input type="text" placeholder="Search by name, room number, or phone...">
-                        <button class="btn btn-primary">Search</button>
-                    </div>
-                </div>
-
-                <div class="grid grid-2">
-                    <!-- Pending Check-Ins -->
-                    <div class="card">
-                        <h2 class="card-title">Pending Check-Ins</h2>
-                        <p class="card-description">Students expected to check-in soon</p>
-                        <ul class="activity-list">
-                            <li class="activity-item">
-                                <div class="activity-icon blue">
-                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="12" cy="7" r="4"></circle>
-                                    </svg>
-                                </div>
-                                <div style="flex: 1;">
-                                    <p><strong>Neha Gupta</strong> - Room A-204</p>
-                                    <p style="font-size: 0.875rem; color: #666;">Expected: 22 Mar 2026</p>
-                                </div>
-                                <button class="btn btn-sm btn-primary" onclick="openModal('checkInModal')">Check-In</button>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-icon blue">
-                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="12" cy="7" r="4"></circle>
-                                    </svg>
-                                </div>
-                                <div style="flex: 1;">
-                                    <p><strong>Vikram Singh</strong> - Room B-102</p>
-                                    <p style="font-size: 0.875rem; color: #666;">Expected: 23 Mar 2026</p>
-                                </div>
-                                <button class="btn btn-sm btn-primary" onclick="openModal('checkInModal')">Check-In</button>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Recent Activity -->
-                    <div class="card">
-                        <h2 class="card-title">Recent Activity</h2>
-                        <p class="card-description">Latest check-ins and check-outs</p>
-                        <ul class="activity-list">
-                            <li class="activity-item">
-                                <div class="activity-icon green">
-                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                                        <polyline points="10 17 15 12 10 7"></polyline>
-                                    </svg>
-                                </div>
-                                <div style="flex: 1;">
-                                    <p><strong>Rahul Verma</strong> - A-305</p>
-                                    <p style="font-size: 0.875rem; color: #666;">2 hours ago</p>
-                                </div>
-                                <span class="badge badge-success">Check-In</span>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-icon orange">
-                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                        <polyline points="16 17 21 12 16 7"></polyline>
-                                    </svg>
-                                </div>
-                                <div style="flex: 1;">
-                                    <p><strong>Anjali Reddy</strong> - B-201</p>
-                                    <p style="font-size: 0.875rem; color: #666;">5 hours ago</p>
-                                </div>
-                                <span class="badge badge-warning">Check-Out</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Check-In/Out Page -->
-            <div id="checkInOutPage" class="page" style="display: none;">
-                <div class="page-header">
-                    <h1>Check-In / Check-Out Management</h1>
-                    <p>Process student check-ins and check-outs</p>
-                </div>
-
-                <div class="grid grid-2">
-                    <div class="card">
-                        <h2 class="card-title">Today's Check-Ins</h2>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Student</th>
-                                    <th>Room</th>
-                                    <th>Time</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Rahul Verma</td>
-                                    <td>A-305</td>
-                                    <td>10:30 AM</td>
-                                    <td><span class="badge badge-success">Completed</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Priya Sharma</td>
-                                    <td>B-102</td>
-                                    <td>11:45 AM</td>
-                                    <td><span class="badge badge-success">Completed</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="card">
-                        <h2 class="card-title">Today's Check-Outs</h2>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Student</th>
-                                    <th>Room</th>
-                                    <th>Time</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Anjali Reddy</td>
-                                    <td>B-201</td>
-                                    <td>09:15 AM</td>
-                                    <td><span class="badge badge-success">Completed</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Students Page -->
-            <div id="studentsPage" class="page" style="display: none;">
-                <div class="page-header">
-                    <h1>Student Management</h1>
-                    <p>View and manage all students</p>
-                </div>
-
-                <div class="card">
-                    <h2 class="card-title">Current Occupancy</h2>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Student Name</th>
-                                <th>Room</th>
-                                <th>Phone</th>
-                                <th>Check-In Date</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Raj Kumar</td>
-                                <td>A-101</td>
-                                <td>+91 98765 43210</td>
-                                <td>01 Sep 2025</td>
-                                <td><span class="badge badge-success">Active</span></td>
-                            </tr>
-                            <tr>
-                                <td>Priya Sharma</td>
-                                <td>A-102</td>
-                                <td>+91 98765 43211</td>
-                                <td>01 Sep 2025</td>
-                                <td><span class="badge badge-success">Active</span></td>
-                            </tr>
-                            <tr>
-                                <td>Amit Patel</td>
-                                <td>B-201</td>
-                                <td>+91 98765 43212</td>
-                                <td>15 Sep 2025</td>
-                                <td><span class="badge badge-success">Active</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Rooms Page -->
-            <div id="roomsPage" class="page" style="display: none;">
-                <div class="page-header">
-                    <h1>Room Availability</h1>
-                    <p>Check room status and availability</p>
-                </div>
-
-                <div class="card">
-                    <h2 class="card-title">All Rooms</h2>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Room</th>
-                                <th>Type</th>
-                                <th>Occupant</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>A-101</td>
-                                <td>Double</td>
-                                <td>Raj Kumar</td>
-                                <td><span class="badge badge-warning">Occupied</span></td>
-                            </tr>
-                            <tr>
-                                <td>A-102</td>
-                                <td>Single</td>
-                                <td>-</td>
-                                <td><span class="badge badge-success">Available</span></td>
-                            </tr>
-                            <tr>
-                                <td>B-201</td>
-                                <td>Triple</td>
-                                <td>Amit Patel</td>
-                                <td><span class="badge badge-warning">Occupied</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Check-In Modal -->
-    <div id="checkInModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button class="modal-close" onclick="closeModal('checkInModal')">&times;</button>
-                <h2>Student Check-In</h2>
-                <p style="color: #666; font-size: 0.875rem;">Record a new student check-in</p>
-            </div>
-            <form onsubmit="handleCheckIn(event)">
-                <div class="form-group">
-                    <label>Student Name</label>
-                    <input type="text" placeholder="Enter student name" required>
-                </div>
-                <div class="form-group">
-                    <label>Room Number</label>
-                    <input type="text" placeholder="e.g., A-101" required>
-                </div>
-                <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="tel" placeholder="+91 XXXXX XXXXX" required>
-                </div>
-                <div class="form-group">
-                    <label>ID Proof Number</label>
-                    <input type="text" placeholder="Aadhar/Student ID" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Complete Check-In</button>
-            </form>
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg></div>
+            <div class="stat-body"><div class="stat-value" id="recStatStudents">0</div><div class="stat-label">Total Students</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+            <div class="stat-body"><div class="stat-value" id="recStatPresent">0</div><div class="stat-label">Present Today</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></div>
+            <div class="stat-body"><div class="stat-value" id="recStatOut">0</div><div class="stat-label">Out / Absent</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>
+            <div class="stat-body"><div class="stat-value" id="recStatVisitors">0</div><div class="stat-label">Active Visitors</div></div>
+          </div>
         </div>
-    </div>
 
-    <!-- Check-Out Modal -->
-    <div id="checkOutModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button class="modal-close" onclick="closeModal('checkOutModal')">&times;</button>
-                <h2>Student Check-Out</h2>
-                <p style="color: #666; font-size: 0.875rem;">Process student check-out</p>
-            </div>
-            <form onsubmit="handleCheckOut(event)">
-                <div class="form-group">
-                    <label>Room Number</label>
-                    <input type="text" placeholder="e.g., A-101" required>
-                </div>
-                <div class="form-group">
-                    <label>Student Name</label>
-                    <input type="text" placeholder="Verify student name" required>
-                </div>
-                <div class="form-group">
-                    <label>Room Condition</label>
-                    <select required>
-                        <option>Good</option>
-                        <option>Needs Cleaning</option>
-                        <option>Damage Reported</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Complete Check-Out</button>
-            </form>
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <div class="quick-action-card green" onclick="openModal('checkInModal')">
+            <div class="qa-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg></div>
+            <div class="qa-label">Check-In</div>
+            <div class="qa-sub">Mark student present</div>
+          </div>
+          <div class="quick-action-card blue" onclick="openModal('checkOutModal')">
+            <div class="qa-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></div>
+            <div class="qa-label">Check-Out</div>
+            <div class="qa-sub">Mark student out</div>
+          </div>
+          <div class="quick-action-card orange" onclick="openModal('visitorModal')">
+            <div class="qa-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg></div>
+            <div class="qa-label">Register Visitor</div>
+            <div class="qa-sub">Log visitor entry</div>
+          </div>
+          <div class="quick-action-card purple" onclick="showPage('students-rec')">
+            <div class="qa-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg></div>
+            <div class="qa-label">Student List</div>
+            <div class="qa-sub">View all students</div>
+          </div>
+          <div class="quick-action-card cyan" onclick="showPage('visitors')">
+            <div class="qa-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div>
+            <div class="qa-label">Visitor Log</div>
+            <div class="qa-sub">Today's visitors</div>
+          </div>
         </div>
-    </div>
 
-    <!-- Register Modal -->
-    <div id="registerModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button class="modal-close" onclick="closeModal('registerModal')">&times;</button>
-                <h2>Register New Student</h2>
-                <p style="color: #666; font-size: 0.875rem;">Add a new student to the system</p>
+        <!-- Recent Activity + Room Summary -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Today's Attendance</div><button class="btn btn-sm btn-secondary" onclick="showPage('attendance')">View All</button></div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrapper">
+                <table>
+                  <thead><tr><th>Student ID</th><th>Name</th><th>Room</th><th>Check-In</th><th>Status</th></tr></thead>
+                  <tbody id="attendanceBody"></tbody>
+                </table>
+              </div>
             </div>
-            <form onsubmit="handleRegister(event)">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" placeholder="Enter full name" required>
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" placeholder="student@email.com" required>
-                </div>
-                <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="tel" placeholder="+91 XXXXX XXXXX" required>
-                </div>
-                <div class="form-group">
-                    <label>Assign Room</label>
-                    <input type="text" placeholder="e.g., A-101" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Register Student</button>
-            </form>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Active Visitors</div><button class="btn btn-sm btn-primary" onclick="openModal('visitorModal')">Register</button></div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrapper">
+                <table>
+                  <thead><tr><th>Visitor</th><th>For Student</th><th>Time In</th><th>Action</th></tr></thead>
+                  <tbody id="activeVisitorsBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <script src="script.js"></script>
+      <!-- ===== CHECK-IN / CHECK-OUT PAGE ===== -->
+      <div class="page" id="checkinout">
+        <div class="page-header">
+          <div class="page-header-left"><h2>Check-In / Check-Out</h2><p>Process student entry and exit</p></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header" style="background:var(--success-light)">
+              <div class="card-title" style="color:var(--success)">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:inline;width:18px;height:18px;margin-right:6px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                Student Check-In
+              </div>
+            </div>
+            <div class="card-body">
+              <form onsubmit="handleCheckIn(event)">
+                <div class="form-group-d"><label class="form-label-d">Student ID or Name</label><input class="input" id="ciStudentId" placeholder="Enter Student ID (e.g. STU001)" required></div>
+                <div class="form-group-d"><label class="form-label-d">Or select from list</label>
+                  <select class="input student-dropdown" id="ciStudentSelect" onchange="document.getElementById('ciStudentId').value=this.options[this.selectedIndex].dataset.sid||''">
+                    <option value="" data-sid="">Select student…</option>
+                  </select>
+                </div>
+                <div class="form-group-d"><label class="form-label-d">Remarks (optional)</label><input class="input" placeholder="Any notes…"></div>
+                <button type="submit" class="btn btn-success w-full mt-12">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  Mark Check-In
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header" style="background:var(--primary-light)">
+              <div class="card-title" style="color:var(--primary)">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:inline;width:18px;height:18px;margin-right:6px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                Student Check-Out
+              </div>
+            </div>
+            <div class="card-body">
+              <form onsubmit="handleCheckOut(event)">
+                <div class="form-group-d"><label class="form-label-d">Student ID or Name</label><input class="input" id="coStudentId" placeholder="Enter Student ID (e.g. STU001)" required></div>
+                <div class="form-group-d"><label class="form-label-d">Or select from list</label>
+                  <select class="input student-dropdown" id="coStudentSelect" onchange="document.getElementById('coStudentId').value=this.options[this.selectedIndex].dataset.sid||''">
+                    <option value="" data-sid="">Select student…</option>
+                  </select>
+                </div>
+                <div class="form-group-d"><label class="form-label-d">Reason for Going Out</label>
+                  <select class="input" id="coReason">
+                    <option value="on-pass">On Pass</option>
+                    <option value="on-leave">On Leave</option>
+                    <option value="outing">General Outing</option>
+                    <option value="emergency">Emergency</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-full mt-12">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7"/></svg>
+                  Mark Check-Out
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== VISITORS ===== -->
+      <div class="page" id="visitors">
+        <div class="page-header">
+          <div class="page-header-left"><h2>Visitor Management</h2><p>Log and track all visitors</p></div>
+          <div class="page-header-right">
+            <button class="btn btn-secondary" onclick="exportTableCSV('visitorsTable','visitors-log')">Export</button>
+            <button class="btn btn-primary" onclick="openModal('visitorModal')">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              Register Visitor
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="filter-bar" style="margin:0;flex:1">
+              <div class="search-box">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input type="text" placeholder="Search visitors…" oninput="filterVisitors(this.value)">
+              </div>
+              <select class="filter-select" onchange="filterVisitorStatus(this.value)">
+                <option value="">All</option>
+                <option value="active">Active</option>
+                <option value="checked-out">Checked Out</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="table-wrapper">
+              <table id="visitorsTable">
+                <thead><tr><th>Visitor Name</th><th>For Student</th><th>Purpose</th><th>Check-In</th><th>Check-Out</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody id="visitorsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== STUDENTS ===== -->
+      <div class="page" id="students-rec">
+        <div class="page-header">
+          <div class="page-header-left"><h2>Students</h2><p>View all students and their status</p></div>
+          <div class="page-header-right">
+            <button class="btn btn-secondary" onclick="exportTableCSV('studentsRecTable','students-status')">Export</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="filter-bar" style="margin:0;flex:1">
+              <div class="search-box">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input type="text" placeholder="Search by name, ID, room…" oninput="filterStudentsRec(this.value)">
+              </div>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="table-wrapper">
+              <table id="studentsRecTable">
+                <thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Room</th><th>Check-In</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="studentsListBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ROOMS ===== -->
+      <div class="page" id="rooms-rec">
+        <div class="page-header">
+          <div class="page-header-left"><h2>Room Status</h2><p>Current occupancy of all rooms</p></div>
+        </div>
+        <div class="rooms-grid" id="recRoomsContainer"></div>
+      </div>
+
+      <!-- ===== ATTENDANCE ===== -->
+      <div class="page" id="attendance">
+        <div class="page-header">
+          <div class="page-header-left"><h2>Attendance Log</h2><p>Today's check-in / check-out records</p></div>
+          <div class="page-header-right">
+            <button class="btn btn-secondary" onclick="exportTableCSV('attendanceTable','attendance-log')">Export</button>
+            <button class="btn btn-primary" onclick="openModal('checkInModal')">Mark Check-In</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <div class="table-wrapper">
+              <table id="attendanceTable">
+                <thead><tr><th>Student ID</th><th>Name</th><th>Room</th><th>Check-In Time</th><th>Status</th></tr></thead>
+                <tbody id="attendanceBody2"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Check-In Modal -->
+<div class="modal-overlay" id="checkInModal">
+  <div class="modal modal-sm">
+    <div class="modal-header"><div class="modal-title">Quick Check-In</div><button class="modal-close" onclick="closeModal('checkInModal')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <form onsubmit="handleCheckIn(event)">
+      <div class="modal-body">
+        <div class="form-group-d"><label class="form-label-d">Student ID</label><input class="input" id="ciStudentId" placeholder="e.g. STU001" required></div>
+        <div class="form-group-d"><label class="form-label-d">Or select</label>
+          <select class="input student-dropdown" onchange="document.getElementById('ciStudentId').value=this.options[this.selectedIndex].dataset.sid||''">
+            <option data-sid="">Select student…</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('checkInModal')">Cancel</button>
+        <button type="submit" class="btn btn-success">Check In</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Check-Out Modal -->
+<div class="modal-overlay" id="checkOutModal">
+  <div class="modal modal-sm">
+    <div class="modal-header"><div class="modal-title">Quick Check-Out</div><button class="modal-close" onclick="closeModal('checkOutModal')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <form onsubmit="handleCheckOut(event)">
+      <div class="modal-body">
+        <div class="form-group-d"><label class="form-label-d">Student ID</label><input class="input" id="coStudentId" placeholder="e.g. STU001" required></div>
+        <div class="form-group-d"><label class="form-label-d">Or select</label>
+          <select class="input student-dropdown" onchange="document.getElementById('coStudentId').value=this.options[this.selectedIndex].dataset.sid||''">
+            <option data-sid="">Select student…</option>
+          </select>
+        </div>
+        <div class="form-group-d"><label class="form-label-d">Reason</label>
+          <select class="input" id="coReason">
+            <option value="on-pass">On Pass</option>
+            <option value="on-leave">On Leave</option>
+            <option value="outing">General Outing</option>
+            <option value="emergency">Emergency</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('checkOutModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Check Out</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Visitor Modal -->
+<div class="modal-overlay" id="visitorModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Register Visitor</div><button class="modal-close" onclick="closeModal('visitorModal')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <form onsubmit="registerVisitor(event)">
+      <div class="modal-body">
+        <div class="form-group-d"><label class="form-label-d">Visitor Name *</label><input class="input" id="visitorName" placeholder="Full name" required></div>
+        <div class="form-group-d"><label class="form-label-d">Phone Number</label><input class="input" id="visitorPhone" type="tel" placeholder="Mobile number"></div>
+        <div class="form-group-d"><label class="form-label-d">Visiting Student *</label>
+          <select class="input student-dropdown" id="visitorForStudent" required></select>
+        </div>
+        <div class="form-group-d"><label class="form-label-d">Purpose</label>
+          <select class="input" id="visitorPurpose">
+            <option value="Family Visit">Family Visit</option>
+            <option value="Friend">Friend</option>
+            <option value="Official">Official</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('visitorModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Register & Check-In</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="logoutConfirmModal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title">Confirm Logout</div>
+      <button class="modal-close" onclick="closeModal('logoutConfirmModal')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to logout?</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('logoutConfirmModal')">Cancel</button>
+      <button type="button" class="btn btn-danger" onclick="confirmLogout()">Logout</button>
+    </div>
+  </div>
+</div>
+<div class="notifications-container"></div>
+<script src="script.js"></script>
+<script>
+  initReceptionistDashboard();
+
+  // Set today's date display
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+  // Populate dropdowns with studentId as data-sid for easy lookup
+  function populateRecStudentDropdowns() {
+    const students = HMS.where('users', u => u.role === 'student');
+    document.querySelectorAll('.student-dropdown').forEach(sel => {
+      const cur = sel.value;
+      sel.innerHTML = '<option value="" data-sid="">Select student…</option>' + students.map(s =>
+        `<option value="${s.id}" data-sid="${s.studentId||s.id}">${s.name} (${s.studentId||s.id})</option>`
+      ).join('');
+      if (cur) sel.value = cur;
+    });
+  }
+  populateRecStudentDropdowns();
+
+  // Active visitors table on dashboard
+  function renderActiveVisitors() {
+    const active = HMS.where('visitors', v => v.status === 'active');
+    const tbody = document.getElementById('activeVisitorsBody');
+    if (!tbody) return;
+    tbody.innerHTML = active.length ? active.map(v => {
+      const s = HMS.findById('users', v.studentId);
+      return `<tr>
+        <td><div class="td-name"><div class="avatar orange sm">${v.name[0]}</div><div class="fw-600">${v.name}</div></div></td>
+        <td>${s?.name||'-'}</td>
+        <td>${v.checkIn}</td>
+        <td><button class="btn btn-sm btn-warning" onclick="checkoutVisitor('${v.id}');renderActiveVisitors()">Check Out</button></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="4" class="text-center text-muted" style="padding:16px">No active visitors</td></tr>';
+  }
+  renderActiveVisitors();
+
+  // Attendance on separate page
+  function renderFullAttendance() {
+    const attendance = HMS.where('attendance', a => a.date === today());
+    const tbody = document.getElementById('attendanceBody2');
+    if (!tbody) return;
+    tbody.innerHTML = attendance.length ? attendance.map(a => {
+      const s = HMS.findById('users', a.studentId);
+      const room = s?.roomId ? HMS.findById('rooms', s.roomId) : null;
+      return `<tr>
+        <td>${s?.studentId||'-'}</td>
+        <td>${s?.name||'-'}</td>
+        <td>${room?.number||'-'}</td>
+        <td>${a.checkIn||'—'}</td>
+        <td><span class="badge ${a.status==='present'?'badge-success':a.status==='out-pass'?'badge-warning':'badge-secondary'}">${a.status}</span></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="5" class="text-center text-muted" style="padding:24px">No records for today</td></tr>';
+  }
+
+  // Filter functions
+  function filterStudentsRec(term) {
+    document.querySelectorAll('#studentsListBody tr').forEach(r => {
+      r.style.display = r.textContent.toLowerCase().includes(term.toLowerCase()) ? '' : 'none';
+    });
+  }
+  function filterVisitors(term) {
+    document.querySelectorAll('#visitorsBody tr').forEach(r => {
+      r.style.display = r.textContent.toLowerCase().includes(term.toLowerCase()) ? '' : 'none';
+    });
+  }
+  function filterVisitorStatus(status) {
+    document.querySelectorAll('#visitorsBody tr').forEach(r => {
+      if (!status) { r.style.display = ''; return; }
+      const badge = r.querySelector('.badge');
+      r.style.display = badge && badge.textContent.trim() === status ? '' : 'none';
+    });
+  }
+  function recSearch(term) {
+    if (!term) return;
+    showPage('students-rec');
+    filterStudentsRec(term);
+  }
+
+  // Render attendance full on page show
+  document.querySelector('[data-page="attendance"]').addEventListener('click', () => setTimeout(renderFullAttendance, 50));
+</script>
 </body>
 </html>
