@@ -249,36 +249,79 @@ function initDashboard() {
     }, 100);
 }
 
-// Initialize Revenue Chart
+// Utility function to format currency
+function formatCurrency(amount) {
+    return '₹' + parseFloat(amount).toLocaleString('en-IN', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+}
+
+// Utility function to format date
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-IN', options);
+}
+
+// Table search functionality
+function filterTable(inputId, tableId) {
+    const input = document.getElementById(inputId);
+    const filter = input.value.toUpperCase();
+    const table = document.getElementById(tableId);
+    const tr = table.getElementsByTagName('tr');
+    
+    for (let i = 1; i < tr.length; i++) {
+        const td = tr[i].getElementsByTagName('td')[0];
+        if (td) {
+            const txtValue = td.textContent || td.innerText;
+            tr[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? '' : 'none';
+        }
+    }
+}
+
+// Chart initialization (requires Chart.js library)
 function initRevenueChart() {
     const ctx = document.getElementById('revenueChart');
-    if (ctx && typeof Chart !== 'undefined') {
+    if (!ctx) return;
+    
+    if (typeof Chart !== 'undefined') {
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                 datasets: [{
-                    label: 'Revenue',
-                    data: [175000, 182000, 190000, 195000, 201000, 225000],
+                    label: 'Monthly Revenue',
+                    data: [180000, 195000, 225000, 210000, 240000, 225000],
                     borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.2)',
-                    borderWidth: 2,
-                    tension: 0.4, // Adds a smooth curve to the line
-                    fill: true
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#667eea',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
+                maintainAspectRatio: true,
                 plugins: {
-                    legend: { display: false } // Hide legend for a cleaner look
+                    legend: {
+                        display: true,
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                return '₹' + (value / 1000) + 'k'; // Format as ₹100k
+                                return '₹' + value / 1000 + 'K';
                             }
                         }
                     }
@@ -288,26 +331,40 @@ function initRevenueChart() {
     }
 }
 
-// Initialize pages on load
-document.addEventListener('DOMContentLoaded', function() {
-    // Only run on dashboard pages
-    if (document.querySelector('.dashboard-container')) {
-        initDashboard();
-        initRevenueChart();
+// Print functionality
+function printContent(elementId) {
+    const printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write('<pre>' + document.getElementById(elementId).innerHTML + '</pre>');
+    printWindow.document.close();
+    printWindow.print();
+}
+
+// Export to CSV
+function exportToCSV(tableId, filename) {
+    const table = document.getElementById(tableId);
+    let csv = [];
+    
+    for (let row of table.rows) {
+        let rowData = [];
+        for (let cell of row.cells) {
+            rowData.push('"' + cell.innerText + '"');
+        }
+        csv.push(rowData.join(','));
+    }
+    
+    let csvContent = csv.join('\n');
+    let element = document.createElement('a');
+    element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent));
+    element.setAttribute('download', filename || 'export.csv');
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
+
+// Initialize on page load if not a login page
+window.addEventListener('load', () => {
+    if (document.body.classList.contains('dashboard')) {
+        setTimeout(initDashboard, 200);
     }
 });
-
-// Format currency
-function formatCurrency(amount) {
-    return '₹' + amount.toLocaleString('en-IN');
-}
-
-// Format date
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-IN', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
-    });
-}
