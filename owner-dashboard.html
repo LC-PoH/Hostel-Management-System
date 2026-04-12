@@ -1,500 +1,590 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Hostel Management</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aastha Vidhya Mandir – Admin Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
-<body class="dashboard" onload="initDashboard()">
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="navbar-brand">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-            </svg>
-            Hostel Pro - Admin Panel
-        </div>
-        <div class="navbar-user">
-            <div class="user-info">
-                <div class="user-name" id="userName">Admin</div>
-                <div class="user-role" id="userRole">Owner</div>
-            </div>
-            <button class="btn-logout" onclick="logout()">Logout</button>
-        </div>
+<body>
+<div class="dashboard-layout">
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      </div>
+      <div><div class="sidebar-brand">AVM</div><div class="sidebar-brand-sub">Admin Panel</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Overview</div>
+      <button class="nav-item active" data-page="dashboard" data-title="Dashboard" onclick="showPage('dashboard')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" data-page="analytics" data-title="Analytics & Reports" onclick="showPage('analytics')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Analytics
+      </button>
+      <div class="sidebar-section-label">Management</div>
+      <button class="nav-item" data-page="rooms" data-title="Room Management" onclick="showPage('rooms')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        Rooms
+      </button>
+      <button class="nav-item" data-page="students" data-title="Student Management" onclick="showPage('students')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        Students
+      </button>
+      <button class="nav-item" data-page="payments-admin" data-title="Payments" onclick="showPage('payments-admin')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        Payments
+      </button>
+      <button class="nav-item" data-page="requests-admin" data-title="Requests" onclick="showPage('requests-admin')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        Requests
+        <span class="nav-badge" id="pendingReqBadge">0</span>
+      </button>
+      <div class="sidebar-section-label">Communication</div>
+      <button class="nav-item" data-page="notices-admin" data-title="Notice Board" onclick="showPage('notices-admin')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+        Notice Board
+      </button>
     </nav>
-
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <ul class="sidebar-menu">
-                <li>
-                    <a href="#" data-page="dashboardPage" onclick="setActivePage(event, 'dashboardPage')" class="active">
-                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <rect x="3" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="14" width="7" height="7"></rect>
-                            <rect x="3" y="14" width="7" height="7"></rect>
-                        </svg>
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-page="roomsPage" onclick="setActivePage(event, 'roomsPage')">
-                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                        </svg>
-                        Room Management
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-page="studentsPage" onclick="setActivePage(event, 'studentsPage')">
-                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                        </svg>
-                        Students
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-page="requestsPage" onclick="setActivePage(event, 'requestsPage')">
-                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        Requests
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-page="reportsPage" onclick="setActivePage(event, 'reportsPage')">
-                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        Reports
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-page="settingsPage" onclick="setActivePage(event, 'settingsPage')">
-                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <circle cx="12" cy="12" r="3"></circle>
-                            <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6m-15.78 7.78l4.24-4.24m3.08-3.08l4.24-4.24"/>
-                        </svg>
-                        Settings
-                    </a>
-                </li>
-            </ul>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Dashboard Page -->
-            <div id="dashboardPage" class="page">
-                <div class="page-header">
-                    <h1>📊 Admin Dashboard</h1>
-                    <p>Welcome! Here's an overview of your hostel operations</p>
-                </div>
-
-                <!-- Quick Stats -->
-                <div class="grid grid-4">
-                    <div class="card">
-                        <div class="stat-card">
-                            <div class="stat-info">
-                                <h3>₹2,25,000</h3>
-                                <p>Monthly Revenue</p>
-                                <small style="color: var(--success);">↑ 12% from last month</small>
-                            </div>
-                            <div class="stat-icon green">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <line x1="12" y1="1" x2="12" y2="23"></line>
-                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="stat-card">
-                            <div class="stat-info">
-                                <h3>45/50</h3>
-                                <p>Rooms Occupied</p>
-                                <small style="color: var(--info);">90% occupancy</small>
-                            </div>
-                            <div class="stat-icon blue">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="stat-card">
-                            <div class="stat-info">
-                                <h3>12</h3>
-                                <p>Pending Requests</p>
-                                <small style="color: var(--warning);">⚠ Requires attention</small>
-                            </div>
-                            <div class="stat-icon orange">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="stat-card">
-                            <div class="stat-info">
-                                <h3>₹42,500</h3>
-                                <p>Pending Payments</p>
-                                <small style="color: var(--danger);">8 students</small>
-                            </div>
-                            <div class="stat-icon red">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                                    <line x1="1" y1="10" x2="23" y2="10"></line>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Bookings -->
-                <div class="card">
-                    <h2 class="card-title">📋 Recent Bookings</h2>
-                    <p class="card-description">Latest student bookings and check-ins</p>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Student Name</th>
-                                    <th>Room No.</th>
-                                    <th>Check-In</th>
-                                    <th>Monthly Rent</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Rahul Verma</td>
-                                    <td>A-305</td>
-                                    <td>15 Mar 2026</td>
-                                    <td>₹5,000</td>
-                                    <td><span class="badge badge-success">Active</span></td>
-                                    <td><button class="btn btn-sm btn-secondary">View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Priya Sharma</td>
-                                    <td>B-102</td>
-                                    <td>10 Mar 2026</td>
-                                    <td>₹4,500</td>
-                                    <td><span class="badge badge-success">Active</span></td>
-                                    <td><button class="btn btn-sm btn-secondary">View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Amit Patel</td>
-                                    <td>A-201</td>
-                                    <td>05 Mar 2026</td>
-                                    <td>₹5,500</td>
-                                    <td><span class="badge badge-success">Active</span></td>
-                                    <td><button class="btn btn-sm btn-secondary">View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Neha Singh</td>
-                                    <td>C-405</td>
-                                    <td>01 Mar 2026</td>
-                                    <td>₹4,800</td>
-                                    <td><span class="badge badge-pending">Pending</span></td>
-                                    <td><button class="btn btn-sm btn-secondary">View</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Rooms Page -->
-            <div id="roomsPage" class="page" style="display: none;">
-                <div class="page-header">
-                    <h1>🏠 Room Management</h1>
-                    <p>Manage all rooms and their status</p>
-                </div>
-
-                <div class="card" style="margin-bottom: 1.5rem;">
-                    <button class="btn btn-primary" onclick="openModal('addRoomModal')">+ Add New Room</button>
-                </div>
-
-                <div class="grid grid-3">
-                    <div class="card">
-                        <h3 style="margin-bottom: 0.5rem;">Room A-301</h3>
-                        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">2 Beds • Shared Bathroom</p>
-                        <div style="margin-bottom: 1rem;">
-                            <span class="badge badge-success">Occupied</span>
-                            <span style="color: var(--gray); font-size: 0.85rem; margin-left: 0.5rem;">₹5,000/month</span>
-                        </div>
-                        <button class="btn btn-sm btn-secondary" style="width: 100%; margin-bottom: 0.5rem;">Edit</button>
-                        <button class="btn btn-sm btn-danger" style="width: 100%;">Delete</button>
-                    </div>
-
-                    <div class="card">
-                        <h3 style="margin-bottom: 0.5rem;">Room B-102</h3>
-                        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">1 Bed • Private Bathroom</p>
-                        <div style="margin-bottom: 1rem;">
-                            <span class="badge badge-success">Occupied</span>
-                            <span style="color: var(--gray); font-size: 0.85rem; margin-left: 0.5rem;">₹7,000/month</span>
-                        </div>
-                        <button class="btn btn-sm btn-secondary" style="width: 100%; margin-bottom: 0.5rem;">Edit</button>
-                        <button class="btn btn-sm btn-danger" style="width: 100%;">Delete</button>
-                    </div>
-
-                    <div class="card">
-                        <h3 style="margin-bottom: 0.5rem;">Room C-203</h3>
-                        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">3 Beds • Shared Bathroom</p>
-                        <div style="margin-bottom: 1rem;">
-                            <span class="badge badge-warning">Available</span>
-                            <span style="color: var(--gray); font-size: 0.85rem; margin-left: 0.5rem;">₹4,500/month</span>
-                        </div>
-                        <button class="btn btn-sm btn-secondary" style="width: 100%; margin-bottom: 0.5rem;">Edit</button>
-                        <button class="btn btn-sm btn-danger" style="width: 100%;">Delete</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Students Page -->
-            <div id="studentsPage" class="page" style="display: none;">
-                <div class="page-header">
-                    <h1>👨‍🎓 Student Management</h1>
-                    <p>Manage all students and their information</p>
-                </div>
-
-                <div class="card" style="margin-bottom: 1.5rem;">
-                    <button class="btn btn-primary" onclick="openModal('addStudentModal')">+ Add New Student</button>
-                </div>
-
-                <div class="card">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Student ID</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Room</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>STU001</td>
-                                    <td>Rahul Verma</td>
-                                    <td>rahul@email.com</td>
-                                    <td>A-305</td>
-                                    <td><span class="badge badge-success">Active</span></td>
-                                    <td><button class="btn btn-sm btn-secondary">Edit</button> <button class="btn btn-sm btn-danger">Delete</button></td>
-                                </tr>
-                                <tr>
-                                    <td>STU002</td>
-                                    <td>Priya Sharma</td>
-                                    <td>priya@email.com</td>
-                                    <td>B-102</td>
-                                    <td><span class="badge badge-success">Active</span></td>
-                                    <td><button class="btn btn-sm btn-secondary">Edit</button> <button class="btn btn-sm btn-danger">Delete</button></td>
-                                </tr>
-                                <tr>
-                                    <td>STU003</td>
-                                    <td>Amit Patel</td>
-                                    <td>amit@email.com</td>
-                                    <td>A-201</td>
-                                    <td><span class="badge badge-success">Active</span></td>
-                                    <td><button class="btn btn-sm btn-secondary">Edit</button> <button class="btn btn-sm btn-danger">Delete</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Requests Page -->
-            <div id="requestsPage" class="page" style="display: none;">
-                <div class="page-header">
-                    <h1>📬 Student Requests</h1>
-                    <p>Review and manage student requests</p>
-                </div>
-
-                <div class="grid grid-2">
-                    <div class="card">
-                        <h3 style="margin-bottom: 0.5rem;">Room Change Request</h3>
-                        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">From: Rahul Verma (A-305)</p>
-                        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">Reason: Noise issues</p>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn btn-sm btn-success" style="flex: 1;">Approve</button>
-                            <button class="btn btn-sm btn-danger" style="flex: 1;">Reject</button>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h3 style="margin-bottom: 0.5rem;">Maintenance Request</h3>
-                        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">From: Priya Sharma (B-102)</p>
-                        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">Issue: Broken tap in bathroom</p>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn btn-sm btn-success" style="flex: 1;">Approve</button>
-                            <button class="btn btn-sm btn-danger" style="flex: 1;">Reject</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reports Page -->
-            <div id="reportsPage" class="page" style="display: none;">
-                <div class="page-header">
-                    <h1>📈 Reports & Analytics</h1>
-                    <p>View hostel statistics and reports</p>
-                </div>
-
-                <div class="grid grid-3">
-                    <div class="card">
-                        <h3 style="margin-bottom: 0.5rem;">Total Revenue</h3>
-                        <p style="font-size: 2rem; color: var(--primary); margin: 1rem 0; font-weight: 700;">₹10,80,000</p>
-                        <p style="color: var(--gray); font-size: 0.9rem;">Annual revenue</p>
-                    </div>
-
-                    <div class="card">
-                        <h3 style="margin-bottom: 0.5rem;">Occupancy Rate</h3>
-                        <p style="font-size: 2rem; color: var(--success); margin: 1rem 0; font-weight: 700;">90%</p>
-                        <p style="color: var(--gray); font-size: 0.9rem;">45 out of 50 rooms</p>
-                    </div>
-
-                    <div class="card">
-                        <h3 style="margin-bottom: 0.5rem;">Average Rating</h3>
-                        <p style="font-size: 2rem; color: var(--warning); margin: 1rem 0; font-weight: 700;">4.8 ⭐</p>
-                        <p style="color: var(--gray); font-size: 0.9rem;">From 120 reviews</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Settings Page -->
-            <div id="settingsPage" class="page" style="display: none;">
-                <div class="page-header">
-                    <h1>⚙️ Settings</h1>
-                    <p>Manage hostel settings and configuration</p>
-                </div>
-
-                <div class="card">
-                    <h3 style="margin-bottom: 1.5rem;">Hostel Information</h3>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Hostel Name</label>
-                            <input type="text" value="Premium Hostel" placeholder="Enter hostel name">
-                        </div>
-                        <div class="form-group">
-                            <label>City</label>
-                            <input type="text" value="Delhi" placeholder="Enter city">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Address</label>
-                        <input type="text" value="123 Main Street, Delhi" placeholder="Enter full address">
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Phone Number</label>
-                            <input type="tel" value="+91-123-456-7890" placeholder="Enter phone number">
-                        </div>
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" value="admin@hostel.com" placeholder="Enter email">
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--gray-light);">
-                        <button class="btn btn-primary">Save Changes</button>
-                        <button class="btn btn-secondary" style="margin-left: 0.5rem;">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Add Room Modal -->
-    <div id="addRoomModal" class="modal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('addRoomModal')">×</button>
-            <div class="modal-header">
-                <h2>Add New Room</h2>
-                <p>Fill in the details to add a new room</p>
-            </div>
-            <form onsubmit="handleRoomAdd(event)">
-                <div class="form-group">
-                    <label>Room Number</label>
-                    <input type="text" placeholder="e.g., A-301" required>
-                </div>
-                <div class="form-group">
-                    <label>Number of Beds</label>
-                    <select required>
-                        <option value="">Select number of beds</option>
-                        <option value="1">1 Bed</option>
-                        <option value="2">2 Beds</option>
-                        <option value="3">3 Beds</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Monthly Rent (₹)</label>
-                    <input type="number" placeholder="e.g., 5000" required>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('addRoomModal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Room</button>
-                </div>
-            </form>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar" id="sidebarUserAvatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarUserName">Admin</div>
+          <div class="sidebar-user-role" id="sidebarUserRole">Administrator</div>
         </div>
+      </div>
+      <button class="sidebar-logout" onclick="logout()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Logout
+      </button>
     </div>
+  </aside>
 
-    <!-- Add Student Modal -->
-    <div id="addStudentModal" class="modal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('addStudentModal')">×</button>
-            <div class="modal-header">
-                <h2>Add New Student</h2>
-                <p>Register a new student in the hostel</p>
-            </div>
-            <form onsubmit="handleStudentAdd(event)">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" placeholder="Enter full name" required>
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" placeholder="Enter email" required>
-                </div>
-                <div class="form-group">
-                    <label>Room Assignment</label>
-                    <select required>
-                        <option value="">Select room</option>
-                        <option value="A-301">A-301</option>
-                        <option value="B-102">B-102</option>
-                        <option value="C-203">C-203</option>
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('addStudentModal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Student</button>
-                </div>
-            </form>
+  <!-- Main Content -->
+  <div class="main-content">
+    <header class="topbar">
+      <button class="topbar-menu-btn" onclick="toggleMobileSidebar()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-search">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input type="text" placeholder="Search students, rooms…" id="globalSearch" oninput="globalSearchHandler()">
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle dark/light mode">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="topbar-btn" onclick="showPage('requests-admin')" title="Pending requests">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <span class="dot"></span>
+        </button>
+        <div class="topbar-user">
+          <div class="topbar-user-avatar" id="topbarUserAvatar">A</div>
+          <div class="topbar-user-name" id="topbarUserName">Admin</div>
         </div>
-    </div>
+      </div>
+    </header>
 
-    <script src="script.js"></script>
+    <main class="page-content">
+
+      <!-- ===== DASHBOARD ===== -->
+      <div class="page active" id="dashboard">
+        <div class="page-header">
+          <div class="page-header-left"><h2>Admin Dashboard</h2><p>Hostel overview and quick actions</p></div>
+          <div class="page-header-right">
+            <button class="btn btn-secondary" onclick="openModal('addRoomModal')">Add Room</button>
+            <button class="btn btn-primary" onclick="openModal('addStudentModal')">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              Add Student
+            </button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div>
+            <div class="stat-body"><div class="stat-value" id="statTotalRooms">0</div><div class="stat-label">Total Rooms</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></div>
+            <div class="stat-body"><div class="stat-value" id="statOccupied">0/0</div><div class="stat-label">Occupied Rooms</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg></div>
+            <div class="stat-body"><div class="stat-value" id="statStudents">0</div><div class="stat-label">Total Students</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+            <div class="stat-body"><div class="stat-value" id="statMonthRevenue">₹0</div><div class="stat-label">Monthly Revenue</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon red"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></div>
+            <div class="stat-body"><div class="stat-value" id="statPendingReqs">0</div><div class="stat-label">Pending Requests</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon cyan"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg></div>
+            <div class="stat-body"><div class="stat-value" id="statPendingPay">₹0</div><div class="stat-label">Pending Payments</div></div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Recent Activity</div></div>
+            <div class="card-body"><div id="activityFeed"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Latest Requests</div><button class="btn btn-sm btn-secondary" onclick="showPage('requests-admin')">View All</button></div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrapper">
+                <table>
+                  <thead><tr><th>Student</th><th>Type</th><th>Status</th></tr></thead>
+                  <tbody id="quickRequestsBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ANALYTICS ===== -->
+      <div class="page" id="analytics">
+        <div class="page-header">
+          <div class="page-header-left"><h2>Analytics & Reports</h2><p>Insights and performance metrics</p></div>
+          <div class="page-header-right">
+            <button class="btn btn-secondary" onclick="exportTableCSV('paymentsAdminTable','payments-report')">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Export Report
+            </button>
+          </div>
+        </div>
+        <div class="grid-3" style="margin-bottom:20px">
+          <div class="stat-card"><div class="stat-icon green"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="stat-body"><div class="stat-value" id="statMonthRevenue2">₹0</div><div class="stat-label">Monthly Revenue</div></div></div>
+          <div class="stat-card"><div class="stat-icon blue"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div><div class="stat-body"><div class="stat-value" id="statOccupied2">0/0</div><div class="stat-label">Occupancy</div></div></div>
+          <div class="stat-card"><div class="stat-icon orange"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg></div><div class="stat-body"><div class="stat-value" id="statStudents2">0</div><div class="stat-label">Students</div></div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Revenue Trend (2025)</div></div>
+            <div class="card-body"><div class="chart-container"><canvas id="revenueChart"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Room Occupancy</div></div>
+            <div class="card-body"><div class="chart-container"><canvas id="occupancyChart"></canvas></div></div>
+          </div>
+        </div>
+        <div class="card mt-20">
+          <div class="card-header"><div class="card-title">Payment Status</div></div>
+          <div class="card-body"><div class="chart-container" style="height:200px"><canvas id="payStatusChart"></canvas></div></div>
+        </div>
+      </div>
+
+      <!-- ===== ROOMS ===== -->
+      <div class="page" id="rooms">
+        <div class="page-header">
+          <div class="page-header-left"><h2>Room Management</h2><p>Manage all hostel rooms</p></div>
+          <div class="page-header-right">
+            <div class="filter-bar" style="margin:0">
+              <select class="filter-select" id="roomStatusFilter" onchange="filterRooms()">
+                <option value="">All Status</option>
+                <option value="available">Available</option>
+                <option value="occupied">Occupied</option>
+                <option value="partial">Partial</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('addRoomModal')">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              Add Room
+            </button>
+          </div>
+        </div>
+        <div class="rooms-grid" id="roomsContainer"></div>
+      </div>
+
+      <!-- ===== STUDENTS ===== -->
+      <div class="page" id="students">
+        <div class="page-header">
+          <div class="page-header-left"><h2>Student Management</h2><p>Manage all registered students</p></div>
+          <div class="page-header-right">
+            <button class="btn btn-secondary" onclick="exportTableCSV('studentsTable','students-list')">Export</button>
+            <button class="btn btn-primary" onclick="openModal('addStudentModal')">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              Add Student
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="filter-bar" style="margin:0;flex:1">
+              <div class="search-box" style="max-width:300px">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input type="text" placeholder="Search students…" oninput="filterStudentsTable(this.value)">
+              </div>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="table-wrapper">
+              <table id="studentsTable">
+                <thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Room</th><th>Course</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="studentsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PAYMENTS ===== -->
+      <div class="page" id="payments-admin">
+        <div class="page-header">
+          <div class="page-header-left"><h2>Payments</h2><p>All payment records</p></div>
+          <div class="page-header-right">
+            <button class="btn btn-secondary" onclick="exportTableCSV('paymentsAdminTable','all-payments')">Export CSV</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="filter-bar" style="margin:0;flex:1">
+              <div class="search-box">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input type="text" placeholder="Search payments…" oninput="filterPaymentsTable(this.value)">
+              </div>
+              <select class="filter-select" onchange="filterPaymentsStatus(this.value)">
+                <option value="">All Status</option>
+                <option value="paid">Paid</option>
+                <option value="pending">Pending</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="table-wrapper">
+              <table id="paymentsAdminTable">
+                <thead><tr><th>Txn ID</th><th>Student</th><th>Student ID</th><th>Type</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th></tr></thead>
+                <tbody id="paymentsAdminBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== REQUESTS ===== -->
+      <div class="page" id="requests-admin">
+        <div class="page-header">
+          <div class="page-header-left"><h2>Student Requests</h2><p>Review and respond to student requests</p></div>
+          <div class="page-header-right">
+            <select class="filter-select" onchange="filterRequestsStatus(this.value)">
+              <option value="">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="resolved">Resolved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>ID</th><th>Student</th><th>Type</th><th>Description</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="requestsAdminBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== NOTICES ===== -->
+      <div class="page" id="notices-admin">
+        <div class="page-header">
+          <div class="page-header-left"><h2>Notice Board</h2><p>Post announcements for students</p></div>
+          <div class="page-header-right">
+            <button class="btn btn-primary" onclick="openModal('noticeModal')">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              Post Notice
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body"><div id="noticesAdminList"></div></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Add Room -->
+<div class="modal-overlay" id="addRoomModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Add New Room</div><button class="modal-close" onclick="closeModal('addRoomModal')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <form onsubmit="addRoom(event)">
+      <div class="modal-body">
+        <div class="input-row">
+          <div class="form-group-d"><label class="form-label-d">Room Number *</label><input class="input" id="roomNumber" placeholder="e.g. A-101" required></div>
+          <div class="form-group-d"><label class="form-label-d">Floor</label><input class="input" id="roomFloor" placeholder="e.g. Ground Floor"></div>
+        </div>
+        <div class="input-row">
+          <div class="form-group-d"><label class="form-label-d">Room Type</label>
+            <select class="input" id="roomType"><option>Single</option><option>Double</option><option>Triple</option><option>Dormitory</option></select>
+          </div>
+          <div class="form-group-d"><label class="form-label-d">Number of Beds *</label><input class="input" type="number" id="roomBeds" min="1" max="10" required></div>
+        </div>
+        <div class="input-row">
+          <div class="form-group-d"><label class="form-label-d">Bathroom</label>
+            <select class="input" id="roomBath"><option>Shared</option><option>Attached</option></select>
+          </div>
+          <div class="form-group-d"><label class="form-label-d">Monthly Rent (₹) *</label><input class="input" type="number" id="roomRent" min="0" required></div>
+        </div>
+        <div class="form-group-d"><label class="form-label-d">Amenities (comma-separated)</label><input class="input" id="roomAmenities" placeholder="AC, WiFi, Study Table, Wardrobe"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('addRoomModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add Room</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Room -->
+<div class="modal-overlay" id="editRoomModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Edit Room</div><button class="modal-close" onclick="closeModal('editRoomModal')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <form onsubmit="saveRoom(event)">
+      <div class="modal-body">
+        <input type="hidden" id="editRoomId">
+        <div class="input-row">
+          <div class="form-group-d"><label class="form-label-d">Room Number</label><input class="input" id="editRoomNumber" required></div>
+          <div class="form-group-d"><label class="form-label-d">Floor</label><input class="input" id="editRoomFloor"></div>
+        </div>
+        <div class="input-row">
+          <div class="form-group-d"><label class="form-label-d">Room Type</label>
+            <select class="input" id="editRoomType"><option>Single</option><option>Double</option><option>Triple</option><option>Dormitory</option></select>
+          </div>
+          <div class="form-group-d"><label class="form-label-d">Beds</label><input class="input" type="number" id="editRoomBeds" min="1" required></div>
+        </div>
+        <div class="input-row">
+          <div class="form-group-d"><label class="form-label-d">Bathroom</label>
+            <select class="input" id="editRoomBath"><option>Shared</option><option>Attached</option></select>
+          </div>
+          <div class="form-group-d"><label class="form-label-d">Monthly Rent (₹)</label><input class="input" type="number" id="editRoomRent" min="0"></div>
+        </div>
+        <div class="input-row">
+          <div class="form-group-d"><label class="form-label-d">Status</label>
+            <select class="input" id="editRoomStatus"><option value="available">Available</option><option value="occupied">Occupied</option><option value="partial">Partial</option><option value="maintenance">Maintenance</option></select>
+          </div>
+        </div>
+        <div class="form-group-d"><label class="form-label-d">Amenities (comma-separated)</label><input class="input" id="editRoomAmenities"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('editRoomModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Student -->
+<div class="modal-overlay" id="addStudentModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><div class="modal-title">Add New Student</div><button class="modal-close" onclick="closeModal('addStudentModal')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <form onsubmit="addStudent(event)">
+      <div class="modal-body">
+        <div class="input-row">
+          <div class="form-group-d"><label class="form-label-d">Full Name *</label><input class="input" id="newStudentName" required></div>
+          <div class="form-group-d"><label class="form-label-d">Email *</label><input class="input" type="email" id="newStudentEmail" required></div>
+        </div>
+        <div class="input-row">
+          <div class="form-group-d"><label class="form-label-d">Phone</label><input class="input" id="newStudentPhone" type="tel"></div>
+          <div class="form-group-d"><label class="form-label-d">Course</label><input class="input" id="newStudentCourse" placeholder="e.g. B.Tech CSE"></div>
+        </div>
+        <div class="input-row">
+          <div class="form-group-d"><label class="form-label-d">Year</label><input class="input" id="newStudentYear" placeholder="e.g. 2nd Year"></div>
+          <div class="form-group-d"><label class="form-label-d">Assign Room</label>
+            <select class="input room-dropdown" id="newStudentRoom"></select>
+          </div>
+        </div>
+        <hr class="form-divider">
+        <div class="input-row">
+          <div class="form-group-d"><label class="form-label-d">Username *</label><input class="input" id="newStudentUser" required><div class="form-hint">Used for portal login</div></div>
+          <div class="form-group-d"><label class="form-label-d">Password *</label><input class="input" type="password" id="newStudentPass" required minlength="6"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('addStudentModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add Student</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- View Student -->
+<div class="modal-overlay" id="viewStudentModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Student Details</div><button class="modal-close" onclick="closeModal('viewStudentModal')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <div class="modal-body" id="viewStudentBody"></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('viewStudentModal')">Close</button></div>
+  </div>
+</div>
+
+<!-- Edit Student -->
+<div class="modal-overlay" id="editStudentModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Edit Student</div><button class="modal-close" onclick="closeModal('editStudentModal')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <form onsubmit="saveStudent(event)">
+      <div class="modal-body">
+        <input type="hidden" id="editStudentId">
+        <div class="input-row">
+          <div class="form-group-d"><label class="form-label-d">Full Name</label><input class="input" id="editStudentName" required></div>
+          <div class="form-group-d"><label class="form-label-d">Email</label><input class="input" type="email" id="editStudentEmail" required></div>
+        </div>
+        <div class="input-row">
+          <div class="form-group-d"><label class="form-label-d">Phone</label><input class="input" id="editStudentPhone"></div>
+          <div class="form-group-d"><label class="form-label-d">Blood Group</label>
+            <select class="input" id="editStudentBlood"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select>
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="form-group-d"><label class="form-label-d">Course</label><input class="input" id="editStudentCourse"></div>
+          <div class="form-group-d"><label class="form-label-d">Year</label><input class="input" id="editStudentYear"></div>
+        </div>
+        <div class="form-group-d"><label class="form-label-d">Assign Room</label>
+          <select class="input room-dropdown" id="editStudentRoom"></select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('editStudentModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Post Notice -->
+<div class="modal-overlay" id="noticeModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Post Notice</div><button class="modal-close" onclick="closeModal('noticeModal')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <form onsubmit="postNotice(event)">
+      <div class="modal-body">
+        <div class="form-group-d"><label class="form-label-d">Title *</label><input class="input" id="noticeTitle" required></div>
+        <div class="form-group-d"><label class="form-label-d">Type</label>
+          <select class="input" id="noticeType"><option value="info">Info</option><option value="warning">Warning</option><option value="success">Success/Event</option><option value="danger">Urgent</option></select>
+        </div>
+        <div class="form-group-d"><label class="form-label-d">Message *</label><textarea class="input" id="noticeBody" rows="4" required></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('noticeModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Post Notice</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="logoutConfirmModal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title">Confirm Logout</div>
+      <button class="modal-close" onclick="closeModal('logoutConfirmModal')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to logout?</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('logoutConfirmModal')">Cancel</button>
+      <button type="button" class="btn btn-danger" onclick="confirmLogout()">Logout</button>
+    </div>
+  </div>
+</div>
+<div class="notifications-container"></div>
+<script src="script.js"></script>
+<script>
+  initAdminDashboard();
+
+  function filterRooms() {
+    const filter = document.getElementById('roomStatusFilter').value;
+    document.querySelectorAll('.room-card').forEach(card => {
+      if (!filter) { card.style.display = ''; return; }
+      const badge = card.querySelector('.badge');
+      card.style.display = badge && badge.textContent.trim() === filter ? '' : 'none';
+    });
+  }
+
+  function filterStudentsTable(term) {
+    document.querySelectorAll('#studentsBody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(term.toLowerCase()) ? '' : 'none';
+    });
+  }
+
+  function filterPaymentsTable(term) {
+    document.querySelectorAll('#paymentsAdminBody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(term.toLowerCase()) ? '' : 'none';
+    });
+  }
+
+  function filterPaymentsStatus(status) {
+    document.querySelectorAll('#paymentsAdminBody tr').forEach(row => {
+      if (!status) { row.style.display = ''; return; }
+      const badge = row.querySelector('.badge');
+      row.style.display = badge && badge.textContent.trim() === status ? '' : 'none';
+    });
+  }
+
+  function filterRequestsStatus(status) {
+    document.querySelectorAll('#requestsAdminBody tr').forEach(row => {
+      if (!status) { row.style.display = ''; return; }
+      const badges = row.querySelectorAll('.badge');
+      let match = false;
+      badges.forEach(b => { if (b.textContent.trim() === status) match = true; });
+      row.style.display = match ? '' : 'none';
+    });
+  }
+
+  function globalSearchHandler() {
+    const term = document.getElementById('globalSearch').value.toLowerCase();
+    if (!term) return;
+    // Search across students and rooms
+    const students = HMS.where('users', u => u.role === 'student' && (u.name.toLowerCase().includes(term) || (u.studentId||'').toLowerCase().includes(term)));
+    if (students.length) {
+      showPage('students');
+      filterStudentsTable(term);
+    }
+  }
+
+  // Populate quick requests on dashboard
+  function populateQuickRequests() {
+    const reqs = HMS.where('requests', r => r.status === 'pending').slice(0, 5);
+    const tbody = document.getElementById('quickRequestsBody');
+    if (!tbody) return;
+    tbody.innerHTML = reqs.length ? reqs.map(r => {
+      const s = HMS.findById('users', r.studentId);
+      return `<tr><td>${s?.name||'-'}</td><td><span class="badge badge-info">${r.type}</span></td><td><span class="badge badge-warning">pending</span></td></tr>`;
+    }).join('') : '<tr><td colspan="3" class="text-center text-muted" style="padding:16px">No pending requests</td></tr>';
+    const badge = document.getElementById('pendingReqBadge');
+    if (badge) badge.textContent = reqs.length;
+  }
+
+  // Sync analytics page stats
+  document.querySelector('[data-page="analytics"]').addEventListener('click', () => {
+    setTimeout(() => {
+      document.getElementById('statMonthRevenue2').textContent = document.getElementById('statMonthRevenue').textContent;
+      document.getElementById('statOccupied2').textContent = document.getElementById('statOccupied').textContent;
+      document.getElementById('statStudents2').textContent = document.getElementById('statStudents').textContent;
+      initCharts();
+    }, 50);
+  });
+
+  populateRoomDropdowns();
+  populateQuickRequests();
+</script>
 </body>
 </html>
