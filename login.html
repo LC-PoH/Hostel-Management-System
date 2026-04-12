@@ -72,12 +72,52 @@
 
       <form id="loginForm" onsubmit="handleLogin(event)">
         <div class="form-group">
-          <label class="form-label" for="role">Login As</label>
-          <select class="form-control" id="role" required>
-            <option value="student">Student</option>
-            <option value="admin">Admin / Owner</option>
-            <option value="receptionist">Receptionist</option>
-          </select>
+          <label class="form-label">Login As</label>
+          <input type="hidden" id="role" value="student">
+          <div class="role-picker" id="rolePicker">
+            <div class="role-trigger" id="roleTrigger" onclick="toggleRolePicker()">
+              <div class="role-trigger-icon" id="roleTriggerIcon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              </div>
+              <div class="role-trigger-text">
+                <div class="role-trigger-name" id="roleTriggerName">Student</div>
+                <div class="role-trigger-sub" id="roleTriggerSub">Hostel resident access</div>
+              </div>
+              <svg class="role-trigger-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="role-dropdown-panel" id="roleDropdownPanel">
+              <div class="role-option selected" data-value="student" data-name="Student" data-sub="Hostel resident access" data-color="blue" onclick="selectRoleOption(this)">
+                <div class="role-opt-icon blue">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                </div>
+                <div class="role-opt-text">
+                  <div class="role-opt-name">Student</div>
+                  <div class="role-opt-sub">Hostel resident access</div>
+                </div>
+                <svg class="role-opt-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="role-option" data-value="admin" data-name="Admin / Owner" data-sub="Full system control" data-color="purple" onclick="selectRoleOption(this)">
+                <div class="role-opt-icon purple">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div class="role-opt-text">
+                  <div class="role-opt-name">Admin / Owner</div>
+                  <div class="role-opt-sub">Full system control</div>
+                </div>
+                <svg class="role-opt-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="role-option" data-value="receptionist" data-name="Receptionist" data-sub="Front desk operations" data-color="cyan" onclick="selectRoleOption(this)">
+                <div class="role-opt-icon cyan">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+                </div>
+                <div class="role-opt-text">
+                  <div class="role-opt-name">Receptionist</div>
+                  <div class="role-opt-sub">Front desk operations</div>
+                </div>
+                <svg class="role-opt-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="form-group">
