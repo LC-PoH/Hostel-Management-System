@@ -96,7 +96,7 @@ function showNotification(message, type = 'success') {
         position: fixed;
         top: 20px;
         right: 20px;
-        background: #333333;
+        background: ${type === 'success' ? '#10b981' : '#ef4444'};
         color: #ffffff;
         padding: 1rem 2rem;
         border-radius: 0.5rem;
@@ -143,35 +143,35 @@ document.head.appendChild(style);
 // Handle form submissions
 function handleCheckIn(event) {
     event.preventDefault();
-    showNotification('Student checked in successfully!', 'success');
+    showNotification('✓ Student checked in successfully!', 'success');
     closeModal('checkInModal');
     event.target.reset();
 }
 
 function handleCheckOut(event) {
     event.preventDefault();
-    showNotification('Student checked out successfully!', 'success');
+    showNotification('✓ Student checked out successfully!', 'success');
     closeModal('checkOutModal');
     event.target.reset();
 }
 
 function handleRegister(event) {
     event.preventDefault();
-    showNotification('Student registered successfully!', 'success');
+    showNotification('✓ Student registered successfully!', 'success');
     closeModal('registerModal');
     event.target.reset();
 }
 
 function handlePayment(event) {
     event.preventDefault();
-    showNotification('Payment processed successfully!', 'success');
+    showNotification('✓ Payment processed successfully!', 'success');
     closeModal('paymentModal');
     event.target.reset();
 }
 
 function handleRoomAdd(event) {
     event.preventDefault();
-    showNotification('Room added successfully!', 'success');
+    showNotification('✓ Room added successfully!', 'success');
     closeModal('addRoomModal');
     event.target.reset();
 }
