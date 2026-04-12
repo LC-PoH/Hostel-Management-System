@@ -83,7 +83,8 @@ function closeModal(modalId) {
 // Close modal when clicking outside
 document.addEventListener('click', function(event) {
     if (event.target.classList.contains('modal')) {
-        closeModal(event.target.id);
+        event.target.classList.remove('active');
+        document.body.style.overflow = 'auto';
     }
 });
 
