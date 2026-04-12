@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receptionist Dashboard - Hostel Management</title>
+    <title>Reception Dashboard - Hostel Management</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="dashboard" onload="initDashboard()">
     <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-brand">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>stroke-width="2"
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
             </svg>
-            Hostel Management System
+            Hostel Pro - Reception
         </div>
         <div class="navbar-user">
             <div class="user-info">
-                <div class="user-name" id="userName">Receptionist</div>
-                <div class="user-role" id="userRole">receptionist</div>
+                <div class="user-name" id="userName">Reception</div>
+                <div class="user-role" id="userRole">Receptionist</div>
             </div>
-            <button class="btn btn-logout" onclick="logout()">Logout</button>
+            <button class="btn-logout" onclick="logout()">Logout</button>
         </div>
     </nav>
 
@@ -41,7 +41,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-page="checkInOutPage" onclick="setActivePage(event, 'checkInOutPage')">
+                    <a href="#" data-page="checkinoutPage" onclick="setActivePage(event, 'checkinoutPage')">
                         <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
                             <polyline points="10 17 15 12 10 7"></polyline>
@@ -70,9 +70,8 @@
                         Rooms
                     </a>
                 </li>
-            /li>
-            <li>
-                 <a href="#" data-page="visitorPage" onclick="setActivePage(event, 'visitorPage')">
+                <li>
+                    <a href="#" data-page="visitorPage" onclick="setActivePage(event, 'visitorPage')">
                         <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
@@ -86,6 +85,408 @@
         <!-- Main Content -->
         <main class="main-content">
             <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page">
+                <div class="page-header">
+                    <h1>👋 Reception Dashboard</h1>
+                    <p>Manage check-ins, check-outs, and student information</p>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-3">
+                    <div class="card quick-action green" onclick="openModal('checkInModal')">
+                        <div class="action-content">
+                            <div class="action-icon green">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                    <polyline points="10 17 15 12 10 7"></polyline>
+                                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                                </svg>
+                            </div>
+                            <div>
+                                <p style="color: var(--gray); font-size: 0.875rem;">Quick Action</p>
+                                <h3>Check-In Student</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card quick-action blue" onclick="openModal('checkOutModal')">
+                        <div class="action-content">
+                            <div class="action-icon blue">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"></path>
+                                    <polyline points="14 7 9 12 14 17"></polyline>
+                                    <line x1="9" y1="12" x2="21" y2="12"></line>
+                                </svg>
+                            </div>
+                            <div>
+                                <p style="color: var(--gray); font-size: 0.875rem;">Quick Action</p>
+                                <h3>Check-Out Student</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card quick-action orange" onclick="openModal('visitorCheckInModal')">
+                        <div class="action-content">
+                            <div class="action-icon orange">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                            <div>
+                                <p style="color: var(--gray); font-size: 0.875rem;">Quick Action</p>
+                                <h3>Register Visitor</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-4">
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>8</h3>
+                                <p>Check-Ins Today</p>
+                                <small style="color: var(--success);">↑ 3 new</small>
+                            </div>
+                            <div class="stat-icon green">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                    <polyline points="10 17 15 12 10 7"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>2</h3>
+                                <p>Check-Outs Today</p>
+                                <small style="color: var(--info);">Pending</small>
+                            </div>
+                            <div class="stat-icon blue">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"></path>
+                                    <polyline points="14 7 9 12 14 17"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>12</h3>
+                                <p>Active Visitors</p>
+                                <small style="color: var(--warning);">In premises</small>
+                            </div>
+                            <div class="stat-icon orange">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>45</h3>
+                                <p>Present Students</p>
+                                <small style="color: var(--primary);">In hostel</small>
+                            </div>
+                            <div class="stat-icon">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card">
+                    <h2 class="card-title">📋 Recent Activity</h2>
+                    <p class="card-description">Latest check-ins and check-outs</p>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Room</th>
+                                    <th>Activity</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Raj Kumar</td>
+                                    <td>A-305</td>
+                                    <td>Check-In</td>
+                                    <td>10:30 AM</td>
+                                    <td><span class="badge badge-success">✓ Done</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Priya Sharma</td>
+                                    <td>B-102</td>
+                                    <td>Check-In</td>
+                                    <td>09:15 AM</td>
+                                    <td><span class="badge badge-success">✓ Done</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Vikram Singh</td>
+                                    <td>A-201</td>
+                                    <td>Check-Out</td>
+                                    <td>08:45 AM</td>
+                                    <td><span class="badge badge-pending">⏳ Pending</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Check-In/Out Page -->
+            <div id="checkinoutPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>🔄 Check-In/Check-Out</h1>
+                    <p>Manage student movements</p>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 style="margin-bottom: 1.5rem;">📥 Quick Check-In</h3>
+                        <form onsubmit="handleCheckIn(event)">
+                            <div class="form-group">
+                                <label>Student ID / Name</label>
+                                <input type="text" placeholder="Enter ID or name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Room</label>
+                                <input type="text" placeholder="Auto-fill" required>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-block">Check-In</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 1.5rem;">📤 Quick Check-Out</h3>
+                        <form onsubmit="handleCheckOut(event)">
+                            <div class="form-group">
+                                <label>Student ID / Name</label>
+                                <input type="text" placeholder="Enter ID or name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Reason</label>
+                                <select required>
+                                    <option>Select reason</option>
+                                    <option>On Pass</option>
+                                    <option>On Leaves</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-danger btn-block">Check-Out</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students Page -->
+            <div id="studentsPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>👨‍🎓 Students</h1>
+                    <p>Student records and information</p>
+                </div>
+
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Room</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>STU001</td>
+                                    <td>Rahul Verma</td>
+                                    <td>98XXXXXXX1</td>
+                                    <td>A-305</td>
+                                    <td><span class="badge badge-success">✓ Present</span></td>
+                                </tr>
+                                <tr>
+                                    <td>STU002</td>
+                                    <td>Priya Sharma</td>
+                                    <td>97XXXXXXX2</td>
+                                    <td>B-102</td>
+                                    <td><span class="badge badge-success">✓ Present</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rooms Page -->
+            <div id="roomsPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>🏠 Rooms</h1>
+                    <p>Room occupancy and status</p>
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="card">
+                        <h3>Room A-305</h3>
+                        <p style="color: var(--gray); margin: 0.5rem 0;">2 Beds</p>
+                        <p style="font-size: 0.9rem; margin: 1rem 0;"><strong>Occupants:</strong> 2/2</p>
+                        <span class="badge badge-success">Occupied</span>
+                    </div>
+                    <div class="card">
+                        <h3>Room B-102</h3>
+                        <p style="color: var(--gray); margin: 0.5rem 0;">1 Bed</p>
+                        <p style="font-size: 0.9rem; margin: 1rem 0;"><strong>Occupants:</strong> 1/1</p>
+                        <span class="badge badge-success">Occupied</span>
+                    </div>
+                    <div class="card">
+                        <h3>Room A-201</h3>
+                        <p style="color: var(--gray); margin: 0.5rem 0;">3 Beds</p>
+                        <p style="font-size: 0.9rem; margin: 1rem 0;"><strong>Occupants:</strong> 1/3</p>
+                        <span class="badge badge-warning">1 Available</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visitor Page -->
+            <div id="visitorPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>👥 Visitors</h1>
+                    <p>Visitor management</p>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <button class="btn btn-primary" onclick="openModal('visitorCheckInModal')">+ Register Visitor</button>
+                </div>
+
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Visitor</th>
+                                    <th>For Student</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Mrs. Sharma</td>
+                                    <td>Priya Sharma</td>
+                                    <td>2:30 PM</td>
+                                    <td><span class="badge badge-success">✓ In</span></td>
+                                    <td><button class="btn btn-sm btn-danger" onclick="showNotification('Checked out', 'success')">Out</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="checkInModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('checkInModal')">×</button>
+            <div class="modal-header">
+                <h2>Check-In Student</h2>
+                <p>Register entry</p>
+            </div>
+            <form onsubmit="handleCheckIn(event)">
+                <div class="form-group">
+                    <label>Student ID / Name</label>
+                    <input type="text" placeholder="Enter ID" required>
+                </div>
+                <div class="form-group">
+                    <label>Room</label>
+                    <input type="text" placeholder="Auto-fill" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('checkInModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Check-In</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="checkOutModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('checkOutModal')">×</button>
+            <div class="modal-header">
+                <h2>Check-Out Student</h2>
+                <p>Register exit</p>
+            </div>
+            <form onsubmit="handleCheckOut(event)">
+                <div class="form-group">
+                    <label>Student ID / Name</label>
+                    <input type="text" placeholder="Enter ID" required>
+                </div>
+                <div class="form-group">
+                    <label>Reason</label>
+                    <select required>
+                        <option>On Pass</option>
+                        <option>On Leaves</option>
+                        <option>Permanent</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('checkOutModal')">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Check-Out</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="visitorCheckInModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('visitorCheckInModal')">×</button>
+            <div class="modal-header">
+                <h2>Register Visitor</h2>
+                <p>Check in a visitor</p>
+            </div>
+            <form onsubmit="handleComplaint(event)">
+                <div class="form-group">
+                    <label>Visitor Name</label>
+                    <input type="text" placeholder="Name" required>
+                </div>
+                <div class="form-group">
+                    <label>For Student</label>
+                    <input type="text" placeholder="Student name" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" placeholder="Phone number" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('visitorCheckInModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Check-In</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
             <div id="dashboardPage" class="page">
                 <div class="page-header">
                     <h1>Reception Dashboard</h1>
@@ -384,7 +785,6 @@
                                 <td>Priya Sharma</td>
                                 <td>A-102</td>
                                 <td>+91 98765 43211</td>
-                                <td>11:45 AM</td>
                                 <td>01 Sep 2025</td>
                                 <td><span class="badge badge-success">Active</span></td>
                             </tr>
