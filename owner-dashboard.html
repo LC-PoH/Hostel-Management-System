@@ -6,7 +6,7 @@
     <title>Owner Dashboard - Hostel Management</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="dashboard">
+<body class="dashboard" onload="initDashboard()">
     <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-brand">
@@ -18,8 +18,8 @@
         </div>
         <div class="navbar-user">
             <div class="user-info">
-                <div class="user-name" id="userName">Owner</div>
-                <div class="user-role" id="userRole">owner</div>
+                <div class="user-name" id="userName">Admin</div>
+                <div class="user-role" id="userRole">Owner</div>
             </div>
             <button class="btn btn-logout" onclick="logout()">Logout</button>
         </div>
@@ -46,6 +46,17 @@
                             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                         </svg>
                         Room Management
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-page="studentsPage" onclick="setActivePage(event, 'studentsPage')">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        Students
                     </a>
                 </li>
                 <li>
