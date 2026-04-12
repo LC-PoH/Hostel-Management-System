@@ -193,7 +193,73 @@ function fillCred(username, password, role) {
   document.getElementById('username').value = username;
   document.getElementById('password').value = password;
   document.getElementById('role').value = role;
+  syncRoleUI(role);
 }
+
+// ===== ROLE PICKER =====
+const _roleData = {
+  student:      { name: 'Student',       sub: 'Hostel resident access',  color: 'blue'   },
+  admin:        { name: 'Admin / Owner', sub: 'Full system control',      color: 'purple' },
+  receptionist: { name: 'Receptionist', sub: 'Front desk operations',    color: 'cyan'   },
+};
+
+function toggleRolePicker() {
+  const trigger = document.getElementById('roleTrigger');
+  const panel   = document.getElementById('roleDropdownPanel');
+  if (!trigger || !panel) return;
+  const isOpen = panel.classList.contains('open');
+  if (isOpen) { closeRolePicker(); } else {
+    trigger.classList.add('open');
+    panel.classList.add('open');
+  }
+}
+
+function closeRolePicker() {
+  const trigger = document.getElementById('roleTrigger');
+  const panel   = document.getElementById('roleDropdownPanel');
+  if (trigger) trigger.classList.remove('open');
+  if (panel)   panel.classList.remove('open');
+}
+
+function selectRoleOption(el) {
+  const value = el.dataset.value;
+  document.getElementById('role').value = value;
+  document.querySelectorAll('.role-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  syncRoleUI(value);
+  closeRolePicker();
+}
+
+function syncRoleUI(value) {
+  const data = _roleData[value];
+  if (!data) return;
+  const nameEl = document.getElementById('roleTriggerName');
+  const subEl  = document.getElementById('roleTriggerSub');
+  const iconEl = document.getElementById('roleTriggerIcon');
+  if (nameEl) nameEl.textContent = data.name;
+  if (subEl)  subEl.textContent  = data.sub;
+  // sync selected state in panel
+  document.querySelectorAll('.role-option').forEach(o => {
+    o.classList.toggle('selected', o.dataset.value === value);
+  });
+  // sync trigger icon gradient color accent
+  if (iconEl) {
+    iconEl.style.background = value === 'admin'
+      ? 'linear-gradient(135deg,#7c3aed,#a855f7)'
+      : value === 'receptionist'
+        ? 'linear-gradient(135deg,#0891b2,#06b6d4)'
+        : 'linear-gradient(135deg,var(--primary),var(--secondary))';
+    // swap icon svg to match the selected option icon
+    const srcIcon = document.querySelector(`.role-option[data-value="${value}"] .role-opt-icon svg`);
+    if (srcIcon) iconEl.innerHTML = srcIcon.outerHTML;
+  }
+}
+
+// Close role picker when clicking outside
+document.addEventListener('click', function(e) {
+  const picker = document.getElementById('rolePicker');
+  if (picker && !picker.contains(e.target)) closeRolePicker();
+});
 
 function logout() {
   const modal = document.getElementById('logoutConfirmModal');
