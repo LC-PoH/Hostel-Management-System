@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Owner Dashboard - Hostel Management</title>
+    <title>Admin Dashboard - Hostel Management</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="dashboard" onload="initDashboard()">
     <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-brand">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
             </svg>
-            Hostel Management System
+            Hostel Pro - Admin Panel
         </div>
         <div class="navbar-user">
             <div class="user-info">
                 <div class="user-name" id="userName">Admin</div>
                 <div class="user-role" id="userRole">Owner</div>
             </div>
-            <button class="btn btn-logout" onclick="logout()">Logout</button>
+            <button class="btn-logout" onclick="logout()">Logout</button>
         </div>
     </nav>
 
@@ -30,7 +30,7 @@
         <aside class="sidebar">
             <ul class="sidebar-menu">
                 <li>
-                    <a href="#" data-page="dashboardPage" onclick="setActivePage('dashboardPage')" class="active">
+                    <a href="#" data-page="dashboardPage" onclick="setActivePage(event, 'dashboardPage')" class="active">
                         <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <rect x="3" y="3" width="7" height="7"></rect>
                             <rect x="14" y="3" width="7" height="7"></rect>
@@ -41,9 +41,10 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-page="roomsPage" onclick="setActivePage('roomsPage')">
+                    <a href="#" data-page="roomsPage" onclick="setActivePage(event, 'roomsPage')">
                         <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
                         </svg>
                         Room Management
                     </a>
@@ -69,12 +70,21 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-page="reportsPage" onclick="setActivePage('reportsPage')">
+                    <a href="#" data-page="reportsPage" onclick="setActivePage(event, 'reportsPage')">
                         <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
                         Reports
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-page="settingsPage" onclick="setActivePage(event, 'settingsPage')">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6m-15.78 7.78l4.24-4.24m3.08-3.08l4.24-4.24"/>
+                        </svg>
+                        Settings
                     </a>
                 </li>
             </ul>
@@ -85,18 +95,18 @@
             <!-- Dashboard Page -->
             <div id="dashboardPage" class="page">
                 <div class="page-header">
-                    <h1>Owner Dashboard</h1>
-                    <p>Overview of your hostel operations</p>
+                    <h1>📊 Admin Dashboard</h1>
+                    <p>Welcome! Here's an overview of your hostel operations</p>
                 </div>
 
-                <!-- Stats -->
+                <!-- Quick Stats -->
                 <div class="grid grid-4">
                     <div class="card">
                         <div class="stat-card">
                             <div class="stat-info">
                                 <h3>₹2,25,000</h3>
                                 <p>Monthly Revenue</p>
-                                <small style="color: #22c55e;">+12% from last month</small>
+                                <small style="color: var(--success);">↑ 12% from last month</small>
                             </div>
                             <div class="stat-icon green">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -112,7 +122,7 @@
                             <div class="stat-info">
                                 <h3>45/50</h3>
                                 <p>Rooms Occupied</p>
-                                <small style="color: #667eea;">90% occupancy</small>
+                                <small style="color: var(--info);">90% occupancy</small>
                             </div>
                             <div class="stat-icon blue">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -125,9 +135,9 @@
                     <div class="card">
                         <div class="stat-card">
                             <div class="stat-info">
-                                <h3>5</h3>
+                                <h3>12</h3>
                                 <p>Pending Requests</p>
-                                <small style="color: #f59e0b;">Requires attention</small>
+                                <small style="color: var(--warning);">⚠ Requires attention</small>
                             </div>
                             <div class="stat-icon orange">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -142,11 +152,11 @@
                     <div class="card">
                         <div class="stat-card">
                             <div class="stat-info">
-                                <h3>₹25,000</h3>
+                                <h3>₹42,500</h3>
                                 <p>Pending Payments</p>
-                                <small style="color: #ef4444;">5 students</small>
+                                <small style="color: var(--danger);">8 students</small>
                             </div>
-                            <div class="stat-icon">
+                            <div class="stat-icon red">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
                                     <line x1="1" y1="10" x2="23" y2="10"></line>
@@ -156,243 +166,262 @@
                     </div>
                 </div>
 
-                <!-- Revenue Chart -->
-                <div class="card">
-                    <h2 class="card-title">Revenue Overview</h2>
-                    <p class="card-description">Monthly revenue for the past 6 months</p>
-                    <div class="chart-container">
-                        <canvas id="revenueChart"></canvas>
-                    </div>
-                </div>
-
                 <!-- Recent Bookings -->
                 <div class="card">
-                    <h2 class="card-title">Recent Bookings</h2>
-                    <p class="card-description">Latest student bookings</p>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Student Name</th>
-                                <th>Room</th>
-                                <th>Check-In Date</th>
-                                <th>Monthly Rent</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Rahul Verma</td>
-                                <td>A-305</td>
-                                <td>15 Mar 2026</td>
-                                <td>₹5,000</td>
-                                <td><span class="badge badge-success">Active</span></td>
-                            </tr>
-                            <tr>
-                                <td>Priya Sharma</td>
-                                <td>B-102</td>
-                                <td>10 Mar 2026</td>
-                                <td>₹4,500</td>
-                                <td><span class="badge badge-success">Active</span></td>
-                            </tr>
-                            <tr>
-                                <td>Amit Patel</td>
-                                <td>A-201</td>
-                                <td>05 Mar 2026</td>
-                                <td>₹5,500</td>
-                                <td><span class="badge badge-success">Active</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <h2 class="card-title">📋 Recent Bookings</h2>
+                    <p class="card-description">Latest student bookings and check-ins</p>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Room No.</th>
+                                    <th>Check-In</th>
+                                    <th>Monthly Rent</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Rahul Verma</td>
+                                    <td>A-305</td>
+                                    <td>15 Mar 2026</td>
+                                    <td>₹5,000</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-sm btn-secondary">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Priya Sharma</td>
+                                    <td>B-102</td>
+                                    <td>10 Mar 2026</td>
+                                    <td>₹4,500</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-sm btn-secondary">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Amit Patel</td>
+                                    <td>A-201</td>
+                                    <td>05 Mar 2026</td>
+                                    <td>₹5,500</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-sm btn-secondary">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Neha Singh</td>
+                                    <td>C-405</td>
+                                    <td>01 Mar 2026</td>
+                                    <td>₹4,800</td>
+                                    <td><span class="badge badge-pending">Pending</span></td>
+                                    <td><button class="btn btn-sm btn-secondary">View</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <!-- Rooms Page -->
             <div id="roomsPage" class="page" style="display: none;">
                 <div class="page-header">
-                    <h1>Room Management</h1>
-                    <p>Manage your hostel rooms</p>
-                    <button class="btn btn-primary" onclick="openModal('addRoomModal')">Add New Room</button>
+                    <h1>🏠 Room Management</h1>
+                    <p>Manage all rooms and their status</p>
+                </div>
+
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <button class="btn btn-primary" onclick="openModal('addRoomModal')">+ Add New Room</button>
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="card">
+                        <h3 style="margin-bottom: 0.5rem;">Room A-301</h3>
+                        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">2 Beds • Shared Bathroom</p>
+                        <div style="margin-bottom: 1rem;">
+                            <span class="badge badge-success">Occupied</span>
+                            <span style="color: var(--gray); font-size: 0.85rem; margin-left: 0.5rem;">₹5,000/month</span>
+                        </div>
+                        <button class="btn btn-sm btn-secondary" style="width: 100%; margin-bottom: 0.5rem;">Edit</button>
+                        <button class="btn btn-sm btn-danger" style="width: 100%;">Delete</button>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 0.5rem;">Room B-102</h3>
+                        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">1 Bed • Private Bathroom</p>
+                        <div style="margin-bottom: 1rem;">
+                            <span class="badge badge-success">Occupied</span>
+                            <span style="color: var(--gray); font-size: 0.85rem; margin-left: 0.5rem;">₹7,000/month</span>
+                        </div>
+                        <button class="btn btn-sm btn-secondary" style="width: 100%; margin-bottom: 0.5rem;">Edit</button>
+                        <button class="btn btn-sm btn-danger" style="width: 100%;">Delete</button>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 0.5rem;">Room C-203</h3>
+                        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">3 Beds • Shared Bathroom</p>
+                        <div style="margin-bottom: 1rem;">
+                            <span class="badge badge-warning">Available</span>
+                            <span style="color: var(--gray); font-size: 0.85rem; margin-left: 0.5rem;">₹4,500/month</span>
+                        </div>
+                        <button class="btn btn-sm btn-secondary" style="width: 100%; margin-bottom: 0.5rem;">Edit</button>
+                        <button class="btn btn-sm btn-danger" style="width: 100%;">Delete</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students Page -->
+            <div id="studentsPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>👨‍🎓 Student Management</h1>
+                    <p>Manage all students and their information</p>
+                </div>
+
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <button class="btn btn-primary" onclick="openModal('addStudentModal')">+ Add New Student</button>
                 </div>
 
                 <div class="card">
-                    <h2 class="card-title">All Rooms</h2>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Room Number</th>
-                                <th>Type</th>
-                                <th>Capacity</th>
-                                <th>Rent</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>A-101</td>
-                                <td>Double Sharing</td>
-                                <td>2</td>
-                                <td>₹5,000</td>
-                                <td><span class="badge badge-warning">Occupied</span></td>
-                                <td><button class="btn btn-sm btn-secondary">View</button></td>
-                            </tr>
-                            <tr>
-                                <td>A-102</td>
-                                <td>Single</td>
-                                <td>1</td>
-                                <td>₹7,000</td>
-                                <td><span class="badge badge-success">Available</span></td>
-                                <td><button class="btn btn-sm btn-secondary">View</button></td>
-                            </tr>
-                            <tr>
-                                <td>B-201</td>
-                                <td>Triple Sharing</td>
-                                <td>3</td>
-                                <td>₹4,000</td>
-                                <td><span class="badge badge-warning">Occupied</span></td>
-                                <td><button class="btn btn-sm btn-secondary">View</button></td>
-                            </tr>
-                            <tr>
-                                <td>B-202</td>
-                                <td>Double Sharing</td>
-                                <td>2</td>
-                                <td>₹5,000</td>
-                                <td><span class="badge badge-success">Available</span></td>
-                                <td><button class="btn btn-sm btn-secondary">View</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Room</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>STU001</td>
+                                    <td>Rahul Verma</td>
+                                    <td>rahul@email.com</td>
+                                    <td>A-305</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-sm btn-secondary">Edit</button> <button class="btn btn-sm btn-danger">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <td>STU002</td>
+                                    <td>Priya Sharma</td>
+                                    <td>priya@email.com</td>
+                                    <td>B-102</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-sm btn-secondary">Edit</button> <button class="btn btn-sm btn-danger">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <td>STU003</td>
+                                    <td>Amit Patel</td>
+                                    <td>amit@email.com</td>
+                                    <td>A-201</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-sm btn-secondary">Edit</button> <button class="btn btn-sm btn-danger">Delete</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <!-- Requests Page -->
             <div id="requestsPage" class="page" style="display: none;">
                 <div class="page-header">
-                    <h1>Student Requests</h1>
-                    <p>Manage student requests and complaints</p>
+                    <h1>📬 Student Requests</h1>
+                    <p>Review and manage student requests</p>
                 </div>
 
-                <div class="card">
-                    <h2 class="card-title">Pending Requests</h2>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Request Type</th>
-                                <th>Description</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Neha Gupta</td>
-                                <td>Room Change</td>
-                                <td>Request to change from A-101 to B-202</td>
-                                <td>20 Mar 2026</td>
-                                <td><span class="badge badge-warning">Pending</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-success">Approve</button>
-                                    <button class="btn btn-sm btn-secondary">Reject</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Vikram Singh</td>
-                                <td>Maintenance</td>
-                                <td>AC not working in room B-305</td>
-                                <td>19 Mar 2026</td>
-                                <td><span class="badge badge-warning">Pending</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-success">Approve</button>
-                                    <button class="btn btn-sm btn-secondary">Reject</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Anjali Reddy</td>
-                                <td>Complaint</td>
-                                <td>Noise disturbance from neighboring room</td>
-                                <td>18 Mar 2026</td>
-                                <td><span class="badge badge-warning">Pending</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-success">Approve</button>
-                                    <button class="btn btn-sm btn-secondary">Reject</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 style="margin-bottom: 0.5rem;">Room Change Request</h3>
+                        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">From: Rahul Verma (A-305)</p>
+                        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">Reason: Noise issues</p>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-sm btn-success" style="flex: 1;">Approve</button>
+                            <button class="btn btn-sm btn-danger" style="flex: 1;">Reject</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 0.5rem;">Maintenance Request</h3>
+                        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">From: Priya Sharma (B-102)</p>
+                        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">Issue: Broken tap in bathroom</p>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-sm btn-success" style="flex: 1;">Approve</button>
+                            <button class="btn btn-sm btn-danger" style="flex: 1;">Reject</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Reports Page -->
             <div id="reportsPage" class="page" style="display: none;">
                 <div class="page-header">
-                    <h1>Transaction Reports</h1>
-                    <p>View financial reports and analytics</p>
+                    <h1>📈 Reports & Analytics</h1>
+                    <p>View hostel statistics and reports</p>
                 </div>
 
                 <div class="grid grid-3">
                     <div class="card">
-                        <h3>Total Revenue (March 2026)</h3>
-                        <h2 style="color: #22c55e; margin-top: 0.5rem;">₹2,25,000</h2>
-                        <p style="color: #666; font-size: 0.875rem;">45 payments received</p>
+                        <h3 style="margin-bottom: 0.5rem;">Total Revenue</h3>
+                        <p style="font-size: 2rem; color: var(--primary); margin: 1rem 0; font-weight: 700;">₹10,80,000</p>
+                        <p style="color: var(--gray); font-size: 0.9rem;">Annual revenue</p>
                     </div>
+
                     <div class="card">
-                        <h3>Pending Collections</h3>
-                        <h2 style="color: #f59e0b; margin-top: 0.5rem;">₹25,000</h2>
-                        <p style="color: #666; font-size: 0.875rem;">5 pending payments</p>
+                        <h3 style="margin-bottom: 0.5rem;">Occupancy Rate</h3>
+                        <p style="font-size: 2rem; color: var(--success); margin: 1rem 0; font-weight: 700;">90%</p>
+                        <p style="color: var(--gray); font-size: 0.9rem;">45 out of 50 rooms</p>
                     </div>
+
                     <div class="card">
-                        <h3>Average Room Rate</h3>
-                        <h2 style="color: #667eea; margin-top: 0.5rem;">₹5,000</h2>
-                        <p style="color: #666; font-size: 0.875rem;">Per month</p>
+                        <h3 style="margin-bottom: 0.5rem;">Average Rating</h3>
+                        <p style="font-size: 2rem; color: var(--warning); margin: 1rem 0; font-weight: 700;">4.8 ⭐</p>
+                        <p style="color: var(--gray); font-size: 0.9rem;">From 120 reviews</p>
                     </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settingsPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>⚙️ Settings</h1>
+                    <p>Manage hostel settings and configuration</p>
                 </div>
 
                 <div class="card">
-                    <h2 class="card-title">Payment Transactions</h2>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Transaction ID</th>
-                                <th>Student</th>
-                                <th>Room</th>
-                                <th>Amount</th>
-                                <th>Date</th>
-                                <th>Method</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>#TXN001</td>
-                                <td>Raj Kumar</td>
-                                <td>A-101</td>
-                                <td>₹5,000</td>
-                                <td>01 Mar 2026</td>
-                                <td>UPI</td>
-                                <td><span class="badge badge-success">Success</span></td>
-                            </tr>
-                            <tr>
-                                <td>#TXN002</td>
-                                <td>Priya Sharma</td>
-                                <td>A-102</td>
-                                <td>₹5,000</td>
-                                <td>01 Mar 2026</td>
-                                <td>Net Banking</td>
-                                <td><span class="badge badge-success">Success</span></td>
-                            </tr>
-                            <tr>
-                                <td>#TXN003</td>
-                                <td>Amit Patel</td>
-                                <td>B-201</td>
-                                <td>₹5,000</td>
-                                <td>02 Mar 2026</td>
-                                <td>Debit Card</td>
-                                <td><span class="badge badge-success">Success</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <h3 style="margin-bottom: 1.5rem;">Hostel Information</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Hostel Name</label>
+                            <input type="text" value="Premium Hostel" placeholder="Enter hostel name">
+                        </div>
+                        <div class="form-group">
+                            <label>City</label>
+                            <input type="text" value="Delhi" placeholder="Enter city">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" value="123 Main Street, Delhi" placeholder="Enter full address">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" value="+91-123-456-7890" placeholder="Enter phone number">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" value="admin@hostel.com" placeholder="Enter email">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--gray-light);">
+                        <button class="btn btn-primary">Save Changes</button>
+                        <button class="btn btn-secondary" style="margin-left: 0.5rem;">Cancel</button>
+                    </div>
                 </div>
             </div>
         </main>
@@ -401,39 +430,71 @@
     <!-- Add Room Modal -->
     <div id="addRoomModal" class="modal">
         <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('addRoomModal')">×</button>
             <div class="modal-header">
-                <button class="modal-close" onclick="closeModal('addRoomModal')">&times;</button>
                 <h2>Add New Room</h2>
-                <p style="color: #666; font-size: 0.875rem;">Enter room details</p>
+                <p>Fill in the details to add a new room</p>
             </div>
             <form onsubmit="handleRoomAdd(event)">
                 <div class="form-group">
                     <label>Room Number</label>
-                    <input type="text" placeholder="e.g., A-101" required>
+                    <input type="text" placeholder="e.g., A-301" required>
                 </div>
                 <div class="form-group">
-                    <label>Room Type</label>
+                    <label>Number of Beds</label>
                     <select required>
-                        <option>Single</option>
-                        <option>Double Sharing</option>
-                        <option>Triple Sharing</option>
+                        <option value="">Select number of beds</option>
+                        <option value="1">1 Bed</option>
+                        <option value="2">2 Beds</option>
+                        <option value="3">3 Beds</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Capacity</label>
-                    <input type="number" min="1" max="4" required>
-                </div>
-                <div class="form-group">
                     <label>Monthly Rent (₹)</label>
-                    <input type="number" placeholder="5000" required>
+                    <input type="number" placeholder="e.g., 5000" required>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">Add Room</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addRoomModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Room</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- Add Chart.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('addStudentModal')">×</button>
+            <div class="modal-header">
+                <h2>Add New Student</h2>
+                <p>Register a new student in the hostel</p>
+            </div>
+            <form onsubmit="handleStudentAdd(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="Enter full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="Enter email" required>
+                </div>
+                <div class="form-group">
+                    <label>Room Assignment</label>
+                    <select required>
+                        <option value="">Select room</option>
+                        <option value="A-301">A-301</option>
+                        <option value="B-102">B-102</option>
+                        <option value="C-203">C-203</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addStudentModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
