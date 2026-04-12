@@ -1,99 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hostel Management System - Login</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aastha Vidhya Mandir – Login</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-    <div class="login-container">
-        <div class="login-image">
-            <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800" alt="Hostel">
-            <div class="image-overlay">
-                <div class="brand">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                    </svg>
-                    <h2>Hostel Management System</h2>
-                </div>
-                <p>Streamline your hostel operations with our comprehensive management solution</p>
-                <div
-                    style="margin-top: 2rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; opacity: 0.95;">
-                    <div>
-                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem;">500+</div>
-                        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.9);">Active Hostels</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem;">50K+</div>
-                        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.9);">Students Managed</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="login-form-container">
-            <div class="login-card">
-                <div class="card-header">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                    </svg>
-                    <h1>Welcome Back</h1>
-                    <p>Sign in to your hostel management account</p>
-                </div>
-
-                <form id="loginForm" onsubmit="handleLogin(event)">
-                    <div class="form-group">
-                        <label for="role">Login As</label>
-                        <select id="role" required>
-                            <option value="student">👨‍🎓Student</option>
-                            <option value="owner">👔Admin</option>
-                            <option value="receptionist">👨‍💼Receptionist</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="username">Username or Email</label>
-                        <input type="text" id="username" placeholder="Enter your username or email" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <div class="password-input">
-                            <input type="password" id="password" placeholder="Enter your password" required>
-                            <button type="button" class="toggle-password" onclick="togglePassword()">
-                                <svg id="eyeIcon" class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                     <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 0.5rem;">
-                        Sign In
-                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M15 3h4a2 2 0 0  1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                            <polyline points="10 17 15 12 10 7"></polyline>
-                        </svg>
-                    </button>
-                    
-                    <div class="form-footer">
-                        <a href="#" class="link">Forgot Password?</a>
-                        <span style="color: var(--gray); margin: 0 0.5rem;">•</span>
-                        <a href="#" class="link">Need Help?</a>
-                    </div>
-                </form>
-                </form>
-            </div>
-        </div>
+<div class="login-page animate-gradient">
+  <!-- Left Panel -->
+  <div class="login-left">
+    <div class="login-logo">
+      <div class="login-logo-icon" id="loginLogoIcon">
+        <img class="login-logo-img" src="logo.png" alt="AVM Logo" onerror="this.style.display='none'; this.parentElement.classList.add('logo-fallback');">
+        <svg class="logo-fallback-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      </div>
+      <div>
+        <div class="login-logo-name">AVM Secondary School</div>
+        <div class="login-logo-sub">Hostel Management System</div>
+      </div>
     </div>
 
-    <script src="script.js"></script>
-</body>
+    <div class="login-headline">Manage your hostel<br>the smart way</div>
+    <div class="login-subtext">A complete solution for hostel owners, receptionists, and students. Streamline operations, payments, and communication in one place.</div>
 
+    <div class="login-stats">
+      <div class="login-stat">
+        <div class="login-stat-num">500+</div>
+        <div class="login-stat-label">Active Hostels</div>
+      </div>
+      <div class="login-stat">
+        <div class="login-stat-num">50K+</div>
+        <div class="login-stat-label">Students</div>
+      </div>
+      <div class="login-stat">
+        <div class="login-stat-num">99.9%</div>
+        <div class="login-stat-label">Uptime</div>
+      </div>
+    </div>
+
+    <div class="login-features">
+      <div class="login-feature">
+        <div class="login-feature-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
+        Role-based dashboards for Admin, Receptionist & Student
+      </div>
+      <div class="login-feature">
+        <div class="login-feature-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
+        Complete payment tracking with receipts
+      </div>
+      <div class="login-feature">
+        <div class="login-feature-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
+        Room management, visitor logs & attendance
+      </div>
+      <div class="login-feature">
+        <div class="login-feature-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
+        Requests, complaints & notice board
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="login-right">
+    <div class="login-card">
+      <div class="login-card-header">
+        <div>
+          <div class="login-card-title">Welcome back</div>
+          <div class="login-card-subtitle">Sign in to your account to continue</div>
+        </div>
+        <button class="theme-toggle-btn card-theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle dark/light mode"></button>
+      </div>
+
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label" for="role">Login As</label>
+          <select class="form-control" id="role" required>
+            <option value="student">Student</option>
+            <option value="admin">Admin / Owner</option>
+            <option value="receptionist">Receptionist</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="username">Username</label>
+          <input class="form-control" type="text" id="username" placeholder="Enter your username" autocomplete="username" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="password-wrapper">
+            <input class="form-control" type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required>
+            <button type="button" class="password-toggle" id="passwordToggle" onclick="togglePassword()">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-login">Sign In</button>
+      </form>
+
+      <div class="demo-creds">
+        <div class="demo-creds-title">Demo Credentials – Click to fill</div>
+        <div class="demo-cred-item" onclick="fillCred('admin','admin123','admin')">
+          <span class="role">Admin / Owner</span>
+          <span class="creds">admin / admin123</span>
+        </div>
+        <div class="demo-cred-item" onclick="fillCred('student123','pass123','student')">
+          <span class="role">Student</span>
+          <span class="creds">student123 / pass123</span>
+        </div>
+        <div class="demo-cred-item" onclick="fillCred('reception','rec123','receptionist')">
+          <span class="role">Receptionist</span>
+          <span class="creds">reception / rec123</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="notifications-container"></div>
+<script src="script.js"></script>
+</body>
 </html>
