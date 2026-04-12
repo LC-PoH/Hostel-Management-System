@@ -102,6 +102,8 @@ function showNotification(message, type = 'success') {
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         z-index: 2000;
         animation: slideIn 0.3s ease-out;
+        font-weight: 500;
+        font-size: 0.95rem;
     `;
     
     document.body.appendChild(notification);
