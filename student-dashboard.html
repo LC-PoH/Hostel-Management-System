@@ -6,22 +6,22 @@
     <title>Student Dashboard - Hostel Management</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="dashboard">
+<body class="dashboard" onload="initDashboard()">
     <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-brand">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
             </svg>
-            Hostel Management System
+            Hostel Pro - Student
         </div>
         <div class="navbar-user">
             <div class="user-info">
                 <div class="user-name" id="userName">Student</div>
-                <div class="user-role" id="userRole">student</div>
+                <div class="user-role" id="userRole">Student</div>
             </div>
-            <button class="btn btn-logout" onclick="logout()">Logout</button>
+            <button class="btn-logout" onclick="logout()">Logout</button>
         </div>
     </nav>
 
@@ -30,7 +30,7 @@
         <aside class="sidebar">
             <ul class="sidebar-menu">
                 <li>
-                    <a href="#" data-page="dashboardPage" onclick="setActivePage('dashboardPage')" class="active">
+                    <a href="#" data-page="dashboardPage" onclick="setActivePage(event, 'dashboardPage')" class="active">
                         <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <rect x="3" y="3" width="7" height="7"></rect>
                             <rect x="14" y="3" width="7" height="7"></rect>
@@ -41,7 +41,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-page="bookingsPage" onclick="setActivePage('bookingsPage')">
+                    <a href="#" data-page="bookingsPage" onclick="setActivePage(event, 'bookingsPage')">
                         <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M21 10H3M16 2v4M8 2v4M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
                         </svg>
@@ -49,7 +49,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-page="paymentPage" onclick="setActivePage('paymentPage')">
+                    <a href="#" data-page="paymentPage" onclick="setActivePage(event, 'paymentPage')">
                         <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
                             <line x1="1" y1="10" x2="23" y2="10"></line>
@@ -58,7 +58,15 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-page="profilePage" onclick="setActivePage('profilePage')">
+                    <a href="#" data-page="requestsPage" onclick="setActivePage(event, 'requestsPage')">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        Requests
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-page="profilePage" onclick="setActivePage(event, 'profilePage')">
                         <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
@@ -74,8 +82,8 @@
             <!-- Dashboard Page -->
             <div id="dashboardPage" class="page">
                 <div class="page-header">
-                    <h1>Student Dashboard</h1>
-                    <p>Welcome back! Here's your booking overview</p>
+                    <h1>👋 Student Portal</h1>
+                    <p>Welcome! Here's your booking overview</p>
                 </div>
 
                 <!-- Stats -->
@@ -100,6 +108,7 @@
                             <div class="stat-info">
                                 <h3>₹5,000</h3>
                                 <p>Pending Payment</p>
+                                <small style="color: var(--warning);">↑ Due this month</small>
                             </div>
                             <div class="stat-icon orange">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -115,6 +124,7 @@
                             <div class="stat-info">
                                 <h3>6 Months</h3>
                                 <p>Stay Duration</p>
+                                <small style="color: var(--success);">Active</small>
                             </div>
                             <div class="stat-icon green">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -142,7 +152,7 @@
 
                 <!-- Current Booking -->
                 <div class="card">
-                    <h2 class="card-title">Current Booking</h2>
+                    <h2 class="card-title">📋 Current Booking</h2>
                     <p class="card-description">Your active room booking details</p>
                     <table class="table">
                         <thead>
@@ -160,15 +170,15 @@
                                 <td>Double Sharing</td>
                                 <td>01 Sep 2025</td>
                                 <td>₹5,000</td>
-                                <td><span class="badge badge-success">Active</span></td>
+                                <td><span class="badge badge-success">✓ Active</span></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Payment History -->
+                <!-- Recent Payments -->
                 <div class="card">
-                    <h2 class="card-title">Recent Payments</h2>
+                    <h2 class="card-title">💳 Recent Payments</h2>
                     <p class="card-description">Your payment transaction history</p>
                     <table class="table">
                         <thead>
@@ -184,19 +194,19 @@
                                 <td>01 Mar 2026</td>
                                 <td>Monthly Rent - March 2026</td>
                                 <td>₹5,000</td>
-                                <td><span class="badge badge-success">Paid</span></td>
+                                <td><span class="badge badge-success">✓ Paid</span></td>
                             </tr>
                             <tr>
                                 <td>01 Feb 2026</td>
                                 <td>Monthly Rent - February 2026</td>
                                 <td>₹5,000</td>
-                                <td><span class="badge badge-success">Paid</span></td>
+                                <td><span class="badge badge-success">✓ Paid</span></td>
                             </tr>
                             <tr>
                                 <td>01 Jan 2026</td>
                                 <td>Monthly Rent - January 2026</td>
                                 <td>₹5,000</td>
-                                <td><span class="badge badge-success">Paid</span></td>
+                                <td><span class="badge badge-success">✓ Paid</span></td>
                             </tr>
                         </tbody>
                     </table>
@@ -206,7 +216,7 @@
             <!-- Bookings Page -->
             <div id="bookingsPage" class="page" style="display: none;">
                 <div class="page-header">
-                    <h1>My Bookings</h1>
+                    <h1>📅 My Bookings</h1>
                     <p>View your booking history and status</p>
                 </div>
 
@@ -230,7 +240,7 @@
                                 <td>01 Sep 2025</td>
                                 <td>-</td>
                                 <td>₹5,000/month</td>
-                                <td><span class="badge badge-success">Active</span></td>
+                                <td><span class="badge badge-success">✓ Active</span></td>
                             </tr>
                             <tr>
                                 <td>#BK002</td>
@@ -248,13 +258,13 @@
             <!-- Payment Page -->
             <div id="paymentPage" class="page" style="display: none;">
                 <div class="page-header">
-                    <h1>Make Payment</h1>
+                    <h1>💰 Make Payment</h1>
                     <p>Pay your hostel fees securely</p>
                 </div>
 
                 <div class="grid grid-2">
                     <div class="card">
-                        <h2 class="card-title">Payment Details</h2>
+                        <h2 class="card-title">Payment Form</h2>
                         <form onsubmit="handlePayment(event)">
                             <div class="form-group">
                                 <label>Payment Type</label>
@@ -284,14 +294,14 @@
                     <div class="card">
                         <h2 class="card-title">Pending Dues</h2>
                         <div style="margin-top: 2rem;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; padding: 0.75rem; background: #fef3c7; border-radius: 0.5rem;">
                                 <span>March 2026 Rent</span>
                                 <strong>₹5,000</strong>
                             </div>
                             <div style="border-top: 2px solid #667eea; padding-top: 1rem; margin-top: 1rem;">
                                 <div style="display: flex; justify-content: space-between;">
                                     <strong>Total Due</strong>
-                                    <strong style="color: #667eea; font-size: 1.5rem;">₹5,000</strong>
+                                    <strong style="color: #ef4444; font-size: 1.5rem;">₹5,000</strong>
                                 </div>
                             </div>
                         </div>
@@ -299,16 +309,59 @@
                 </div>
             </div>
 
+            <!-- Requests Page -->
+            <div id="requestsPage" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>📝 Requests & Complaints</h1>
+                    <p>Submit and track your requests</p>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <button class="btn btn-primary" onclick="openModal('requestModal')">+ New Request</button>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Your Requests</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#REQ001</td>
+                                <td>Room Change</td>
+                                <td>Request to change room to higher floor</td>
+                                <td>15 Mar 2026</td>
+                                <td><span class="badge badge-pending">⏳ Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>#REQ002</td>
+                                <td>Complaint</td>
+                                <td>Water pressure issue in room</td>
+                                <td>10 Mar 2026</td>
+                                <td><span class="badge badge-success">✓ Resolved</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Profile Page -->
             <div id="profilePage" class="page" style="display: none;">
                 <div class="page-header">
-                    <h1>My Profile</h1>
+                    <h1>👤 My Profile</h1>
                     <p>Manage your personal information</p>
                 </div>
 
                 <div class="card">
                     <h2 class="card-title">Personal Information</h2>
-                    <form>
+                    <form onsubmit="handleProfileUpdate(event)">
                         <div class="grid grid-2">
                             <div class="form-group">
                                 <label>Full Name</label>
@@ -340,6 +393,36 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="requestModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('requestModal')">×</button>
+            <div class="modal-header">
+                <h2>New Request</h2>
+                <p>Submit your request or complaint</p>
+            </div>
+            <form onsubmit="handleRequest(event)">
+                <div class="form-group">
+                    <label>Request Type</label>
+                    <select required>
+                        <option>Room Change</option>
+                        <option>Maintenance Issue</option>
+                        <option>Complaint</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea placeholder="Describe your request..." required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('requestModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="script.js"></script>
