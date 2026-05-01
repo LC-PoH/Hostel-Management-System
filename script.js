@@ -143,16 +143,42 @@ const HMS = {
     });
   },
 
+  async syncFromDB() {
+    try {
+      const res = await fetch('api/sync.php');
+      if (!res.ok) return false;
+      const result = await res.json();
+      if (result.success && result.data) {
+        // Always overwrite localStorage with DB data (even empty arrays)
+        Object.entries(result.data).forEach(([k, v]) => {
+          localStorage.setItem(this.KEYS[k], JSON.stringify(v ?? []));
+        });
+        return true;
+      }
+    } catch (e) { /* offline – keep localStorage */ }
+    return false;
+  },
+
+  async persist(table, action, data) {
+    try {
+      await fetch('api/data.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table, action, data }),
+      });
+    } catch (e) { /* offline – already saved to localStorage */ }
+  },
+
   get(key) { return JSON.parse(localStorage.getItem(this.KEYS[key]) || '[]'); },
   set(key, data) { localStorage.setItem(this.KEYS[key], JSON.stringify(data)); },
-  add(key, item) { const d = this.get(key); d.push(item); this.set(key, d); return item; },
+  add(key, item) { const d = this.get(key); d.push(item); this.set(key, d); this.persist(key, 'add', item); return item; },
   update(key, id, updates) {
     const d = this.get(key);
     const i = d.findIndex(x => x.id === id);
-    if (i !== -1) { d[i] = { ...d[i], ...updates }; this.set(key, d); return d[i]; }
+    if (i !== -1) { d[i] = { ...d[i], ...updates }; this.set(key, d); this.persist(key, 'update', d[i]); return d[i]; }
     return null;
   },
-  remove(key, id) { this.set(key, this.get(key).filter(x => x.id !== id)); },
+  remove(key, id) { this.set(key, this.get(key).filter(x => x.id !== id)); this.persist(key, 'remove', { id }); },
   findById(key, id) { return this.get(key).find(x => x.id === id); },
   where(key, fn) { return this.get(key).filter(fn); },
   genId() { return '_' + Math.random().toString(36).slice(2, 11); },
@@ -163,7 +189,7 @@ const HMS = {
 };
 
 // ===== AUTH =====
-function handleLogin(e) {
+async function handleLogin(e) {
   e.preventDefault();
   const role = document.getElementById('role').value;
   const username = document.getElementById('username').value.trim();
@@ -175,18 +201,35 @@ function handleLogin(e) {
   btn.textContent = 'Signing in…';
   btn.disabled = true;
 
-  setTimeout(() => {
+  const routes = { admin:'owner-dashboard.html', student:'student-dashboard.html', receptionist:'receptionist-dashboard.html' };
+
+  try {
+    const res = await fetch('api/login.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password, role }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      HMS.setSession({ userId: data.user.id, role: data.user.role, name: data.user.name });
+      window.location.href = routes[data.user.role];
+      return;
+    }
+    notify(data.error || 'Invalid credentials. Please check and try again.', 'error');
+  } catch (err) {
+    // PHP unavailable – fall back to localStorage demo mode
     const users = HMS.get('users');
     const user = users.find(u => u.username === username && u.password === password && u.role === role);
     if (user) {
       HMS.setSession({ userId: user.id, role: user.role, name: user.name });
-      const routes = { admin:'owner-dashboard.html', student:'student-dashboard.html', receptionist:'receptionist-dashboard.html' };
       window.location.href = routes[user.role];
-    } else {
-      notify('Invalid credentials. Please check and try again.', 'error');
-      btn.textContent = 'Sign In'; btn.disabled = false;
+      return;
     }
-  }, 600);
+    notify('Invalid credentials. Please check and try again.', 'error');
+  }
+
+  btn.textContent = 'Sign In';
+  btn.disabled = false;
 }
 
 function fillCred(username, password, role) {
@@ -395,10 +438,12 @@ function exportTableCSV(tableId, filename) {
 }
 
 // ===== STUDENT DASHBOARD =====
-function initStudentDashboard() {
+async function initStudentDashboard() {
   const session = requireAuth('student');
   if (!session) return;
   initTopbar(session);
+  showPage('dashboard');
+  await HMS.syncFromDB();
   const student = HMS.findById('users', session.userId);
   renderStudentDashboard(student);
   renderStudentBookings(student);
@@ -406,7 +451,6 @@ function initStudentDashboard() {
   renderStudentRequests(student);
   renderStudentProfile(student);
   renderNotices();
-  showPage('dashboard');
 }
 
 function renderStudentDashboard(student) {
@@ -557,16 +601,29 @@ function updateProfile(e) {
   renderStudentProfile(updated);
 }
 
-function changePassword(e) {
+async function changePassword(e) {
   e.preventDefault();
   const session = HMS.getSession();
   const user = HMS.findById('users', session.userId);
   const old = document.getElementById('oldPass').value;
-  const np = document.getElementById('newPass').value;
-  const cp = document.getElementById('confirmPass').value;
-  if (user.password !== old) { notify('Current password is incorrect', 'error'); return; }
+  const np  = document.getElementById('newPass').value;
+  const cp  = document.getElementById('confirmPass').value;
   if (np.length < 6) { notify('New password must be at least 6 characters', 'warning'); return; }
   if (np !== cp) { notify('New passwords do not match', 'error'); return; }
+
+  try {
+    const res = await fetch('api/change-password.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: session.userId, oldPassword: old, newPassword: np }),
+    });
+    const data = await res.json();
+    if (!data.success) { notify(data.error || 'Current password is incorrect', 'error'); return; }
+  } catch (err) {
+    // Offline fallback: verify against localStorage plaintext
+    if (user.password && user.password !== old) { notify('Current password is incorrect', 'error'); return; }
+  }
+
   HMS.update('users', session.userId, { password: np });
   notify('Password changed successfully', 'success');
   e.target.reset();
@@ -606,18 +663,15 @@ function renderNotices() {
 }
 
 // ===== ADMIN DASHBOARD =====
-function initAdminDashboard() {
+async function initAdminDashboard() {
   const session = requireAuth('admin');
   if (!session) return;
   initTopbar(session);
-  renderAdminStats();
-  renderAdminRooms();
-  renderAdminStudents();
-  renderAdminRequests();
-  renderAdminPayments();
-  renderAdminActivity();
-  renderNoticesAdmin();
   showPage('dashboard');
+  await HMS.syncFromDB();
+  renderAdminStats(); renderAdminRooms(); renderAdminStudents();
+  renderAdminRequests(); renderAdminPayments(); renderAdminActivity();
+  renderNoticesAdmin(); populateRoomDropdowns();
   setTimeout(initCharts, 100);
 }
 
@@ -1025,17 +1079,14 @@ function initCharts() {
 }
 
 // ===== RECEPTIONIST DASHBOARD =====
-function initReceptionistDashboard() {
+async function initReceptionistDashboard() {
   const session = requireAuth('receptionist');
   if (!session) return;
   initTopbar(session);
-  renderReceptionistStats();
-  renderStudentsList();
-  renderRoomsList();
-  renderVisitorsList();
-  renderAttendanceLog();
-  populateStudentDropdowns();
   showPage('dashboard');
+  await HMS.syncFromDB();
+  renderReceptionistStats(); renderStudentsList(); renderRoomsList();
+  renderVisitorsList(); renderAttendanceLog(); populateStudentDropdowns();
 }
 
 function renderReceptionistStats() {
