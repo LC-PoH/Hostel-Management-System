@@ -597,18 +597,42 @@ function submitRequest(e) {
   renderStudentRequests(student);
 }
 
+// Pre-fills the amount field with the current pending due so the student
+// sees exactly what they owe before editing it for a partial payment.
+function openPaymentModal() {
+  const session = HMS.getSession();
+  const pending = HMS.where('payments', p => p.studentId === session.userId && p.status === 'pending');
+  const amtEl = document.getElementById('payAmount');
+  if (amtEl && pending.length) amtEl.value = pending[0].amount;
+  openModal('paymentModal');
+}
+
 function submitPayment(e) {
   e.preventDefault();
   const session = HMS.getSession();
   const method = document.getElementById('payMethod').value;
   const amount = Number(document.getElementById('payAmount').value);
   if (!method || !amount) { notify('Please fill in all payment details', 'warning'); return; }
+
   const pending = HMS.where('payments', p => p.studentId === session.userId && p.status === 'pending');
+  const txnId = 'TXN' + Date.now();
+
   if (pending.length) {
-    HMS.update('payments', pending[0].id, { method, status:'paid', txnId:'TXN'+Date.now() });
+    const pendingAmt = Number(pending[0].amount);
+    if (amount >= pendingAmt) {
+      // Paying full amount or more — mark the pending record as paid with the actual due amount
+      HMS.update('payments', pending[0].id, { amount: pendingAmt, method, status: 'paid', txnId });
+    } else {
+      // Partial payment — create a new paid record for the amount entered,
+      // and reduce the pending balance by that amount
+      HMS.add('payments', { id: HMS.genPaymentId(), bookingId: pending[0].bookingId, studentId: session.userId, amount, method, date: today(), status: 'paid', type: pending[0].type || 'Monthly Rent', txnId });
+      HMS.update('payments', pending[0].id, { amount: pendingAmt - amount });
+    }
   } else {
-    HMS.add('payments', { id:HMS.genPaymentId(), bookingId:'', studentId:session.userId, amount, method, date:today(), status:'paid', type:'Monthly Rent', txnId:'TXN'+Date.now() });
+    // No pending record — just log a new paid payment
+    HMS.add('payments', { id: HMS.genPaymentId(), bookingId: '', studentId: session.userId, amount, method, date: today(), status: 'paid', type: 'Monthly Rent', txnId });
   }
+
   notify(`Payment of ${fmtCurrency(amount)} made successfully via ${method}!`, 'success');
   closeModal('paymentModal');
   e.target.reset();
