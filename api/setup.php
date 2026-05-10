@@ -133,6 +133,12 @@ echo "<h3>Inserting Payments…</h3>";
 $pSql = 'INSERT IGNORE INTO payments (id,booking_id,student_id,amount,method,pay_date,status,pay_type,txn_id) VALUES (?,?,?,?,?,?,?,?,?)';
 foreach ($payments as $p) { tryInsert($pdo, $pSql, $p, "Payment: {$p[0]}"); }
 
+// ADDED: After seeding, back-fill student_name and student_sid from the users table into
+//        payments and bookings. The INSERT statements use internal IDs only, so this JOIN
+//        ensures phpMyAdmin and any direct DB queries show readable names and STU-format IDs.
+$pdo->exec("UPDATE payments p JOIN users u ON u.id = p.student_id SET p.student_name = u.name, p.student_sid = u.student_id WHERE p.student_name IS NULL OR p.student_sid IS NULL");
+$pdo->exec("UPDATE bookings b JOIN users u ON u.id = b.student_id SET b.student_name = u.name, b.student_sid = u.student_id WHERE b.student_name IS NULL OR b.student_sid IS NULL");
+
 echo "<h3>Inserting Requests…</h3>";
 $reqSql = 'INSERT IGNORE INTO requests (id,student_id,req_type,description,req_date,status,response) VALUES (?,?,?,?,?,?,?)';
 foreach ($requests as $req) { tryInsert($pdo, $reqSql, $req, "Request: {$req[0]}"); }
