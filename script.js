@@ -800,7 +800,8 @@ function renderAdminStats() {
 
 function renderAdminRooms() {
   const statusFilter = document.getElementById('roomStatusFilter')?.value || '';
-  let rooms = HMS.get('rooms');
+  // Sort rooms alphabetically by room number so they always appear in A→Z order
+  let rooms = HMS.get('rooms').slice().sort((a, b) => (a.number || '').localeCompare(b.number || '', undefined, { numeric: true }));
   if (statusFilter) rooms = rooms.filter(r => r.status === statusFilter);
   const container = document.getElementById('roomsContainer');
   if (!container) return;
@@ -1280,6 +1281,8 @@ function populateRoomDropdowns() {
 
 function populateRoomDropdown(sel, rooms) {
   if (!rooms) rooms = HMS.get('rooms');
+  // Sort alphabetically by room number so dropdown list is always in order
+  rooms = rooms.slice().sort((a, b) => (a.number || '').localeCompare(b.number || '', undefined, { numeric: true }));
   sel.innerHTML = '<option value="">Select Room</option>' + rooms.map(r => {
     const free = r.beds - r.occupied;
     const full = free <= 0 || r.status === 'occupied';
@@ -1440,7 +1443,8 @@ function renderStudentsList() {
 
 function renderRoomsList() {
   const statusFilter = document.getElementById('recRoomStatusFilter')?.value || '';
-  let rooms = HMS.get('rooms');
+  // Sort alphabetically by room number so rooms always appear in A→Z order
+  let rooms = HMS.get('rooms').slice().sort((a, b) => (a.number || '').localeCompare(b.number || '', undefined, { numeric: true }));
   if (statusFilter) rooms = rooms.filter(r => r.status === statusFilter);
   const container = document.getElementById('recRoomsContainer');
   if (!container) return;
