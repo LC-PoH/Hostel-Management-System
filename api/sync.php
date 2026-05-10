@@ -34,7 +34,9 @@ try {
 
     $payments = $pdo->query(
         'SELECT id, booking_id AS bookingId, student_id AS studentId,
-                amount, method, pay_date AS date, status, pay_type AS type, txn_id AS txnId
+                student_name AS studentName,
+                amount, method, pay_date AS date, status, pay_type AS type, txn_id AS txnId,
+                reference_no AS reference, collected_by AS collectedBy, collected_at AS collectedAt
          FROM payments'
     )->fetchAll();
     foreach ($payments as &$p) { $p['amount'] = (float)$p['amount']; }
@@ -42,12 +44,14 @@ try {
 
     $requests = $pdo->query(
         'SELECT id, student_id AS studentId, req_type AS type,
-                description, req_date AS date, status, response
+                description, req_date AS date, status, response,
+                resolved_at AS resolvedAt, resolved_by AS resolvedBy
          FROM requests'
     )->fetchAll();
 
     $visitors = $pdo->query(
         'SELECT id, name, student_id AS studentId, phone,
+                relation, id_proof AS idProof,
                 check_in AS checkIn, check_out AS checkOut, status, purpose
          FROM visitors'
     )->fetchAll();
@@ -62,9 +66,22 @@ try {
         'SELECT id, title, body, notice_date AS date, type, author FROM notices'
     )->fetchAll();
 
+    // Outpasses
+    $outpasses = [];
+    try {
+        $outpasses = $pdo->query(
+            'SELECT id, student_id AS studentId, student_name AS studentName,
+                    student_sid AS studentSid, room_id AS roomId,
+                    reason, destination, return_date_time AS returnDateTime,
+                    remarks, issued_at AS issuedAt, issued_by AS issuedBy,
+                    status, returned_at AS returnedAt
+             FROM outpasses'
+        )->fetchAll();
+    } catch (Exception $e) { /* Table may not exist yet – safe to skip */ }
+
     echo json_encode([
         'success' => true,
-        'data'    => compact('users','rooms','bookings','payments','requests','visitors','attendance','notices'),
+        'data'    => compact('users','rooms','bookings','payments','requests','visitors','attendance','notices','outpasses'),
     ]);
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
