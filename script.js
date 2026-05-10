@@ -1036,9 +1036,7 @@ function renderAdminPayments() {
     const student = HMS.findById('users', p.studentId);
     return `<tr>
       <td>${p.txnId || '-'}</td>
-      <td>${student?.name || '-'}</td>
-        // FIX: Use s.studentSid (STU-format stored on payment row) as fallback when
-        //      user lookup fails, so internal IDs like u2 are never shown to the user
+      <td>${student?.name || p.studentName || '-'}</td>
       <td>${student?.studentId || p.studentSid || '-'}</td>
       <td>${p.type}</td>
       <td>${fmtCurrency(p.amount)}</td>
