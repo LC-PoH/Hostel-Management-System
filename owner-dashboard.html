@@ -683,6 +683,14 @@
   document.querySelector('[data-page="requests-admin"]').addEventListener('click', () => {
     setTimeout(() => { renderAdminRequests(); populateQuickRequests(); }, 50);
   });
+  // FIX: Re-render Payments and Students tables on every nav click so the data is always
+  // fresh after DB sync. Without these listeners the tables showed the pre-sync snapshot.
+  document.querySelector('[data-page="payments-admin"]').addEventListener('click', () => {
+    setTimeout(() => { renderAdminPayments(); }, 50);
+  });
+  document.querySelector('[data-page="students"]').addEventListener('click', () => {
+    setTimeout(() => { renderAdminStudents(); }, 50);
+  });
 
   populateRoomDropdowns();
   populateQuickRequests();
