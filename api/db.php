@@ -1,4 +1,21 @@
 <?php
+/**
+ * db.php — Database Connection
+ *
+ * Provides a single shared PDO instance for all API endpoints via getDB().
+ * Uses a static variable so only one connection is opened per request.
+ *
+ * Configuration:
+ *   DB_HOST — MySQL hostname (default: localhost for XAMPP)
+ *   DB_NAME — Target database (hostel_management)
+ *   DB_USER — MySQL username (default: root for XAMPP)
+ *   DB_PASS — MySQL password (empty by default for XAMPP)
+ *
+ * PDO options set:
+ *   ERRMODE_EXCEPTION        — all DB errors throw PDOException (caught by callers)
+ *   FETCH_ASSOC              — rows returned as associative arrays
+ *   EMULATE_PREPARES = false — forces real prepared statements (prevents SQL injection)
+ */
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'hostel_management');
 define('DB_USER', 'root');
