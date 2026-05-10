@@ -1172,7 +1172,9 @@
       const cls = req.status === 'resolved' ? 'badge-success' : req.status === 'approved' ? 'badge-info' : req.status === 'rejected' ? 'badge-danger' : 'badge-warning';
       return `<tr>
         <td style="font-size:11px;color:var(--text-2)">${req.id?.slice(-6)||'-'}</td>
-        <td><div class="fw-600">${s?.name||'Unknown'}</div><div style="font-size:11px;color:var(--text-2)">${s?.studentId||''}</div></td>
+        <!-- FIX: studentId sub-div always renders with min-height:14px so rows without a studentId
+             are the same height as rows that have one (prevents inconsistent row heights) -->
+        <td><div class="fw-600">${s?.name||'Unknown'}</div><div style="font-size:11px;color:var(--text-2);min-height:14px">${s?.studentId||''}</div></td>
         <td><span class="badge badge-secondary" style="font-size:11px">${req.type||'General'}</span></td>
         <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px" title="${req.description||''}">${req.description||'-'}</td>
         <td style="font-size:12px">${req.date ? new Date(req.date).toLocaleDateString('en-IN') : '-'}</td>
@@ -1257,7 +1259,7 @@
       return `<tr>
         <td style="font-size:11px;color:var(--text-2)">${p.id?.slice(-8)||'-'}</td>
         <td><div class="fw-600">${s?.name||p.studentName||'Unknown'}</div></td>
-        <td style="font-size:12px;color:var(--text-2)">${s?.studentId||p.studentId||'-'}</td>
+        <td style="font-size:12px;color:var(--text-2)">${s?.studentId||p.studentSid||'-'}</td>
         <td>${p.type||'Rent'}</td>
         <td class="fw-600">${fmtCurrency(p.amount)}</td>
         <td>${p.method||'-'}</td>
@@ -1292,9 +1294,9 @@
     const amount = parseFloat(document.getElementById('recPayAmount').value);
     if (!amount || amount <= 0) return notify('Enter a valid amount', 'danger');
     const session = HMS.getSession();
-    // FIX: Use genPaymentId() instead of genId() so receptionist-recorded payments
-    // get sequential IDs (p23, p24...) consistent with all other payments in the system.
     HMS.add('payments', {
+      // FIX: Use genPaymentId() instead of genId() so receptionist-recorded payments get
+      //      sequential IDs (p23, p24...) matching the rest of the system, not random strings
       id: HMS.genPaymentId(),
       studentId,
       studentName: student.name,
@@ -1397,7 +1399,7 @@
         <div style="width:64px;height:64px;border-radius:50%;background:${avatarColor(s.name)};display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;font-weight:700;flex-shrink:0">${avatarLetter(s.name)}</div>
         <div>
           <div style="font-size:20px;font-weight:700">${s.name}</div>
-          <div style="font-size:13px;color:var(--text-2)">${s.studentId||s.id} · ${s.course||'N/A'} · ${s.email||''}</div>
+          <div style="font-size:13px;color:var(--text-2)">${[s.studentId, s.course||'N/A', s.email].filter(Boolean).join(' · ')}</div>
           <div style="margin-top:4px"><span class="badge ${att?.status==='present'?'badge-success':outpass?'badge-warning':'badge-secondary'}">${outpass?'On Outpass':att?.status||'No record today'}</span></div>
         </div>
       </div>
@@ -1415,7 +1417,9 @@
           <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-2);margin-bottom:8px">Room & Payments</div>
           <table style="width:100%;font-size:13px"><tbody>
             <tr><td style="color:var(--text-2);padding:3px 0;width:50%">Room</td><td>${room ? 'Room ' + room.number + ' (' + room.type + ')' : '—'}</td></tr>
-            <tr><td style="color:var(--text-2);padding:3px 0">Rent</td><td>${room ? fmtCurrency(room.price||0)+'/mo' : '—'}</td></tr>
+            <!-- FIX: room.rent corrected from room.price (which was always ₹0 — field doesn't exist)
+                 to room.rent which is the actual monthly rent stored in the rooms table -->
+            <tr><td style="color:var(--text-2);padding:3px 0">Rent</td><td>${room ? fmtCurrency(room.rent||0)+'/mo' : '—'}</td></tr>
             <tr><td style="color:var(--text-2);padding:3px 0">Total Paid</td><td style="color:var(--success);font-weight:600">${fmtCurrency(totalPaid)}</td></tr>
             <tr><td style="color:var(--text-2);padding:3px 0">Pending</td><td style="color:${pendingAmt>0?'var(--danger)':'var(--text-2)'};font-weight:${pendingAmt>0?'600':'400'}">${fmtCurrency(pendingAmt)}</td></tr>
           </tbody></table>
