@@ -182,6 +182,16 @@ const HMS = {
   findById(key, id) { return this.get(key).find(x => x.id === id); },
   where(key, fn) { return this.get(key).filter(fn); },
   genId() { return '_' + Math.random().toString(36).slice(2, 11); },
+  // Generates sequential payment IDs (p1, p2, p3...) instead of random strings,
+  // keeping payment IDs consistent with seeded data and readable in the UI.
+  genPaymentId() {
+    const payments = this.get('payments');
+    const max = payments.reduce((m, p) => {
+      const n = parseInt((p.id || '').replace(/^p/, ''));
+      return (!isNaN(n) && n > m) ? n : m;
+    }, 0);
+    return 'p' + (max + 1);
+  },
 
   getSession() { return JSON.parse(sessionStorage.getItem('hms_session') || 'null'); },
   setSession(data) { sessionStorage.setItem('hms_session', JSON.stringify(data)); },
@@ -522,8 +532,10 @@ function renderStudentPayments(student) {
   filtered.sort((a, b) => {
     if (sc === 'amount') return sd === 'asc' ? (a.amount||0) - (b.amount||0) : (b.amount||0) - (a.amount||0);
     if (sc === 'status') return sd === 'asc' ? (a.status||'').localeCompare(b.status||'') : (b.status||'').localeCompare(a.status||'');
-    // default: date
-    return sd === 'asc' ? (a.date||'').localeCompare(b.date||'') : (b.date||'').localeCompare(a.date||'');
+    // FIX: Use direct < > comparison instead of localeCompare() for ISO date strings (YYYY-MM-DD).
+    // localeCompare() is locale-sensitive and produces wrong order on Indian/non-English Windows locales.
+    const da = a.date || '', db = b.date || '';
+    return sd === 'asc' ? (da < db ? -1 : da > db ? 1 : 0) : (db < da ? -1 : db > da ? 1 : 0);
   });
 
   const tbody = document.getElementById('paymentHistoryBody');
@@ -595,7 +607,7 @@ function submitPayment(e) {
   if (pending.length) {
     HMS.update('payments', pending[0].id, { method, status:'paid', txnId:'TXN'+Date.now() });
   } else {
-    HMS.add('payments', { id:HMS.genId(), bookingId:'', studentId:session.userId, amount, method, date:today(), status:'paid', type:'Monthly Rent', txnId:'TXN'+Date.now() });
+    HMS.add('payments', { id:HMS.genPaymentId(), bookingId:'', studentId:session.userId, amount, method, date:today(), status:'paid', type:'Monthly Rent', txnId:'TXN'+Date.now() });
   }
   notify(`Payment of ${fmtCurrency(amount)} made successfully via ${method}!`, 'success');
   closeModal('paymentModal');
@@ -913,10 +925,14 @@ function renderAdminPayments() {
   const to = toEl ? toEl.value : '';
   if (from) payments = payments.filter(p => p.date && p.date >= from);
   if (to)   payments = payments.filter(p => p.date && p.date <= to);
+  // FIX: Use direct < > comparison for date sort — locale-safe for YYYY-MM-DD on all Windows locales.
   payments = [...payments].sort((a, b) => {
+    if (col === 'date') {
+      const da = a.date || '', db = b.date || '';
+      return dir === 'asc' ? (da < db ? -1 : da > db ? 1 : 0) : (db < da ? -1 : db > da ? 1 : 0);
+    }
     let va = '', vb = '';
-    if (col === 'date') { va = a.date || ''; vb = b.date || ''; }
-    else if (col === 'name') {
+    if (col === 'name') {
       va = HMS.findById('users', a.studentId)?.name || '';
       vb = HMS.findById('users', b.studentId)?.name || '';
     } else if (col === 'id') {
@@ -1073,7 +1089,12 @@ function addStudent(e) {
     if (room) {
       const newOccupied = Math.min(room.occupied + 1, room.beds);
       HMS.update('rooms', roomId, { occupied: newOccupied, status: newOccupied >= room.beds ? 'occupied' : 'partial' });
-      HMS.add('bookings', { id:HMS.genId(), studentId:newStudent.id, roomId, checkIn:today(), checkOut:'', amount:room.rent, status:'active' });
+      const bookingId = HMS.genId();
+      HMS.add('bookings', { id: bookingId, studentId: newStudent.id, roomId, checkIn: today(), checkOut: '', amount: room.rent, status: 'active' });
+      // FIX: Automatically create a pending payment for the current month when a room is assigned.
+      // Without this, new students showed ₹0 dues even though they had an active booking.
+      const monthStart = today().slice(0, 7) + '-01';
+      HMS.add('payments', { id: HMS.genPaymentId(), bookingId, studentId: newStudent.id, amount: room.rent, method: '', date: monthStart, status: 'pending', type: 'Monthly Rent', txnId: '' });
     }
   }
   notify('Student added successfully', 'success');
@@ -1122,9 +1143,14 @@ function editStudent(id) {
   openModal('editStudentModal');
 }
 
+// FIX: saveStudent now fully handles room changes — releases old room/booking, creates new booking,
+// updates occupancy counts on both rooms, and creates a pending payment for the new room if needed.
 function saveStudent(e) {
   e.preventDefault();
   const id = document.getElementById('editStudentId').value;
+  const newRoomId = document.getElementById('editStudentRoom').value;
+  const existing = HMS.findById('users', id);
+  const oldRoomId = existing ? existing.roomId : '';
   const updates = {
     name: document.getElementById('editStudentName').value,
     email: document.getElementById('editStudentEmail').value,
@@ -1132,7 +1158,7 @@ function saveStudent(e) {
     course: document.getElementById('editStudentCourse').value,
     year: document.getElementById('editStudentYear').value,
     bloodGroup: document.getElementById('editStudentBlood').value,
-    roomId: document.getElementById('editStudentRoom').value,
+    roomId: newRoomId,
   };
   // Handle optional password change
   const newPass = (document.getElementById('editStudentNewPass')?.value || '').trim();
@@ -1143,12 +1169,43 @@ function saveStudent(e) {
     updates.password = newPass;
   }
   HMS.update('users', id, updates);
+  // Handle room assignment change
+  if (newRoomId !== oldRoomId) {
+    // Release old room
+    if (oldRoomId) {
+      const oldRoom = HMS.findById('rooms', oldRoomId);
+      if (oldRoom) {
+        const occ = Math.max(0, oldRoom.occupied - 1);
+        HMS.update('rooms', oldRoomId, { occupied: occ, status: occ <= 0 ? 'available' : occ < oldRoom.beds ? 'partial' : 'occupied' });
+      }
+      // Close old active booking
+      const oldBooking = HMS.where('bookings', b => b.studentId === id && b.status === 'active')[0];
+      if (oldBooking) HMS.update('bookings', oldBooking.id, { status: 'inactive', checkOut: today() });
+    }
+    // Assign new room
+    if (newRoomId) {
+      const newRoom = HMS.findById('rooms', newRoomId);
+      if (newRoom) {
+        const newOcc = Math.min(newRoom.occupied + 1, newRoom.beds);
+        HMS.update('rooms', newRoomId, { occupied: newOcc, status: newOcc >= newRoom.beds ? 'occupied' : 'partial' });
+        const bookingId = HMS.genId();
+        HMS.add('bookings', { id: bookingId, studentId: id, roomId: newRoomId, checkIn: today(), checkOut: '', amount: newRoom.rent, status: 'active' });
+        // Create pending payment only if no existing pending payment for this student
+        const hasPending = HMS.where('payments', p => p.studentId === id && p.status === 'pending').length > 0;
+        if (!hasPending) {
+          const monthStart = today().slice(0, 7) + '-01';
+          HMS.add('payments', { id: HMS.genPaymentId(), bookingId, studentId: id, amount: newRoom.rent, method: '', date: monthStart, status: 'pending', type: 'Monthly Rent', txnId: '' });
+        }
+      }
+    }
+    renderAdminRooms();
+  }
   // Clear password fields
   if (document.getElementById('editStudentNewPass')) document.getElementById('editStudentNewPass').value = '';
   if (document.getElementById('editStudentConfirmPass')) document.getElementById('editStudentConfirmPass').value = '';
   notify('Student updated successfully' + (newPass ? ' (password changed)' : ''), 'success');
   closeModal('editStudentModal');
-  renderAdminStudents();
+  renderAdminStudents(); renderAdminStats();
 }
 
 function deleteStudent(id) {
@@ -1468,8 +1525,9 @@ function renderVisitorsList() {
       return vd === 'asc' ? sa.localeCompare(sb) : sb.localeCompare(sa);
     }
     if (vc === 'status') return vd === 'asc' ? (a.status||'').localeCompare(b.status||'') : (b.status||'').localeCompare(a.status||'');
-    // default: date desc
-    return vd === 'asc' ? (a.checkIn||'').localeCompare(b.checkIn||'') : (b.checkIn||'').localeCompare(a.checkIn||'');
+    // default: date desc — direct string comparison (locale-safe)
+    const ca = a.checkIn || '', cb = b.checkIn || '';
+    return vd === 'asc' ? (ca < cb ? -1 : ca > cb ? 1 : 0) : (cb < ca ? -1 : cb > ca ? 1 : 0);
   });
   tbody.innerHTML = visitorsArr.length ? visitorsArr.map(v => {
     const student = HMS.findById('users', v.studentId);
@@ -1503,7 +1561,7 @@ function renderAttendanceLog() {
       const rnb = rb ? (HMS.findById('rooms', rb)?.number || '') : '';
       return ad === 'asc' ? rna.localeCompare(rnb) : rnb.localeCompare(rna);
     }
-    if (ac === 'checkIn') return ad === 'asc' ? (a.checkIn||'').localeCompare(b.checkIn||'') : (b.checkIn||'').localeCompare(a.checkIn||'');
+    if (ac === 'checkIn') { const ca = a.checkIn||'', cb = b.checkIn||''; return ad === 'asc' ? (ca < cb ? -1 : ca > cb ? 1 : 0) : (cb < ca ? -1 : cb > ca ? 1 : 0); }
     if (ac === 'status') return ad === 'asc' ? (a.status||'').localeCompare(b.status||'') : (b.status||'').localeCompare(a.status||'');
     // default: name
     const na = HMS.findById('users', a.studentId)?.name || '';
