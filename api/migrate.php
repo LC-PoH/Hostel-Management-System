@@ -1,4 +1,24 @@
 <?php
+/**
+ * migrate.php — Database Schema Migration Script
+ *
+ * Run this ONCE from the browser to set up the database from scratch:
+ *   http://localhost/Hostel_Management_System/api/migrate.php
+ *
+ * What it does:
+ *   1. Connects to MySQL without selecting a database.
+ *   2. Drops the existing `hostel_management` database (if any) and recreates it
+ *      with utf8mb4 encoding for full Unicode / emoji support.
+ *   3. Reads database.sql from the project root and executes each statement.
+ *      Statements that create the DB or select it are skipped (already handled).
+ *   4. Outputs a colour-coded HTML log of every statement executed.
+ *   5. On success, shows a link to setup.php to seed demo data.
+ *
+ * WARNING: This script drops ALL existing data.  Do not run on a live database
+ *          that contains real records you want to keep.
+ *
+ * After running migrate.php, visit setup.php to populate sample data.
+ */
 // Run this once to apply the new schema. Delete after use.
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
