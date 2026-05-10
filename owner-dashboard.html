@@ -476,9 +476,11 @@
 </div>
 
 <!-- View Student -->
+<!-- CHANGED: viewStudentModal widened to 640px and renamed to "Student Profile" to match
+     the new rich two-column layout added to viewStudent() in script.js -->
 <div class="modal-overlay" id="viewStudentModal">
-  <div class="modal">
-    <div class="modal-header"><div class="modal-title">Student Details</div><button class="modal-close" onclick="closeModal('viewStudentModal')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header"><div class="modal-title">Student Profile</div><button class="modal-close" onclick="closeModal('viewStudentModal')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
     <div class="modal-body" id="viewStudentBody"></div>
     <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('viewStudentModal')">Close</button></div>
   </div>
