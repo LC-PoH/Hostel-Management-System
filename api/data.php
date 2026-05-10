@@ -8,13 +8,17 @@ $action = $input['action'] ?? '';
 $data   = $input['data']   ?? [];
 
 // Map JS camelCase keys → SQL table/column names
+// CHANGED: Added 'status' to users map so active/inactive toggle writes to DB
+// CHANGED: Added student_name + student_sid to bookings map
+// CHANGED: Added student_sid to payments map
 $tableMap = [
     'users' => [
         'table'   => 'users',
         'columns' => [
             'username' => 'username', 'role' => 'role', 'name' => 'name',
             'email' => 'email', 'phone' => 'phone',
-            'studentId' => 'student_id', 'roomId' => 'room_id',
+            // ADDED: status allows admin to toggle student active/inactive and persist to DB
+            'studentId' => 'student_id', 'roomId' => 'room_id', 'status' => 'status',
             'bloodGroup' => 'blood_group', 'emergencyContact' => 'emergency_contact',
             'course' => 'course', 'year' => 'year_of_study',
             'fatherName' => 'father_name', 'address' => 'address',
@@ -28,19 +32,22 @@ $tableMap = [
             'rent' => 'rent', 'status' => 'status',
         ],
     ],
+    // ADDED: student_name + student_sid stored in bookings so phpMyAdmin shows readable info
     'bookings' => [
         'table'   => 'bookings',
         'columns' => [
-            'studentId' => 'student_id', 'roomId' => 'room_id',
+            'studentId' => 'student_id', 'studentName' => 'student_name',
+            'studentSid' => 'student_sid', 'roomId' => 'room_id',
             'checkIn' => 'check_in', 'checkOut' => 'check_out',
             'amount' => 'amount', 'status' => 'status',
         ],
     ],
+    // ADDED: student_sid stored in payments as fallback for student ID display
     'payments' => [
         'table'   => 'payments',
         'columns' => [
             'bookingId' => 'booking_id', 'studentId' => 'student_id',
-            'studentName' => 'student_name',
+            'studentName' => 'student_name', 'studentSid' => 'student_sid',
             'amount' => 'amount', 'method' => 'method', 'date' => 'pay_date',
             'status' => 'status', 'type' => 'pay_type', 'txnId' => 'txn_id',
             'reference' => 'reference_no', 'collectedBy' => 'collected_by', 'collectedAt' => 'collected_at',
