@@ -1,4 +1,24 @@
 <?php
+/**
+ * sync.php — Full Data Sync Endpoint
+ *
+ * Called by the front-end once after a successful login to pull all data
+ * from MySQL into the browser's localStorage.  This powers the "dual-mode"
+ * architecture: the app works offline from localStorage and syncs to MySQL
+ * whenever the server is reachable.
+ *
+ * Returns a JSON object:
+ *   { success: true, data: { users, rooms, bookings, payments, requests,
+ *                            visitors, attendance, notices, outpasses } }
+ *
+ * Column aliases:  SQL snake_case → JS camelCase (e.g. student_id → studentId)
+ * so the front-end can use the same key names as its localStorage objects.
+ *
+ * The outpasses query is wrapped in a try/catch so the endpoint still succeeds
+ * if that table has not been created yet (e.g. on a fresh install before migrate.php).
+ *
+ * Note: password_hash is intentionally excluded from the users SELECT.
+ */
 header('Content-Type: application/json');
 require_once __DIR__ . '/db.php';
 
