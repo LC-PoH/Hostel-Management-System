@@ -4,7 +4,37 @@
 h2{color:#4338ca}.ok{color:#10b981}.err{color:#ef4444}pre{background:#f1f5f9;padding:12px;border-radius:8px}</style>
 </head><body>
 <h2>Hostel Management System – Database Seeder</h2>
+<!DOCTYPE html>
+<html><head><title>HMS Setup</title>
+<style>body{font-family:Arial,sans-serif;max-width:700px;margin:40px auto;padding:0 20px}
+h2{color:#4338ca}.ok{color:#10b981}.err{color:#ef4444}pre{background:#f1f5f9;padding:12px;border-radius:8px}</style>
+</head><body>
+<h2>Hostel Management System – Database Seeder</h2>
 <?php
+/**
+ * setup.php — Sample Data Seeder
+ *
+ * Run this after migrate.php to populate the database with demo records:
+ *   http://localhost/Hostel_Management_System/api/setup.php
+ *
+ * Inserts:
+ *   - 13 users  : 1 admin, 1 receptionist, 11 students (passwords bcrypt-hashed)
+ *   - 8 rooms   : mix of Single / Double / Triple, available and occupied
+ *   - 12 bookings: active and completed, linking students to rooms
+ *   - 21+ payments: paid and pending monthly rent records
+ *   - Sample requests, visitors, attendance, notices, and outpasses
+ *
+ * All INSERTs use INSERT IGNORE so re-running this file is safe —
+ * existing rows are skipped rather than causing duplicate-key errors.
+ *
+ * Passwords in the $users array are plain text here and are hashed with
+ * password_hash() before insertion. Never store or log plain-text passwords.
+ *
+ * Demo credentials:
+ *   Admin       — admin / admin123
+ *   Student     — student123 / pass123
+ *   Receptionist — reception / rec123
+ */
 require_once __DIR__ . '/db.php';
 
 $pdo = getDB();
