@@ -1,4 +1,23 @@
 <?php
+/**
+ * change-password.php — Password Change Endpoint
+ *
+ * Accepts a JSON POST body: { userId, oldPassword, newPassword }
+ *
+ * Process:
+ *   1. Fetch the current bcrypt hash for the given userId from the users table.
+ *   2. Verify oldPassword against the stored hash using password_verify().
+ *      Returns an error if the current password is wrong, preventing
+ *      unauthorised password changes.
+ *   3. Hash newPassword with password_hash() (bcrypt) and save it.
+ *
+ * Returns:
+ *   { success: true }  on success
+ *   { success: false, error: "..." }  on any failure
+ *
+ * Note: This endpoint does not check session/token authentication.
+ *       The old-password verification step acts as the identity proof.
+ */
 header('Content-Type: application/json');
 require_once __DIR__ . '/db.php';
 
