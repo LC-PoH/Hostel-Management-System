@@ -1,4 +1,23 @@
 <?php
+/**
+ * login.php — Authentication Endpoint
+ *
+ * Accepts a JSON POST body: { username, password, role }
+ * Looks up the user in the `users` table matching both username AND role,
+ * then verifies the submitted password against the stored bcrypt hash
+ * using PHP's password_verify().
+ *
+ * On success returns:
+ *   { success: true, user: { id, role, name, username } }
+ *
+ * On failure returns:
+ *   { success: false, error: "..." }
+ *
+ * Security notes:
+ *   - Passwords are never stored or returned in plaintext.
+ *   - Role is checked server-side so a student cannot log in as admin.
+ *   - Uses PDO prepared statements to prevent SQL injection.
+ */
 header('Content-Type: application/json');
 require_once __DIR__ . '/db.php';
 
