@@ -10,6 +10,7 @@
 -- USE hostel_management;
 
 -- Drop old tables if they exist (order matters for FK constraints)
+DROP TABLE IF EXISTS outpasses;
 DROP TABLE IF EXISTS payments;
 DROP TABLE IF EXISTS bookings;
 DROP TABLE IF EXISTS requests;
@@ -63,15 +64,19 @@ CREATE TABLE IF NOT EXISTS bookings (
 );
 
 CREATE TABLE IF NOT EXISTS payments (
-    id         VARCHAR(30) PRIMARY KEY,
-    booking_id VARCHAR(30),
-    student_id VARCHAR(30) NOT NULL,
-    amount     DECIMAL(10,2) NOT NULL,
-    method     VARCHAR(50),
-    pay_date   DATE NOT NULL,
-    status     ENUM('paid','pending','overdue') DEFAULT 'pending',
-    pay_type   VARCHAR(50),
-    txn_id     VARCHAR(60)
+    id           VARCHAR(30) PRIMARY KEY,
+    booking_id   VARCHAR(30),
+    student_id   VARCHAR(30) NOT NULL,
+    student_name VARCHAR(100),
+    amount       DECIMAL(10,2) NOT NULL,
+    method       VARCHAR(50),
+    pay_date     DATE NOT NULL,
+    status       ENUM('paid','pending','overdue') DEFAULT 'pending',
+    pay_type     VARCHAR(50),
+    txn_id       VARCHAR(60),
+    reference_no VARCHAR(100),
+    collected_by VARCHAR(100),
+    collected_at DATETIME
 );
 
 CREATE TABLE IF NOT EXISTS requests (
@@ -81,7 +86,9 @@ CREATE TABLE IF NOT EXISTS requests (
     description TEXT,
     req_date    DATE NOT NULL,
     status      ENUM('pending','approved','rejected','resolved') DEFAULT 'pending',
-    response    TEXT
+    response    TEXT,
+    resolved_at DATETIME,
+    resolved_by VARCHAR(100)
 );
 
 CREATE TABLE IF NOT EXISTS visitors (
@@ -89,6 +96,8 @@ CREATE TABLE IF NOT EXISTS visitors (
     name       VARCHAR(100) NOT NULL,
     student_id VARCHAR(30) NOT NULL,
     phone      VARCHAR(20),
+    relation   VARCHAR(50),
+    id_proof   VARCHAR(100),
     check_in   VARCHAR(60),
     check_out  VARCHAR(60),
     status     ENUM('active','checked-out') DEFAULT 'active',
@@ -112,4 +121,20 @@ CREATE TABLE IF NOT EXISTS notices (
     type        ENUM('info','warning','success','danger') DEFAULT 'info',
     author      VARCHAR(100),
     created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS outpasses (
+    id               VARCHAR(30)  PRIMARY KEY,
+    student_id       VARCHAR(30)  NOT NULL,
+    student_name     VARCHAR(100),
+    student_sid      VARCHAR(20),
+    room_id          VARCHAR(30),
+    reason           VARCHAR(200),
+    destination      VARCHAR(200),
+    return_date_time DATETIME,
+    remarks          TEXT,
+    issued_at        DATETIME DEFAULT CURRENT_TIMESTAMP,
+    issued_by        VARCHAR(100),
+    status           ENUM('active','returned','overdue') DEFAULT 'active',
+    returned_at      DATETIME
 );
