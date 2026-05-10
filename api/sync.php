@@ -5,9 +5,10 @@ require_once __DIR__ . '/db.php';
 try {
     $pdo = getDB();
 
+    // ADDED: Include users.status (active/inactive) so the frontend can show and toggle student account status
     $users = $pdo->query(
         'SELECT id, username, role, name, email, phone,
-                student_id AS studentId, room_id AS roomId,
+                student_id AS studentId, room_id AS roomId, status,
                 blood_group AS bloodGroup, emergency_contact AS emergencyContact,
                 course, year_of_study AS year, father_name AS fatherName, address
          FROM users'
@@ -24,17 +25,22 @@ try {
     }
     unset($r);
 
+    // ADDED: Include student_name and student_sid in bookings so phpMyAdmin and the frontend
+    //        show readable names/STU-codes instead of raw internal IDs (u2, u4, etc.)
     $bookings = $pdo->query(
-        'SELECT id, student_id AS studentId, room_id AS roomId,
+        'SELECT id, student_id AS studentId, student_name AS studentName,
+                student_sid AS studentSid, room_id AS roomId,
                 check_in AS checkIn, check_out AS checkOut, amount, status
          FROM bookings'
     )->fetchAll();
     foreach ($bookings as &$b) { $b['amount'] = (float)$b['amount']; }
     unset($b);
 
+    // ADDED: Include student_sid in payments so the JS fallback p.studentSid shows STU001
+    //        instead of the internal user ID when a direct user lookup fails
     $payments = $pdo->query(
         'SELECT id, booking_id AS bookingId, student_id AS studentId,
-                student_name AS studentName,
+                student_name AS studentName, student_sid AS studentSid,
                 amount, method, pay_date AS date, status, pay_type AS type, txn_id AS txnId,
                 reference_no AS reference, collected_by AS collectedBy, collected_at AS collectedAt
          FROM payments'
