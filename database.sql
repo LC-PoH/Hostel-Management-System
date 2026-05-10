@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS users (
     phone             VARCHAR(20),
     student_id        VARCHAR(20),
     room_id           VARCHAR(30),
+    status            ENUM('active','inactive') DEFAULT 'active',
     blood_group       VARCHAR(5),
     emergency_contact VARCHAR(20),
     course            VARCHAR(100),
@@ -53,14 +54,16 @@ CREATE TABLE IF NOT EXISTS rooms (
 );
 
 CREATE TABLE IF NOT EXISTS bookings (
-    id         VARCHAR(30) PRIMARY KEY,
-    student_id VARCHAR(30) NOT NULL,
-    room_id    VARCHAR(30) NOT NULL,
-    check_in   DATE NOT NULL,
-    check_out  DATE,
-    amount     DECIMAL(10,2) NOT NULL,
-    status     ENUM('pending','active','rejected','completed') DEFAULT 'pending',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    id           VARCHAR(30) PRIMARY KEY,
+    student_id   VARCHAR(30) NOT NULL,
+    student_name VARCHAR(100),
+    student_sid  VARCHAR(20),
+    room_id      VARCHAR(30) NOT NULL,
+    check_in     DATE NOT NULL,
+    check_out    DATE,
+    amount       DECIMAL(10,2) NOT NULL,
+    status       ENUM('pending','active','rejected','completed') DEFAULT 'pending',
+    created_at   DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS payments (
@@ -68,6 +71,7 @@ CREATE TABLE IF NOT EXISTS payments (
     booking_id   VARCHAR(30),
     student_id   VARCHAR(30) NOT NULL,
     student_name VARCHAR(100),
+    student_sid  VARCHAR(20),
     amount       DECIMAL(10,2) NOT NULL,
     method       VARCHAR(50),
     pay_date     DATE NOT NULL,
