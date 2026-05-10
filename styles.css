@@ -1,3 +1,48 @@
+/* ============================================================
+   styles.css — Hostel Management System — Global Stylesheet
+   AVM Secondary School | ICT308 Capstone Project 2, CIHE 2026
+   ============================================================
+
+   STRUCTURE
+   1.  CSS Custom Properties (:root)
+       — Colour palette, spacing, shadows, sidebar width.
+       — Dark-mode overrides via [data-theme="dark"] on <body>.
+   2.  Reset & Base
+       — Box-sizing, body font, scroll behaviour.
+   3.  Animated Gradient Background
+       — Used on the login page (.animate-gradient).
+   4.  Login Page (.login-page, .login-left, .login-right, .login-card)
+       — Split-screen layout, role picker, demo credential cards.
+   5.  Dashboard Shell (.dashboard-layout, .sidebar, .main-content)
+       — Sidebar navigation, topbar, mobile overlay.
+   6.  Navigation (.nav-item, .nav-section)
+       — Sidebar links with active state and hover animations.
+   7.  Page Sections (.page, .page-header, .stats-grid)
+       — Per-dashboard page visibility and stat card grid.
+   8.  Cards & Surfaces (.card, .table-card)
+       — Shared card styles, table wrappers, action buttons.
+   9.  Data Tables (.data-table)
+       — Sortable, striped, responsive tables with status badges.
+   10. Modals (.modal-overlay, .modal)
+       — Centered overlay modals with backdrop click to close.
+   11. Forms (.form-group, .form-label, .form-input, .form-select)
+       — Consistent form field styling across all dashboards.
+   12. Buttons (.btn, .btn-primary, .btn-secondary, .btn-danger, etc.)
+       — Shared button styles with size and variant modifiers.
+   13. Status Badges (.badge-*)
+       — Colour-coded pill badges for statuses (paid/pending/active/etc.).
+   14. Notifications (.notifications-container, .notification)
+       — Floating toast messages (success/error/warning/info).
+   15. Charts (.chart-card, .chart-wrapper)
+       — Chart.js container styles for the admin analytics page.
+   16. Room Grid (.room-grid, .room-card)
+       — Visual room status grid on the receptionist dashboard.
+   17. Theme Toggle (.theme-toggle-btn)
+       — Sun/moon icon button for dark/light mode switching.
+   18. Responsive Breakpoints
+       — Mobile sidebar overlay, stacked layouts below 768 px.
+   ============================================================ */
+
 /* ==========================================
    HOSTEL MANAGEMENT SYSTEM - MODERN STYLES
    ========================================== */
