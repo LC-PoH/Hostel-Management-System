@@ -449,6 +449,11 @@ body[data-theme="light"] .nav-item svg,body[data-theme="light"] .nav-item:hover 
 .table-wrapper{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
 thead th{background:var(--bg);color:var(--text-2);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.6px;padding:10px 16px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+.sortable-th{cursor:pointer;user-select:none;transition:color .15s,background .15s}
+.sortable-th:hover{background:var(--surface-2);color:var(--primary)}
+.sortable-th.sort-active{color:var(--primary)}
+.sort-icon{font-style:normal;font-size:10px;opacity:.5;margin-left:3px;display:inline-block}
+.sortable-th.sort-active .sort-icon{opacity:1}
 tbody td{padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
 tbody tr:last-child td{border-bottom:none}
 tbody tr:hover{background:var(--surface-2)}
@@ -459,7 +464,9 @@ tbody tr:hover{background:var(--surface-2)}
 .avatar.red{background:linear-gradient(135deg,var(--danger),#dc2626)}
 .avatar.purple{background:linear-gradient(135deg,var(--secondary),#6d28d9)}
 .avatar.sm{width:28px;height:28px;font-size:11px}
-.td-sub{font-size:11px;color:var(--text-3);margin-top:1px}
+/* FIX: Added min-height:14px so the sub-text div reserves space even when its content is empty.
+   Without this, rows with a name-only cell (no email/studentId) were shorter than rows with two lines. */
+.td-sub{font-size:11px;color:var(--text-3);margin-top:1px;min-height:14px}
 
 /* ===== BADGES ===== */
 .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:var(--radius-full);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;white-space:nowrap}
