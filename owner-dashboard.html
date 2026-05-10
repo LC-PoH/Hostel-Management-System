@@ -16,7 +16,7 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-logo">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <img src="logo.png" alt="AVM Logo" onerror="this.style.display='none'">
       </div>
       <div><div class="sidebar-brand">AVM</div><div class="sidebar-brand-sub">Admin Panel</div></div>
     </div>
@@ -148,7 +148,7 @@
             <div class="card-body" style="padding:0">
               <div class="table-wrapper">
                 <table>
-                  <thead><tr><th>Student</th><th>Type</th><th>Status</th></tr></thead>
+                  <thead><tr><th>Student</th><th>Type</th><th>Status</th><th>Action</th></tr></thead>
                   <tbody id="quickRequestsBody"></tbody>
                 </table>
               </div>
@@ -230,12 +230,26 @@
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 <input type="text" placeholder="Search students…" oninput="filterStudentsTable(this.value)">
               </div>
+              <label class="filter-label" style="font-size:12px;color:var(--text-2);white-space:nowrap">Check-in:</label>
+              <div class="date-range-wrap">
+                <span class="dr-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></span>
+                <input type="date" id="stuDateFrom" onchange="applyStudentDateRange()">
+                <span class="date-range-sep">→</span>
+                <input type="date" id="stuDateTo" onchange="applyStudentDateRange()">
+                <button class="dr-clear" onclick="clearStudentDateRange()" title="Clear dates">×</button>
+              </div>
             </div>
           </div>
           <div class="card-body" style="padding:0">
             <div class="table-wrapper">
               <table id="studentsTable">
-                <thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Room</th><th>Course</th><th>Status</th><th>Actions</th></tr></thead>
+                <thead><tr>
+                  <th class="sortable-th" id="sth-id" onclick="sortStudents('id')">ID <span class="sort-icon">↑</span></th>
+                  <th class="sortable-th sort-active" id="sth-name" onclick="sortStudents('name')">Name <span class="sort-icon">↕</span></th>
+                  <th>Phone</th>
+                  <th class="sortable-th" id="sth-room" onclick="sortStudents('room')">Room <span class="sort-icon">↕</span></th>
+                  <th>Course</th><th>Status</th><th>Actions</th>
+                </tr></thead>
                 <tbody id="studentsBody"></tbody>
               </table>
             </div>
@@ -263,12 +277,26 @@
                 <option value="paid">Paid</option>
                 <option value="pending">Pending</option>
               </select>
+              <div class="date-range-wrap">
+                <span class="dr-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></span>
+                <input type="date" id="payDateFrom" onchange="applyPaymentDateRange()">
+                <span class="date-range-sep">→</span>
+                <input type="date" id="payDateTo" onchange="applyPaymentDateRange()">
+                <button class="dr-clear" onclick="clearPaymentDateRange()" title="Clear dates">×</button>
+              </div>
             </div>
           </div>
           <div class="card-body" style="padding:0">
             <div class="table-wrapper">
               <table id="paymentsAdminTable">
-                <thead><tr><th>Txn ID</th><th>Student</th><th>Student ID</th><th>Type</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th></tr></thead>
+                <thead><tr>
+                  <th>Txn ID</th>
+                  <th class="sortable-th" id="pth-name" onclick="sortPayments('name')">Student <span class="sort-icon">↕</span></th>
+                  <th class="sortable-th" id="pth-id" onclick="sortPayments('id')">Student ID <span class="sort-icon">↕</span></th>
+                  <th>Type</th><th>Amount</th><th>Method</th>
+                  <th class="sortable-th sort-active" id="pth-date" onclick="sortPayments('date')">Date <span class="sort-icon">↓</span></th>
+                  <th>Status</th>
+                </tr></thead>
                 <tbody id="paymentsAdminBody"></tbody>
               </table>
             </div>
@@ -385,12 +413,31 @@
           </div>
         </div>
         <div class="form-group-d"><label class="form-label-d">Amenities (comma-separated)</label><input class="input" id="editRoomAmenities"></div>
+        <div id="editRoomOccupants" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)"></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" onclick="closeModal('editRoomModal')">Cancel</button>
         <button type="submit" class="btn btn-primary">Save Changes</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Admin Respond to Request -->
+<div class="modal-overlay" id="adminRespondModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Respond to Request</div><button class="modal-close" onclick="closeModal('adminRespondModal')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <div class="modal-body">
+      <div id="adminRespondInfo" style="margin-bottom:14px;padding:12px;background:var(--surface-2);border-radius:8px;font-size:14px;line-height:1.5"></div>
+      <div class="form-group-d"><label class="form-label-d">Response / Note for Student</label><textarea class="input" id="adminRespondNote" rows="3" placeholder="Add a response note or action taken…"></textarea></div>
+      <input type="hidden" id="adminRespondId">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('adminRespondModal')">Cancel</button>
+      <button class="btn btn-danger" onclick="adminActOnRequest('rejected')">Reject</button>
+      <button class="btn btn-success" onclick="adminActOnRequest('approved')">Approve</button>
+      <button class="btn btn-primary" onclick="adminActOnRequest('resolved')">Mark Resolved</button>
+    </div>
   </div>
 </div>
 
@@ -461,6 +508,13 @@
         <div class="form-group-d"><label class="form-label-d">Assign Room</label>
           <select class="input room-dropdown" id="editStudentRoom"></select>
         </div>
+        <div style="border-top:1px solid var(--border);margin-top:4px;padding-top:16px">
+          <div style="font-size:12px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Change Password</div>
+          <div class="input-row">
+            <div class="form-group-d" style="margin-bottom:0"><label class="form-label-d">New Password</label><input class="input" type="password" id="editStudentNewPass" placeholder="Leave blank to keep current" minlength="6" autocomplete="new-password"></div>
+            <div class="form-group-d" style="margin-bottom:0"><label class="form-label-d">Confirm Password</label><input class="input" type="password" id="editStudentConfirmPass" placeholder="Repeat new password" autocomplete="new-password"></div>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" onclick="closeModal('editStudentModal')">Cancel</button>
@@ -511,11 +565,37 @@
   initAdminDashboard();
 
   function filterRooms() {
-    const filter = document.getElementById('roomStatusFilter').value;
-    document.querySelectorAll('.room-card').forEach(card => {
-      if (!filter) { card.style.display = ''; return; }
-      const badge = card.querySelector('.badge');
-      card.style.display = badge && badge.textContent.trim() === filter ? '' : 'none';
+    renderAdminRooms();
+  }
+
+  function sortStudents(col) {
+    const state = adminSortState.students;
+    state.dir = state.col === col ? (state.dir === 'asc' ? 'desc' : 'asc') : 'asc';
+    state.col = col;
+    renderAdminStudents();
+    updateSortIcons('students');
+  }
+
+  function sortPayments(col) {
+    const state = adminSortState.payments;
+    state.dir = state.col === col ? (state.dir === 'asc' ? 'desc' : 'asc') : (col === 'date' ? 'desc' : 'asc');
+    state.col = col;
+    renderAdminPayments();
+    updateSortIcons('payments');
+  }
+
+  function updateSortIcons(table) {
+    const state = adminSortState[table];
+    const map = table === 'students'
+      ? { id: 'sth-id', name: 'sth-name', room: 'sth-room' }
+      : { name: 'pth-name', id: 'pth-id', date: 'pth-date' };
+    Object.entries(map).forEach(([col, elId]) => {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      const icon = el.querySelector('.sort-icon');
+      const active = col === state.col;
+      el.classList.toggle('sort-active', active);
+      if (icon) icon.textContent = active ? (state.dir === 'asc' ? '↑' : '↓') : '↕';
     });
   }
 
@@ -537,6 +617,24 @@
       const badge = row.querySelector('.badge');
       row.style.display = badge && badge.textContent.trim() === status ? '' : 'none';
     });
+  }
+
+  function applyPaymentDateRange() { renderAdminPayments(); }
+  function clearPaymentDateRange() {
+    const f = document.getElementById('payDateFrom');
+    const t = document.getElementById('payDateTo');
+    if (f) f.value = '';
+    if (t) t.value = '';
+    renderAdminPayments();
+  }
+
+  function applyStudentDateRange() { renderAdminStudents(); }
+  function clearStudentDateRange() {
+    const f = document.getElementById('stuDateFrom');
+    const t = document.getElementById('stuDateTo');
+    if (f) f.value = '';
+    if (t) t.value = '';
+    renderAdminStudents();
   }
 
   function filterRequestsStatus(status) {
@@ -567,20 +665,23 @@
     if (!tbody) return;
     tbody.innerHTML = reqs.length ? reqs.map(r => {
       const s = HMS.findById('users', r.studentId);
-      return `<tr><td>${s?.name||'-'}</td><td><span class="badge badge-info">${r.type}</span></td><td><span class="badge badge-warning">pending</span></td></tr>`;
-    }).join('') : '<tr><td colspan="3" class="text-center text-muted" style="padding:16px">No pending requests</td></tr>';
+      return `<tr>
+        <td><div class="fw-600" style="font-size:13px">${s?.name||'-'}</div><div style="font-size:11px;color:var(--text-2)">${s?.studentId||''}</div></td>
+        <td><span class="badge badge-secondary" style="font-size:11px">${r.type||'General'}</span></td>
+        <td><span class="badge badge-warning">pending</span></td>
+        <td><button class="btn btn-sm btn-primary" onclick="openAdminRespond('${r.id}')">Respond</button></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="4" class="text-center text-muted" style="padding:16px">No pending requests</td></tr>';
     const badge = document.getElementById('pendingReqBadge');
-    if (badge) badge.textContent = reqs.length;
+    if (badge) { badge.textContent = reqs.length || ''; badge.style.display = reqs.length ? '' : 'none'; }
   }
 
-  // Sync analytics page stats
+  // Sync analytics page when navigated to
   document.querySelector('[data-page="analytics"]').addEventListener('click', () => {
-    setTimeout(() => {
-      document.getElementById('statMonthRevenue2').textContent = document.getElementById('statMonthRevenue').textContent;
-      document.getElementById('statOccupied2').textContent = document.getElementById('statOccupied').textContent;
-      document.getElementById('statStudents2').textContent = document.getElementById('statStudents').textContent;
-      initCharts();
-    }, 50);
+    setTimeout(() => { renderAdminStats(); initCharts(); }, 50);
+  });
+  document.querySelector('[data-page="requests-admin"]').addEventListener('click', () => {
+    setTimeout(() => { renderAdminRequests(); populateQuickRequests(); }, 50);
   });
 
   populateRoomDropdowns();
