@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', initTheme);
 
 // ===== DATA STORE =====
 const HMS = {
-  KEYS: { users:'hms_users', rooms:'hms_rooms', bookings:'hms_bookings', payments:'hms_payments', requests:'hms_requests', visitors:'hms_visitors', attendance:'hms_attendance', notices:'hms_notices' },
+  KEYS: { users:'hms_users', rooms:'hms_rooms', bookings:'hms_bookings', payments:'hms_payments', requests:'hms_requests', visitors:'hms_visitors', attendance:'hms_attendance', notices:'hms_notices', outpasses:'hms_outpasses' },
 
   defaults: {
     users: [
@@ -501,7 +501,7 @@ function renderStudentBookings(student) {
 }
 
 function renderStudentPayments(student) {
-  const payments = HMS.where('payments', p => p.studentId === student.id);
+  let payments = HMS.where('payments', p => p.studentId === student.id);
   const pending = payments.filter(p => p.status === 'pending');
   const pendingAmt = pending.reduce((s,p) => s + p.amount, 0);
 
@@ -509,21 +509,45 @@ function renderStudentPayments(student) {
   set('paymentHeroLabel', pendingAmt > 0 ? 'Amount Due' : 'No Pending Dues');
   set('paymentDueDate', pendingAmt > 0 ? 'Due by 10th of this month' : 'All payments up to date');
 
+  // Apply date range filter
+  const fromEl = document.getElementById('stuPayDateFrom');
+  const toEl = document.getElementById('stuPayDateTo');
+  const from = fromEl ? fromEl.value : '';
+  const to = toEl ? toEl.value : '';
+  let filtered = [...payments];
+  if (from) filtered = filtered.filter(p => p.date && p.date >= from);
+  if (to)   filtered = filtered.filter(p => p.date && p.date <= to);
+  // Apply sort
+  const { col: sc, dir: sd } = stuSortState.payments;
+  filtered.sort((a, b) => {
+    if (sc === 'amount') return sd === 'asc' ? (a.amount||0) - (b.amount||0) : (b.amount||0) - (a.amount||0);
+    if (sc === 'status') return sd === 'asc' ? (a.status||'').localeCompare(b.status||'') : (b.status||'').localeCompare(a.status||'');
+    // default: date
+    return sd === 'asc' ? (a.date||'').localeCompare(b.date||'') : (b.date||'').localeCompare(a.date||'');
+  });
+
   const tbody = document.getElementById('paymentHistoryBody');
   if (!tbody) return;
-  tbody.innerHTML = payments.length ? [...payments].reverse().map(p =>
+  tbody.innerHTML = filtered.length ? filtered.map(p =>
     `<tr><td>${p.txnId || '-'}</td><td>${p.type}</td><td>${fmtCurrency(p.amount)}</td>
      <td>${p.method || '-'}</td><td>${fmtDate(p.date)}</td>
      <td><span class="badge ${p.status==='paid'?'badge-success':'badge-warning'}">${p.status}</span></td>
      <td>${p.status==='paid'?`<button class="btn btn-sm btn-secondary" onclick="printReceipt('${p.id}')">Receipt</button>`:'—'}</td></tr>`
-  ).join('') : '<tr><td colspan="7" class="text-center text-muted" style="padding:24px">No payment records</td></tr>';
+  ).join('') : '<tr><td colspan="7" class="text-center text-muted" style="padding:24px">No payment records found</td></tr>';
 }
 
 function renderStudentRequests(student) {
   const reqs = HMS.where('requests', r => r.studentId === student.id);
   const tbody = document.getElementById('requestsBody');
   if (!tbody) return;
-  tbody.innerHTML = reqs.length ? [...reqs].reverse().map(r =>
+  // Apply sort
+  const { col: rc, dir: rd } = stuSortState.requests;
+  const sorted = [...reqs].sort((a, b) => {
+    if (rc === 'status') return rd === 'asc' ? (a.status||'').localeCompare(b.status||'') : (b.status||'').localeCompare(a.status||'');
+    // default: date
+    return rd === 'asc' ? (a.date||'').localeCompare(b.date||'') : (b.date||'').localeCompare(a.date||'');
+  });
+  tbody.innerHTML = sorted.length ? sorted.map(r =>
     `<tr><td>${r.id}</td><td><span class="badge badge-info">${r.type}</span></td>
      <td>${r.description}</td><td>${fmtDate(r.date)}</td>
      <td><span class="badge ${r.status==='resolved'||r.status==='approved'?'badge-success':r.status==='rejected'?'badge-danger':'badge-warning'}">${r.status}</span></td>
@@ -662,13 +686,50 @@ function renderNotices() {
   containers.forEach(c => c.innerHTML = html);
 }
 
+// ===== ADMIN SORT STATE =====
+const adminSortState = {
+  students: { col: 'id', dir: 'asc' },
+  payments: { col: 'date', dir: 'desc' }
+};
+// ===== RECEPTIONIST SORT STATE =====
+const recSortState = {
+  students:   { col: 'name',  dir: 'asc'  },
+  visitors:   { col: 'date',  dir: 'desc' },
+  attendance: { col: 'name',  dir: 'asc'  },
+  payments:   { col: 'date',  dir: 'desc' }
+};
+// ===== STUDENT SORT STATE =====
+const stuSortState = {
+  payments: { col: 'date', dir: 'desc' },
+  requests: { col: 'date', dir: 'desc' }
+};
+
 // ===== ADMIN DASHBOARD =====
+function reconcileRooms() {
+  // Recalculate room occupancy from actual student assignments (fixes stale/wrong counts)
+  const rooms = HMS.get('rooms');
+  rooms.forEach(room => {
+    const occupants = HMS.where('users', u => u.role === 'student' && u.roomId === room.id);
+    const actual = occupants.length;
+    let newStatus = room.status;
+    if (room.status !== 'maintenance') {
+      if (actual === 0) newStatus = 'available';
+      else if (actual >= room.beds) newStatus = 'occupied';
+      else newStatus = 'partial';
+    }
+    if (room.occupied !== actual || room.status !== newStatus) {
+      HMS.update('rooms', room.id, { occupied: actual, status: newStatus });
+    }
+  });
+}
+
 async function initAdminDashboard() {
   const session = requireAuth('admin');
   if (!session) return;
   initTopbar(session);
   showPage('dashboard');
   await HMS.syncFromDB();
+  reconcileRooms();
   renderAdminStats(); renderAdminRooms(); renderAdminStudents();
   renderAdminRequests(); renderAdminPayments(); renderAdminActivity();
   renderNoticesAdmin(); populateRoomDropdowns();
@@ -680,7 +741,8 @@ function renderAdminStats() {
   const students = HMS.where('users', u => u.role === 'student');
   const payments = HMS.get('payments');
   const requests = HMS.where('requests', r => r.status === 'pending');
-  const monthlyRev = payments.filter(p => p.status==='paid' && p.date?.startsWith('2025-04')).reduce((s,p) => s+p.amount, 0);
+  const curMonth = new Date().toISOString().slice(0, 7); // e.g. "2026-05"
+  const monthlyRev = payments.filter(p => p.status==='paid' && p.date?.startsWith(curMonth)).reduce((s,p) => s+p.amount, 0);
   const occupied = rooms.filter(r => r.status === 'occupied' || r.status === 'partial').length;
 
   set('statTotalRooms', rooms.length);
@@ -690,16 +752,29 @@ function renderAdminStats() {
   set('statPendingReqs', requests.length);
   const pendingPayAmt = payments.filter(p=>p.status==='pending').reduce((s,p)=>s+p.amount,0);
   set('statPendingPay', fmtCurrency(pendingPayAmt));
+
+  // Update sidebar badge
+  const badge = document.getElementById('pendingReqBadge');
+  if (badge) { badge.textContent = requests.length || ''; badge.style.display = requests.length ? '' : 'none'; }
+  // Also sync analytics page stats
+  set('statMonthRevenue2', fmtCurrency(monthlyRev));
+  set('statOccupied2', `${occupied}/${rooms.length}`);
+  set('statStudents2', students.length);
 }
 
 function renderAdminRooms() {
-  const rooms = HMS.get('rooms');
+  const statusFilter = document.getElementById('roomStatusFilter')?.value || '';
+  let rooms = HMS.get('rooms');
+  if (statusFilter) rooms = rooms.filter(r => r.status === statusFilter);
   const container = document.getElementById('roomsContainer');
   if (!container) return;
   container.innerHTML = rooms.map(r => {
-    const pct = Math.round((r.occupied / r.beds) * 100);
+    const occupants = HMS.where('users', u => u.role === 'student' && u.roomId === r.id);
+    const actualOccupied = occupants.length;
+    const pct = r.beds > 0 ? Math.round((actualOccupied / r.beds) * 100) : 0;
     const color = pct === 100 ? 'red' : pct > 50 ? 'orange' : 'green';
     const statusBadge = { occupied:'badge-danger', partial:'badge-warning', available:'badge-success', maintenance:'badge-secondary' }[r.status] || 'badge-secondary';
+    const amenities = (r.amenities||[]).map(a => `<span class="amenity-tag">${a}</span>`).join('');
     return `<div class="room-card">
       <div class="room-card-header">
         <div class="room-card-top">
@@ -709,14 +784,14 @@ function renderAdminRooms() {
       </div>
       <div class="room-card-body">
         <div class="room-info-row"><span>Beds</span><strong>${r.beds}</strong></div>
-        <div class="room-info-row"><span>Occupied</span><strong>${r.occupied}/${r.beds}</strong></div>
+        <div class="room-info-row"><span>Occupied</span><strong>${actualOccupied}/${r.beds}</strong></div>
         <div class="room-info-row"><span>Bathroom</span><strong>${r.bathrooms}</strong></div>
         <div class="room-info-row"><span>Status</span><span class="badge ${statusBadge}">${r.status}</span></div>
         <div class="room-occupancy">
           <div class="occupancy-text"><span>Occupancy</span><span>${pct}%</span></div>
           <div class="progress-bar"><div class="progress-fill ${color}" style="width:${pct}%"></div></div>
         </div>
-        <div class="room-amenities">${r.amenities.map(a => `<span class="amenity-tag">${a}</span>`).join('')}</div>
+        ${amenities ? `<div class="room-amenities">${amenities}</div>` : ''}
       </div>
       <div class="room-card-footer">
         <button class="btn btn-sm btn-outline" onclick="openEditRoom('${r.id}')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>Edit</button>
@@ -727,7 +802,33 @@ function renderAdminRooms() {
 }
 
 function renderAdminStudents() {
-  const students = HMS.where('users', u => u.role === 'student');
+  let students = HMS.where('users', u => u.role === 'student');
+  // Apply check-in date range filter if set
+  const fromEl = document.getElementById('stuDateFrom');
+  const toEl = document.getElementById('stuDateTo');
+  const from = fromEl ? fromEl.value : '';
+  const to = toEl ? toEl.value : '';
+  if (from || to) {
+    students = students.filter(s => {
+      const booking = HMS.where('bookings', b => b.studentId === s.id && b.status === 'active')[0];
+      const checkIn = booking ? booking.checkIn : '';
+      if (!checkIn) return false;
+      if (from && checkIn < from) return false;
+      if (to && checkIn > to) return false;
+      return true;
+    });
+  }
+  const { col, dir } = adminSortState.students;
+  students = [...students].sort((a, b) => {
+    let va = '', vb = '';
+    if (col === 'id') { va = a.studentId || ''; vb = b.studentId || ''; }
+    else if (col === 'name') { va = a.name || ''; vb = b.name || ''; }
+    else if (col === 'room') {
+      va = a.roomId ? (HMS.findById('rooms', a.roomId)?.number || '') : '';
+      vb = b.roomId ? (HMS.findById('rooms', b.roomId)?.number || '') : '';
+    }
+    return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+  });
   const tbody = document.getElementById('studentsBody');
   if (!tbody) return;
   tbody.innerHTML = students.length ? students.map(s => {
@@ -753,28 +854,80 @@ function renderAdminRequests() {
   const requests = HMS.get('requests');
   const tbody = document.getElementById('requestsAdminBody');
   if (!tbody) return;
+  const pendingCount = requests.filter(r => r.status === 'pending').length;
+  const badge = document.getElementById('adminReqBadge');
+  if (badge) { badge.textContent = pendingCount || ''; badge.style.display = pendingCount ? '' : 'none'; }
   tbody.innerHTML = requests.length ? [...requests].reverse().map(r => {
     const student = HMS.findById('users', r.studentId);
+    const cls = r.status==='resolved'||r.status==='approved' ? 'badge-success' : r.status==='rejected' ? 'badge-danger' : 'badge-warning';
+    const canRespond = r.status === 'pending' || r.status === 'approved';
     return `<tr>
-      <td>${r.id}</td>
-      <td>${student?.name || 'Unknown'}</td>
-      <td><span class="badge badge-info">${r.type}</span></td>
-      <td>${r.description}</td>
-      <td>${fmtDate(r.date)}</td>
-      <td><span class="badge ${r.status==='resolved'||r.status==='approved'?'badge-success':r.status==='rejected'?'badge-danger':'badge-warning'}">${r.status}</span></td>
-      <td class="btn-group">
-        ${r.status==='pending'?`<button class="btn btn-sm btn-success" onclick="respondRequest('${r.id}','approved')">Approve</button>
-        <button class="btn btn-sm btn-danger" onclick="respondRequest('${r.id}','rejected')">Reject</button>
-        <button class="btn btn-sm btn-secondary" onclick="resolveRequest('${r.id}')">Resolve</button>`:'<span class="text-muted text-sm">Actioned</span>'}
+      <td style="font-size:11px;color:var(--text-2)">#${r.id?.slice(-6)||'-'}</td>
+      <td><div class="fw-600">${student?.name||'Unknown'}</div><div style="font-size:11px;color:var(--text-2)">${student?.studentId||''}</div></td>
+      <td><span class="badge badge-secondary" style="font-size:11px">${r.type||'General'}</span></td>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px" title="${r.description||''}">${r.description||'-'}</td>
+      <td style="font-size:12px">${r.date ? new Date(r.date).toLocaleDateString('en-IN') : '-'}</td>
+      <td><span class="badge ${cls}">${r.status||'pending'}</span></td>
+      <td>${canRespond
+        ? `<button class="btn btn-sm btn-primary" onclick="openAdminRespond('${r.id}')">Respond</button>`
+        : `<span style="font-size:12px;color:var(--text-2)">${r.response||'—'}</span>`}
       </td></tr>`;
-  }).join('') : '<tr><td colspan="7" class="text-center text-muted" style="padding:24px">No requests</td></tr>';
+  }).join('') : '<tr><td colspan="7" class="text-center text-muted" style="padding:24px">No requests found</td></tr>';
+}
+
+function openAdminRespond(id) {
+  const req = HMS.findById('requests', id);
+  if (!req) return;
+  const s = HMS.findById('users', req.studentId);
+  setInput('adminRespondId', id);
+  const info = document.getElementById('adminRespondInfo');
+  if (info) info.innerHTML = `<strong>${s?.name||'Unknown'}</strong> — <em>${req.type||'General'}</em><br><span style="color:var(--text-2);margin-top:4px;display:block">${req.description||''}</span>`;
+  const note = document.getElementById('adminRespondNote');
+  if (note) note.value = req.response || '';
+  openModal('adminRespondModal');
+}
+
+function adminActOnRequest(newStatus) {
+  const id = document.getElementById('adminRespondId')?.value;
+  const note = document.getElementById('adminRespondNote')?.value.trim() || '';
+  if (!id) return;
+  HMS.update('requests', id, {
+    status: newStatus,
+    response: note || (newStatus==='approved'?'Request approved.':newStatus==='rejected'?'Request rejected.':'Issue resolved.'),
+    resolvedAt: new Date().toISOString(),
+    resolvedBy: HMS.getSession()?.name || 'Admin'
+  });
+  closeModal('adminRespondModal');
+  notify('Request ' + newStatus + ' successfully', newStatus==='rejected'?'warning':'success');
+  renderAdminRequests(); renderAdminStats();
+  if (typeof populateQuickRequests === 'function') populateQuickRequests();
 }
 
 function renderAdminPayments() {
-  const payments = HMS.get('payments');
+  let payments = HMS.get('payments');
+  const { col, dir } = adminSortState.payments;
+  // Apply date range filter if set
+  const fromEl = document.getElementById('payDateFrom');
+  const toEl = document.getElementById('payDateTo');
+  const from = fromEl ? fromEl.value : '';
+  const to = toEl ? toEl.value : '';
+  if (from) payments = payments.filter(p => p.date && p.date >= from);
+  if (to)   payments = payments.filter(p => p.date && p.date <= to);
+  payments = [...payments].sort((a, b) => {
+    let va = '', vb = '';
+    if (col === 'date') { va = a.date || ''; vb = b.date || ''; }
+    else if (col === 'name') {
+      va = HMS.findById('users', a.studentId)?.name || '';
+      vb = HMS.findById('users', b.studentId)?.name || '';
+    } else if (col === 'id') {
+      va = HMS.findById('users', a.studentId)?.studentId || '';
+      vb = HMS.findById('users', b.studentId)?.studentId || '';
+    }
+    return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+  });
   const tbody = document.getElementById('paymentsAdminBody');
   if (!tbody) return;
-  tbody.innerHTML = payments.length ? [...payments].reverse().map(p => {
+  tbody.innerHTML = payments.length ? payments.map(p => {
     const student = HMS.findById('users', p.studentId);
     return `<tr>
       <td>${p.txnId || '-'}</td>
@@ -846,6 +999,29 @@ function openEditRoom(id) {
   setInput('editRoomBeds', r.beds); setInput('editRoomBath', r.bathrooms);
   setInput('editRoomRent', r.rent); setInput('editRoomStatus', r.status);
   setInput('editRoomAmenities', r.amenities.join(', '));
+  // Populate current occupants
+  const occupants = HMS.where('users', u => u.role === 'student' && u.roomId === id);
+  const container = document.getElementById('editRoomOccupants');
+  if (container) {
+    if (occupants.length) {
+      container.innerHTML = `<div class="form-label-d" style="margin-bottom:8px">Current Occupants (${occupants.length}/${r.beds})</div>` +
+        occupants.map(s => {
+          const cl = avatarColor(s.name);
+          const booking = HMS.where('bookings', b => b.studentId === s.id && b.status === 'active')[0];
+          return `<div class="occupant-row">
+            <div class="td-name">
+              <div class="avatar ${cl} sm">${avatarLetter(s.name)}</div>
+              <div>
+                <div class="fw-600">${s.name} <span class="text-muted text-sm">(${s.studentId||'-'})</span></div>
+                <div class="td-sub">Check-in: ${booking ? fmtDate(booking.checkIn) : '-'}</div>
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+    } else {
+      container.innerHTML = '<div class="text-muted text-sm" style="padding:8px 0">No students currently assigned to this room.</div>';
+    }
+  }
   openModal('editRoomModal');
 }
 
@@ -936,6 +1112,8 @@ function editStudent(id) {
   setInput('editStudentEmail', s.email); setInput('editStudentPhone', s.phone);
   setInput('editStudentCourse', s.course); setInput('editStudentYear', s.year);
   setInput('editStudentBlood', s.bloodGroup);
+  // Clear password fields
+  setInput('editStudentNewPass', ''); setInput('editStudentConfirmPass', '');
   const roomSel = document.getElementById('editStudentRoom');
   if (roomSel) {
     populateRoomDropdown(roomSel);
@@ -947,7 +1125,7 @@ function editStudent(id) {
 function saveStudent(e) {
   e.preventDefault();
   const id = document.getElementById('editStudentId').value;
-  HMS.update('users', id, {
+  const updates = {
     name: document.getElementById('editStudentName').value,
     email: document.getElementById('editStudentEmail').value,
     phone: document.getElementById('editStudentPhone').value,
@@ -955,8 +1133,20 @@ function saveStudent(e) {
     year: document.getElementById('editStudentYear').value,
     bloodGroup: document.getElementById('editStudentBlood').value,
     roomId: document.getElementById('editStudentRoom').value,
-  });
-  notify('Student updated successfully', 'success');
+  };
+  // Handle optional password change
+  const newPass = (document.getElementById('editStudentNewPass')?.value || '').trim();
+  const confirmPass = (document.getElementById('editStudentConfirmPass')?.value || '').trim();
+  if (newPass) {
+    if (newPass.length < 6) { notify('Password must be at least 6 characters', 'error'); return; }
+    if (newPass !== confirmPass) { notify('Passwords do not match', 'error'); return; }
+    updates.password = newPass;
+  }
+  HMS.update('users', id, updates);
+  // Clear password fields
+  if (document.getElementById('editStudentNewPass')) document.getElementById('editStudentNewPass').value = '';
+  if (document.getElementById('editStudentConfirmPass')) document.getElementById('editStudentConfirmPass').value = '';
+  notify('Student updated successfully' + (newPass ? ' (password changed)' : ''), 'success');
   closeModal('editStudentModal');
   renderAdminStudents();
 }
@@ -973,18 +1163,12 @@ function deleteStudent(id) {
   renderAdminStudents(); renderAdminStats(); renderAdminRooms();
 }
 
+// respondRequest / resolveRequest kept for backward compatibility if called elsewhere
 function respondRequest(id, status) {
-  const response = prompt(`Enter response for ${status} (optional):`);
-  HMS.update('requests', id, { status, response: response || (status==='approved'?'Request approved.':'Request rejected.') });
-  notify(`Request ${status}`, status==='approved'?'success':'warning');
-  renderAdminRequests();
+  openAdminRespond(id);
 }
-
 function resolveRequest(id) {
-  const response = prompt('Enter resolution note:') || 'Issue resolved.';
-  HMS.update('requests', id, { status:'resolved', response });
-  notify('Request marked as resolved', 'success');
-  renderAdminRequests();
+  openAdminRespond(id);
 }
 
 function postNotice(e) {
@@ -1015,9 +1199,14 @@ function populateRoomDropdowns() {
 
 function populateRoomDropdown(sel, rooms) {
   if (!rooms) rooms = HMS.get('rooms');
-  sel.innerHTML = '<option value="">Select Room</option>' + rooms.map(r =>
-    `<option value="${r.id}">${r.number} (${r.type}) – ${r.beds - r.occupied} beds free – ${fmtCurrency(r.rent)}/mo</option>`
-  ).join('');
+  sel.innerHTML = '<option value="">Select Room</option>' + rooms.map(r => {
+    const free = r.beds - r.occupied;
+    const full = free <= 0 || r.status === 'occupied';
+    const label = full
+      ? `${r.number} (${r.type}) – FULL – ${fmtCurrency(r.rent)}/mo`
+      : `${r.number} (${r.type}) – ${free} bed${free > 1 ? 's' : ''} free – ${fmtCurrency(r.rent)}/mo`;
+    return `<option value="${r.id}" ${full ? 'disabled style="color:var(--text-muted,#aaa)"' : ''}>${label}</option>`;
+  }).join('');
 }
 
 // ===== CHARTS =====
@@ -1085,8 +1274,16 @@ async function initReceptionistDashboard() {
   initTopbar(session);
   showPage('dashboard');
   await HMS.syncFromDB();
+  reconcileRooms();
   renderReceptionistStats(); renderStudentsList(); renderRoomsList();
   renderVisitorsList(); renderAttendanceLog(); populateStudentDropdowns();
+  // Render dashboard widgets defined in inline script (available after DOMContentLoaded)
+  setTimeout(() => {
+    if (typeof renderOutpassList === 'function') renderOutpassList();
+    if (typeof renderRecRequests === 'function') renderRecRequests();
+    if (typeof renderRecPayments === 'function') renderRecPayments();
+    if (typeof renderRecNotices === 'function') renderRecNotices();
+  }, 0);
 }
 
 function renderReceptionistStats() {
@@ -1094,94 +1291,237 @@ function renderReceptionistStats() {
   const attendance = HMS.where('attendance', a => a.date === today());
   const present = attendance.filter(a => a.status === 'present').length;
   const visitors = HMS.where('visitors', v => v.status === 'active');
+  const pendingReqs = HMS.where('requests', r => r.status === 'pending').length;
+  const activeOutpasses = (HMS.get('outpasses') || []).filter(op => op.status === 'active').length;
 
   set('recStatStudents', students.length);
   set('recStatPresent', present);
   set('recStatOut', students.length - present);
   set('recStatVisitors', visitors.length);
+  set('recStatPendingReqs', pendingReqs);
+  set('recStatOutpass', activeOutpasses);
+
+  // Dashboard today's attendance widget
+  const tbody = document.getElementById('attendanceBody');
+  if (tbody) {
+    const records = [...attendance].sort((a,b) => (b.checkIn||'').localeCompare(a.checkIn||''));
+    tbody.innerHTML = records.length ? records.slice(0,8).map(a => {
+      const s = HMS.findById('users', a.studentId);
+      const room = s?.roomId ? HMS.findById('rooms', s.roomId) : null;
+      const statusCls = a.status==='present'?'badge-success':a.status==='out-pass'?'badge-warning':a.status==='out'?'badge-secondary':'badge-secondary';
+      return `<tr>
+        <td><div class="td-name"><div class="avatar sm" style="background:${avatarColor(s?.name||'?')}">${avatarLetter(s?.name||'?')}</div><div><div class="fw-600" style="font-size:13px">${s?.name||'Unknown'}</div><div class="td-sub">${s?.studentId||''}</div></div></div></td>
+        <td style="font-size:13px">${room?.number||'—'}</td>
+        <td style="font-size:12px">${a.checkIn||'—'}</td>
+        <td style="font-size:12px;color:${a.checkOut?'var(--danger)':'var(--text-3)'}">${a.checkOut||'—'}</td>
+        <td><span class="badge ${statusCls}">${a.status}</span></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="5" class="text-center text-muted" style="padding:16px">No attendance records today</td></tr>';
+  }
 }
 
 function renderStudentsList() {
-  const students = HMS.where('users', u => u.role === 'student');
+  let students = HMS.where('users', u => u.role === 'student');
+  // Apply sort
+  const { col, dir } = recSortState.students;
+  students = [...students].sort((a, b) => {
+    let va = '', vb = '';
+    if (col === 'id') { va = a.studentId || ''; vb = b.studentId || ''; }
+    else if (col === 'room') {
+      va = a.roomId ? (HMS.findById('rooms', a.roomId)?.number || '') : '';
+      vb = b.roomId ? (HMS.findById('rooms', b.roomId)?.number || '') : '';
+    } else { va = a.name || ''; vb = b.name || ''; }
+    return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+  });
   const tbody = document.getElementById('studentsListBody');
   if (!tbody) return;
   tbody.innerHTML = students.map(s => {
     const room = s.roomId ? HMS.findById('rooms', s.roomId) : null;
     const att = HMS.where('attendance', a => a.studentId === s.id && a.date === today())[0];
     const present = att?.status === 'present';
+    const pendingPay = HMS.where('payments', p => p.studentId === s.id && p.status === 'pending').length;
+    const attStatus = att?.status || 'absent';
+    const attCls = present ? 'badge-success' : attStatus === 'out-pass' ? 'badge-warning' : 'badge-secondary';
     return `<tr>
-      <td>${s.studentId||'-'}</td>
-      <td><div class="td-name"><div class="avatar sm ${avatarColor(s.name)}">${avatarLetter(s.name)}</div><div><div class="fw-600">${s.name}</div><div class="td-sub">${s.course||''}</div></div></div></td>
-      <td>${s.phone||'-'}</td>
+      <td style="font-size:11px;color:var(--text-2)">${s.studentId||s.id||'-'}</td>
+      <td><div class="td-name"><div class="avatar sm" style="background:${avatarColor(s.name)}">${avatarLetter(s.name)}</div><div class="fw-600">${s.name}</div></div></td>
       <td>${room?room.number:'—'}</td>
-      <td>${att?.checkIn||'—'}</td>
-      <td><span class="badge ${present?'badge-success':att?.status==='out-pass'?'badge-warning':'badge-secondary'}">${present?'Present':att?.status||'Absent'}</span></td>
+      <td>${s.phone||'-'}</td>
+      <td style="font-size:12px;color:var(--text-2)">${s.course||'-'}</td>
+      <td>${pendingPay > 0 ? `<span class="badge badge-danger">${pendingPay} pending</span>` : '<span class="badge badge-success">Clear</span>'}</td>
+      <td><span class="badge ${attCls}">${present?'Present':attStatus}</span></td>
       <td class="btn-group">
-        ${!present?`<button class="btn btn-sm btn-success" onclick="quickCheckIn('${s.id}')">Check In</button>`:`<button class="btn btn-sm btn-secondary" onclick="markOut('${s.id}')">Mark Out</button>`}
+        <button class="btn btn-sm btn-primary" onclick="viewRecStudent('${s.id}')">View</button>
+        ${!present?`<button class="btn btn-sm btn-success" onclick="quickCheckIn('${s.id}')">In</button>`:`<button class="btn btn-sm btn-secondary" onclick="markOut('${s.id}')">Out</button>`}
       </td></tr>`;
   }).join('');
 }
 
 function renderRoomsList() {
-  const rooms = HMS.get('rooms');
+  const statusFilter = document.getElementById('recRoomStatusFilter')?.value || '';
+  let rooms = HMS.get('rooms');
+  if (statusFilter) rooms = rooms.filter(r => r.status === statusFilter);
   const container = document.getElementById('recRoomsContainer');
   if (!container) return;
+  if (!rooms.length) {
+    container.innerHTML = '<div class="text-center text-muted" style="padding:40px;grid-column:1/-1">No rooms found</div>';
+    return;
+  }
   container.innerHTML = rooms.map(r => {
-    const pct = Math.round((r.occupied/r.beds)*100);
-    const cl = pct===100?'red':pct>50?'orange':'green';
+    // Calculate actual occupancy from students
+    const occupants = HMS.where('users', u => u.role === 'student' && u.roomId === r.id);
+    const actualOccupied = occupants.length;
+    const pct = r.beds > 0 ? Math.round((actualOccupied / r.beds) * 100) : 0;
+    const color = pct === 100 ? 'red' : pct > 50 ? 'orange' : 'green';
     const statusBadge = {occupied:'badge-danger',partial:'badge-warning',available:'badge-success',maintenance:'badge-secondary'}[r.status]||'badge-secondary';
+    const amenities = (r.amenities||[]).map(a => `<span class="amenity-tag">${a}</span>`).join('');
     return `<div class="room-card">
       <div class="room-card-header">
         <div class="room-card-top">
           <div><div class="room-card-number">${r.number}</div><div class="room-card-type">${r.type} · ${r.floor}</div></div>
-          <span class="badge ${statusBadge}">${r.status}</span>
+          <div class="text-right"><div class="room-card-rent">${fmtCurrency(r.rent||0)}</div><div class="room-card-rent-label">/month</div></div>
         </div>
       </div>
       <div class="room-card-body">
-        <div class="room-info-row"><span>Total Beds</span><strong>${r.beds}</strong></div>
-        <div class="room-info-row"><span>Occupied</span><strong>${r.occupied}</strong></div>
-        <div class="room-info-row"><span>Available</span><strong>${r.beds-r.occupied}</strong></div>
+        <div class="room-info-row"><span>Beds</span><strong>${r.beds}</strong></div>
+        <div class="room-info-row"><span>Occupied</span><strong>${actualOccupied}/${r.beds}</strong></div>
+        <div class="room-info-row"><span>Bathroom</span><strong>${r.bathrooms||'—'}</strong></div>
+        <div class="room-info-row"><span>Status</span><span class="badge ${statusBadge}">${r.status}</span></div>
         <div class="room-occupancy">
           <div class="occupancy-text"><span>Occupancy</span><span>${pct}%</span></div>
-          <div class="progress-bar"><div class="progress-fill ${cl}" style="width:${pct}%"></div></div>
+          <div class="progress-bar"><div class="progress-fill ${color}" style="width:${pct}%"></div></div>
         </div>
+        ${amenities ? `<div class="room-amenities">${amenities}</div>` : ''}
+      </div>
+      <div class="room-card-footer">
+        <button class="btn btn-sm btn-outline" onclick="openEditRoomRec('${r.id}')">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>Edit Status
+        </button>
       </div>
     </div>`;
   }).join('');
 }
 
+function filterRecRooms() {
+  renderRoomsList();
+}
+
+function openEditRoomRec(id) {
+  const r = HMS.findById('rooms', id);
+  if (!r) return;
+  setInput('editRoomId', r.id);
+  setInput('editRoomNumber', r.number);
+  setInput('editRoomFloor', r.floor);
+  setInput('editRoomType', r.type);
+  setInput('editRoomBeds', r.beds);
+  setInput('editRoomRent', r.rent);
+  setInput('editRoomStatus', r.status);
+  // Show current occupants
+  const occupants = HMS.where('users', u => u.role === 'student' && u.roomId === id);
+  const container = document.getElementById('editRoomOccupants');
+  if (container) {
+    container.innerHTML = occupants.length
+      ? `<div class="form-label-d" style="margin-bottom:8px">Current Occupants (${occupants.length}/${r.beds})</div>` +
+        occupants.map(s => {
+          const booking = HMS.where('bookings', b => b.studentId === s.id && b.status === 'active')[0];
+          return `<div class="occupant-row"><div class="td-name"><div class="avatar sm" style="background:${avatarColor(s.name)}">${avatarLetter(s.name)}</div><div><div class="fw-600">${s.name} <span class="text-muted text-sm">(${s.studentId||'-'})</span></div><div class="td-sub">Since: ${booking ? fmtDate(booking.checkIn) : '-'}</div></div></div></div>`;
+        }).join('')
+      : '<div class="text-muted text-sm" style="padding:8px 0">No students assigned to this room.</div>';
+  }
+  openModal('editRoomModal');
+}
+
+function saveRoomRec(e) {
+  e.preventDefault();
+  const id = document.getElementById('editRoomId').value;
+  HMS.update('rooms', id, { status: document.getElementById('editRoomStatus').value });
+  notify('Room status updated', 'success');
+  closeModal('editRoomModal');
+  renderRoomsList();
+}
+
 function renderVisitorsList() {
-  const visitors = HMS.get('visitors');
+  let visitors = HMS.get('visitors');
+  // Apply date range filter if set
+  const fromEl = document.getElementById('visDateFrom');
+  const toEl = document.getElementById('visDateTo');
+  const from = fromEl ? fromEl.value : '';
+  const to = toEl ? toEl.value : '';
+  if (from || to) {
+    visitors = visitors.filter(v => {
+      const d = v.checkIn ? v.checkIn.slice(0, 10) : '';
+      if (!d) return false;
+      if (from && d < from) return false;
+      if (to && d > to) return false;
+      return true;
+    });
+  }
   const tbody = document.getElementById('visitorsBody');
   if (!tbody) return;
-  tbody.innerHTML = visitors.length ? [...visitors].reverse().map(v => {
+  // Apply sort state
+  const { col: vc, dir: vd } = recSortState.visitors;
+  const visitorsArr = [...visitors].sort((a, b) => {
+    if (vc === 'name') return vd === 'asc' ? (a.name||'').localeCompare(b.name||'') : (b.name||'').localeCompare(a.name||'');
+    if (vc === 'student') {
+      const sa = HMS.findById('users', a.studentId)?.name || '';
+      const sb = HMS.findById('users', b.studentId)?.name || '';
+      return vd === 'asc' ? sa.localeCompare(sb) : sb.localeCompare(sa);
+    }
+    if (vc === 'status') return vd === 'asc' ? (a.status||'').localeCompare(b.status||'') : (b.status||'').localeCompare(a.status||'');
+    // default: date desc
+    return vd === 'asc' ? (a.checkIn||'').localeCompare(b.checkIn||'') : (b.checkIn||'').localeCompare(a.checkIn||'');
+  });
+  tbody.innerHTML = visitorsArr.length ? visitorsArr.map(v => {
     const student = HMS.findById('users', v.studentId);
+    const isActive = v.status === 'active';
     return `<tr>
-      <td><div class="td-name"><div class="avatar orange sm">${v.name[0]}</div><div><div class="fw-600">${v.name}</div><div class="td-sub">${v.phone}</div></div></div></td>
+      <td><div class="td-name"><div class="avatar sm" style="background:#f59e0b;color:#fff">${(v.name||'?')[0].toUpperCase()}</div><div><div class="fw-600">${v.name}</div><div class="td-sub">${v.phone||''}</div></div></div></td>
       <td>${student?.name||'-'}</td>
+      <td style="font-size:12px;color:var(--text-2)">${v.relation||'—'}</td>
       <td>${v.purpose||'-'}</td>
-      <td>${v.checkIn}</td>
-      <td>${v.checkOut||'—'}</td>
-      <td><span class="badge ${v.status==='active'?'badge-success':'badge-secondary'}">${v.status}</span></td>
-      <td>${v.status==='active'?`<button class="btn btn-sm btn-warning" onclick="checkoutVisitor('${v.id}')">Check Out</button>`:'—'}</td>
+      <td style="font-size:12px">${v.checkIn||'—'}</td>
+      <td style="font-size:12px">${v.checkOut||'—'}</td>
+      <td><span class="badge ${isActive?'badge-success':'badge-secondary'}">${isActive?'Active':'Checked-Out'}</span></td>
+      <td>${isActive?`<button class="btn btn-sm btn-warning" onclick="checkoutVisitor('${v.id}')">Check Out</button>`:'—'}</td>
     </tr>`;
-  }).join('') : '<tr><td colspan="7" class="text-center text-muted" style="padding:24px">No visitors today</td></tr>';
+  }).join('') : '<tr><td colspan="8" class="text-center text-muted" style="padding:24px">No visitors found</td></tr>';
 }
 
 function renderAttendanceLog() {
-  const attendance = HMS.where('attendance', a => a.date === today());
-  const tbody = document.getElementById('attendanceBody');
+  // Update the full check-in/out log table (on the check-in/out page)
+  let attendance = HMS.where('attendance', a => a.date === today());
+  const tbody = document.getElementById('fullAttendanceBody');
   if (!tbody) return;
-  if (!attendance.length) { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted" style="padding:24px">No attendance records for today</td></tr>'; return; }
+  if (!attendance.length) { tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted" style="padding:24px">No attendance records for today</td></tr>'; return; }
+  // Apply sort
+  const { col: ac, dir: ad } = recSortState.attendance;
+  attendance = [...attendance].sort((a, b) => {
+    if (ac === 'room') {
+      const ra = HMS.findById('users', a.studentId)?.roomId;
+      const rb = HMS.findById('users', b.studentId)?.roomId;
+      const rna = ra ? (HMS.findById('rooms', ra)?.number || '') : '';
+      const rnb = rb ? (HMS.findById('rooms', rb)?.number || '') : '';
+      return ad === 'asc' ? rna.localeCompare(rnb) : rnb.localeCompare(rna);
+    }
+    if (ac === 'checkIn') return ad === 'asc' ? (a.checkIn||'').localeCompare(b.checkIn||'') : (b.checkIn||'').localeCompare(a.checkIn||'');
+    if (ac === 'status') return ad === 'asc' ? (a.status||'').localeCompare(b.status||'') : (b.status||'').localeCompare(a.status||'');
+    // default: name
+    const na = HMS.findById('users', a.studentId)?.name || '';
+    const nb = HMS.findById('users', b.studentId)?.name || '';
+    return ad === 'asc' ? na.localeCompare(nb) : nb.localeCompare(na);
+  });
   tbody.innerHTML = attendance.map(a => {
     const student = HMS.findById('users', a.studentId);
     const room = student?.roomId ? HMS.findById('rooms', student.roomId) : null;
+    const cls = a.status==='present'?'badge-success':a.status==='out-pass'?'badge-warning':'badge-secondary';
     return `<tr>
-      <td>${student?.studentId||'-'}</td>
-      <td>${student?.name||'-'}</td>
+      <td style="font-size:12px;color:var(--text-2)">${student?.studentId||'-'}</td>
+      <td><div class="fw-600">${student?.name||'-'}</div></td>
       <td>${room?.number||'-'}</td>
-      <td>${a.checkIn||'—'}</td>
-      <td><span class="badge ${a.status==='present'?'badge-success':a.status==='out-pass'?'badge-warning':'badge-secondary'}">${a.status}</span></td>
+      <td style="font-size:12px">${a.checkIn||'—'}</td>
+      <td style="font-size:12px">${a.checkOut||'—'}</td>
+      <td><span class="badge ${cls}">${a.status}</span></td>
+      <td>${a.status !== 'present' ? `<button class="btn btn-sm btn-success" onclick="quickCheckIn('${a.studentId}')">Check In</button>` : `<button class="btn btn-sm btn-secondary" onclick="markOut('${a.studentId}')">Check Out</button>`}</td>
     </tr>`;
   }).join('');
 }
@@ -1244,6 +1584,8 @@ function registerVisitor(e) {
     id: HMS.genId(),
     name: document.getElementById('visitorName').value,
     studentId, phone: document.getElementById('visitorPhone').value,
+    relation: (document.getElementById('visitorRelation') || {}).value || '',
+    idProof: (document.getElementById('visitorIdProof') || {}).value || '',
     purpose: document.getElementById('visitorPurpose').value,
     checkIn: checkInTime, checkOut: null, status: 'active'
   });
