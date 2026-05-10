@@ -872,16 +872,20 @@ function renderAdminStudents() {
     const room = s.roomId ? HMS.findById('rooms', s.roomId) : null;
     const booking = HMS.where('bookings', b => b.studentId === s.id && b.status === 'active')[0];
     const cl = avatarColor(s.name);
+    // CHANGED: STATUS column now reads s.status (active/inactive) instead of booking status.
+    //          Deactivate/Activate button added to Actions column — calls toggleStudentStatus().
+    const isActive = (s.status || 'active') === 'active';
     return `<tr>
       <td>${s.studentId || '-'}</td>
-      <td><div class="td-name"><div class="avatar ${cl} sm">${avatarLetter(s.name)}</div><div><div class="fw-600">${s.name}</div><div class="td-sub">${s.email}</div></div></div></td>
+      <td><div class="td-name"><div class="avatar ${cl} sm">${avatarLetter(s.name)}</div><div><div class="fw-600">${s.name || '-'}</div><div class="td-sub">${s.email || ''}</div></div></div></td>
       <td>${s.phone || '-'}</td>
       <td>${room ? room.number : '<span class="text-muted">Not assigned</span>'}</td>
       <td>${s.course || '-'}</td>
-      <td><span class="badge ${booking?'badge-success':'badge-secondary'}">${booking?'Active':'Inactive'}</span></td>
+      <td><span class="badge ${isActive ? 'badge-success' : 'badge-secondary'}">${isActive ? 'Active' : 'Inactive'}</span></td>
       <td class="btn-group">
         <button class="btn btn-sm btn-outline" onclick="viewStudent('${s.id}')">View</button>
         <button class="btn btn-sm btn-secondary" onclick="editStudent('${s.id}')">Edit</button>
+        <button class="btn btn-sm ${isActive ? 'btn-warning' : 'btn-success'}" onclick="toggleStudentStatus('${s.id}')" title="${isActive ? 'Set Inactive' : 'Set Active'}">${isActive ? 'Deactivate' : 'Activate'}</button>
         <button class="btn btn-sm btn-danger" onclick="deleteStudent('${s.id}')">Remove</button>
       </td></tr>`;
   }).join('') : '<tr><td colspan="7" class="text-center text-muted" style="padding:24px">No students found</td></tr>';
@@ -973,7 +977,9 @@ function renderAdminPayments() {
     return `<tr>
       <td>${p.txnId || '-'}</td>
       <td>${student?.name || '-'}</td>
-      <td>${student?.studentId || '-'}</td>
+        // FIX: Use s.studentSid (STU-format stored on payment row) as fallback when
+        //      user lookup fails, so internal IDs like u2 are never shown to the user
+      <td>${student?.studentId || p.studentSid || '-'}</td>
       <td>${p.type}</td>
       <td>${fmtCurrency(p.amount)}</td>
       <td>${p.method || '-'}</td>
@@ -1128,28 +1134,78 @@ function addStudent(e) {
   renderAdminStudents(); renderAdminStats(); renderAdminRooms();
 }
 
+// REWRITTEN: viewStudent() now shows a rich two-column modal:
+//   - Header: avatar, name, studentId · course · email, Active/Inactive badge
+//   - Left column: Personal Info (phone, blood group, emergency, father, check-in, address)
+//   - Right column: Room & Payments (room, rent from room.rent, total paid, pending, year)
+//   - Footer: Edit Student button + Set Inactive/Set Active toggle button
+//   - BUG FIX: was using room.price (always ₹0) — now correctly uses room.rent
 function viewStudent(id) {
   const s = HMS.findById('users', id);
+  if (!s) return;
   const room = s.roomId ? HMS.findById('rooms', s.roomId) : null;
   const booking = HMS.where('bookings', b => b.studentId === id && b.status === 'active')[0];
+  const payments = HMS.where('payments', p => p.studentId === id);
+  const totalPaid = payments.filter(p => p.status === 'paid').reduce((sum, p) => sum + Number(p.amount), 0);
+  const pendingAmt = payments.filter(p => p.status === 'pending').reduce((sum, p) => sum + Number(p.amount), 0);
+  const isActive = (s.status || 'active') === 'active';
   const body = document.getElementById('viewStudentBody');
   if (body) body.innerHTML = `
-    <div style="text-align:center;padding:0 0 20px;border-bottom:1px solid var(--border);margin-bottom:20px">
-      <div class="profile-avatar-large" style="margin:0 auto 12px">${s.name[0]}</div>
-      <div class="profile-name">${s.name}</div>
-      <div class="profile-role">${s.course || 'Student'} · ${s.year || ''}</div>
+    <div style="display:flex;align-items:center;gap:18px;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid var(--border)">
+      <div style="width:64px;height:64px;border-radius:50%;background:${avatarColor(s.name)};display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;font-weight:700;flex-shrink:0">${avatarLetter(s.name)}</div>
+      <div style="flex:1">
+        <div style="font-size:20px;font-weight:700">${s.name}</div>
+        <div style="font-size:13px;color:var(--text-2);margin-top:2px">${[s.studentId, s.course, s.email].filter(Boolean).join(' · ')}</div>
+        <div style="margin-top:6px;display:flex;gap:8px;align-items:center">
+          <span class="badge ${isActive ? 'badge-success' : 'badge-secondary'}">${isActive ? 'Active' : 'Inactive'}</span>
+          ${booking ? '<span class="badge badge-info" style="font-size:10px">Booking Active</span>' : ''}
+        </div>
+      </div>
     </div>
-    <div class="info-row"><span class="info-label">Student ID</span><span class="info-value">${s.studentId||'-'}</span></div>
-    <div class="info-row"><span class="info-label">Email</span><span class="info-value">${s.email||'-'}</span></div>
-    <div class="info-row"><span class="info-label">Phone</span><span class="info-value">${s.phone||'-'}</span></div>
-    <div class="info-row"><span class="info-label">Room</span><span class="info-value fw-600 color-primary">${room?room.number:'Not Assigned'}</span></div>
-    <div class="info-row"><span class="info-label">Blood Group</span><span class="info-value">${s.bloodGroup||'-'}</span></div>
-    <div class="info-row"><span class="info-label">Emergency Contact</span><span class="info-value">${s.emergencyContact||'-'}</span></div>
-    <div class="info-row"><span class="info-label">Father's Name</span><span class="info-value">${s.fatherName||'-'}</span></div>
-    <div class="info-row"><span class="info-label">Address</span><span class="info-value">${s.address||'-'}</span></div>
-    ${booking?`<div class="info-row"><span class="info-label">Check-In</span><span class="info-value">${fmtDate(booking.checkIn)}</span></div>`:''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+      <div>
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-2);margin-bottom:8px">Personal Info</div>
+        <table style="width:100%;font-size:13px"><tbody>
+          <tr><td style="color:var(--text-2);padding:4px 0;width:45%">Phone</td><td>${s.phone || '—'}</td></tr>
+          <tr><td style="color:var(--text-2);padding:4px 0">Blood Group</td><td>${s.bloodGroup || '—'}</td></tr>
+          <tr><td style="color:var(--text-2);padding:4px 0">Emergency</td><td>${s.emergencyContact || '—'}</td></tr>
+          <tr><td style="color:var(--text-2);padding:4px 0">Father</td><td>${s.fatherName || '—'}</td></tr>
+          <tr><td style="color:var(--text-2);padding:4px 0">Check-In</td><td>${booking ? fmtDate(booking.checkIn) : '—'}</td></tr>
+          <tr><td style="color:var(--text-2);padding:4px 0">Address</td><td style="font-size:12px">${s.address || '—'}</td></tr>
+        </tbody></table>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-2);margin-bottom:8px">Room & Payments</div>
+        <table style="width:100%;font-size:13px"><tbody>
+          <tr><td style="color:var(--text-2);padding:4px 0;width:45%">Room</td><td>${room ? room.number + ' (' + room.type + ')' : '—'}</td></tr>
+          <tr><td style="color:var(--text-2);padding:4px 0">Rent</td><td>${room ? fmtCurrency(room.rent || 0) + '/mo' : '—'}</td></tr>
+          <tr><td style="color:var(--text-2);padding:4px 0">Total Paid</td><td style="color:var(--success);font-weight:600">${fmtCurrency(totalPaid)}</td></tr>
+          <tr><td style="color:var(--text-2);padding:4px 0">Pending</td><td style="color:${pendingAmt > 0 ? 'var(--danger)' : 'var(--text-2)'};font-weight:${pendingAmt > 0 ? '600' : '400'}">${fmtCurrency(pendingAmt)}</td></tr>
+          <tr><td style="color:var(--text-2);padding:4px 0">Year</td><td>${s.year || '—'}</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-secondary" onclick="closeModal('viewStudentModal');editStudent('${s.id}')">Edit Student</button>
+      <button class="btn ${isActive ? 'btn-danger' : 'btn-success'}" onclick="toggleStudentStatus('${s.id}')">
+        ${isActive ? 'Set Inactive' : 'Set Active'}
+      </button>
+    </div>
   `;
   openModal('viewStudentModal');
+}
+
+// ADDED: toggleStudentStatus() — flips a student between active and inactive.
+//   Writes the new status via HMS.update() which persists to DB through api/data.php.
+//   Closes the profile modal and re-renders the students table so the badge updates immediately.
+function toggleStudentStatus(id) {
+  const s = HMS.findById('users', id);
+  if (!s) return;
+  const newStatus = (s.status || 'active') === 'active' ? 'inactive' : 'active';
+  HMS.update('users', id, { status: newStatus });
+  notify(`${s.name} marked as ${newStatus}`, newStatus === 'active' ? 'success' : 'warning');
+  closeModal('viewStudentModal');
+  renderAdminStudents();
 }
 
 function editStudent(id) {
@@ -1394,6 +1450,7 @@ function renderReceptionistStats() {
       const room = s?.roomId ? HMS.findById('rooms', s.roomId) : null;
       const statusCls = a.status==='present'?'badge-success':a.status==='out-pass'?'badge-warning':a.status==='out'?'badge-secondary':'badge-secondary';
       return `<tr>
+        <!-- FIX: td-sub always renders (never conditional) so all rows are same height; min-height:14px in CSS reserves space when studentId is empty -->
         <td><div class="td-name"><div class="avatar sm" style="background:${avatarColor(s?.name||'?')}">${avatarLetter(s?.name||'?')}</div><div><div class="fw-600" style="font-size:13px">${s?.name||'Unknown'}</div><div class="td-sub">${s?.studentId||''}</div></div></div></td>
         <td style="font-size:13px">${room?.number||'—'}</td>
         <td style="font-size:12px">${a.checkIn||'—'}</td>
@@ -1427,7 +1484,7 @@ function renderStudentsList() {
     const attStatus = att?.status || 'absent';
     const attCls = present ? 'badge-success' : attStatus === 'out-pass' ? 'badge-warning' : 'badge-secondary';
     return `<tr>
-      <td style="font-size:11px;color:var(--text-2)">${s.studentId||s.id||'-'}</td>
+      <td style="font-size:11px;color:var(--text-2)">${s.studentId||'-'}</td>
       <td><div class="td-name"><div class="avatar sm" style="background:${avatarColor(s.name)}">${avatarLetter(s.name)}</div><div class="fw-600">${s.name}</div></div></td>
       <td>${room?room.number:'—'}</td>
       <td>${s.phone||'-'}</td>
@@ -1561,6 +1618,7 @@ function renderVisitorsList() {
     const student = HMS.findById('users', v.studentId);
     const isActive = v.status === 'active';
     return `<tr>
+      <!-- FIX: td-sub always renders so visitor rows without phone are same height as those with phone -->
       <td><div class="td-name"><div class="avatar sm" style="background:#f59e0b;color:#fff">${(v.name||'?')[0].toUpperCase()}</div><div><div class="fw-600">${v.name}</div><div class="td-sub">${v.phone||''}</div></div></div></td>
       <td>${student?.name||'-'}</td>
       <td style="font-size:12px;color:var(--text-2)">${v.relation||'—'}</td>
