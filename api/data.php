@@ -1,4 +1,27 @@
 <?php
+/**
+ * data.php — Generic CRUD Endpoint
+ *
+ * Handles all add / update / remove operations for every table in the system.
+ * Called by HMS.persist() in script.js after every localStorage write.
+ *
+ * Expected JSON POST body:
+ *   { table: "<jsKey>", action: "add"|"update"|"remove", data: { ...fields } }
+ *
+ * The $tableMap array maps JS camelCase field names to SQL column names for each
+ * table, so the front-end never needs to know the database column names.
+ *
+ * Special handling:
+ *   - rooms.amenities  : JS array is JSON-encoded before storage.
+ *   - users.password   : Plain-text password is bcrypt-hashed (password_hash) before storage.
+ *   - payments         : student_name and student_sid are auto-filled from the users table
+ *                        if not provided, so those columns are never NULL.
+ *
+ * Uses INSERT IGNORE for add actions so duplicate IDs (e.g. from offline/online
+ * race conditions) are silently ignored rather than throwing an error.
+ *
+ * All queries use PDO prepared statements to prevent SQL injection.
+ */
 header('Content-Type: application/json');
 require_once __DIR__ . '/db.php';
 
@@ -132,6 +155,20 @@ try {
     // Hash password when adding/updating users
     if ($jsKey === 'users' && isset($data['password']) && $data['password'] !== '') {
         $row['password_hash'] = password_hash($data['password'], PASSWORD_DEFAULT);
+    }
+
+    // Auto-fill student_name and student_sid on payments from the users table
+    // so these columns are never NULL regardless of whether the JS sent them.
+    if ($jsKey === 'payments' && !empty($row['student_id'])) {
+        if (empty($row['student_name']) || empty($row['student_sid'])) {
+            $uStmt = $pdo->prepare('SELECT name, student_id AS sid FROM users WHERE id = ?');
+            $uStmt->execute([$row['student_id']]);
+            $uRow = $uStmt->fetch();
+            if ($uRow) {
+                if (empty($row['student_name'])) $row['student_name'] = $uRow['name'];
+                if (empty($row['student_sid']))  $row['student_sid']  = $uRow['sid'];
+            }
+        }
     }
 
     if ($action === 'add') {
