@@ -1292,8 +1292,10 @@
     const amount = parseFloat(document.getElementById('recPayAmount').value);
     if (!amount || amount <= 0) return notify('Enter a valid amount', 'danger');
     const session = HMS.getSession();
+    // FIX: Use genPaymentId() instead of genId() so receptionist-recorded payments
+    // get sequential IDs (p23, p24...) consistent with all other payments in the system.
     HMS.add('payments', {
-      id: HMS.genId(),
+      id: HMS.genPaymentId(),
       studentId,
       studentName: student.name,
       amount,
