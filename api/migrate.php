@@ -37,6 +37,8 @@ try {
     echo "<p style='color:green'>✓ Database recreated cleanly</p>";
 
     $sql = file_get_contents(__DIR__ . '/../database.sql');
+    // Strip single-line comments before splitting on ; so semicolons inside comments don't break parsing
+    $sql = preg_replace('/--[^\n]*\n/m', "\n", $sql);
     $statements = array_filter(array_map('trim', explode(';', $sql)));
     $ok = 1; $err = 0;
 
