@@ -40,8 +40,10 @@ $tableMap = [
         'table'   => 'payments',
         'columns' => [
             'bookingId' => 'booking_id', 'studentId' => 'student_id',
+            'studentName' => 'student_name',
             'amount' => 'amount', 'method' => 'method', 'date' => 'pay_date',
             'status' => 'status', 'type' => 'pay_type', 'txnId' => 'txn_id',
+            'reference' => 'reference_no', 'collectedBy' => 'collected_by', 'collectedAt' => 'collected_at',
         ],
     ],
     'requests' => [
@@ -50,12 +52,14 @@ $tableMap = [
             'studentId' => 'student_id', 'type' => 'req_type',
             'description' => 'description', 'date' => 'req_date',
             'status' => 'status', 'response' => 'response',
+            'resolvedAt' => 'resolved_at', 'resolvedBy' => 'resolved_by',
         ],
     ],
     'visitors' => [
         'table'   => 'visitors',
         'columns' => [
             'name' => 'name', 'studentId' => 'student_id', 'phone' => 'phone',
+            'relation' => 'relation', 'idProof' => 'id_proof',
             'checkIn' => 'check_in', 'checkOut' => 'check_out',
             'status' => 'status', 'purpose' => 'purpose',
         ],
@@ -72,6 +76,17 @@ $tableMap = [
         'columns' => [
             'title' => 'title', 'body' => 'body', 'date' => 'notice_date',
             'type' => 'type', 'author' => 'author',
+        ],
+    ],
+    'outpasses' => [
+        'table'   => 'outpasses',
+        'columns' => [
+            'studentId' => 'student_id', 'studentName' => 'student_name',
+            'studentSid' => 'student_sid', 'roomId' => 'room_id',
+            'reason' => 'reason', 'destination' => 'destination',
+            'returnDateTime' => 'return_date_time', 'remarks' => 'remarks',
+            'issuedAt' => 'issued_at', 'issuedBy' => 'issued_by',
+            'status' => 'status', 'returnedAt' => 'returned_at',
         ],
     ],
 ];
