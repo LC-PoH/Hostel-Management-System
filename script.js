@@ -1,3 +1,59 @@
+// ============================================================
+// script.js — Hostel Management System — Core Application Logic
+// AVM Secondary School | ICT308 Capstone Project 2, CIHE 2026
+// ============================================================
+//
+// ARCHITECTURE
+//   This file is the single JavaScript bundle for all three dashboards
+//   (student, receptionist, owner/admin) plus the login page.
+//   It follows a dual-mode data architecture:
+//     • Online  — data is synced from MySQL via api/sync.php on login,
+//                 then every write calls api/data.php to persist the change.
+//     • Offline — if the server is unreachable, the app falls back to
+//                 hardcoded defaults loaded into localStorage on first run.
+//
+// KEY OBJECTS & SECTIONS
+//   HMS            — Central data layer (CRUD, localStorage, DB persistence,
+//                    session management, ID generation).
+//   handleLogin()  — Authenticates against api/login.php, falls back to
+//                    localStorage in offline mode.
+//   showPage()     — Single-page navigation (no full page reloads).
+//   notify()       — Floating toast notification system.
+//
+// STUDENT DASHBOARD
+//   renderStudentDashboard() — Overview stats and recent activity.
+//   renderStudentPayments()  — Payment history and pending dues.
+//   openPaymentModal()       — Pre-fills pending amount before payment.
+//   submitPayment()          — Records payment, persists to DB with name/SID.
+//   renderStudentRequests()  — Maintenance/complaint request list.
+//   submitRequest()          — Submits a new request.
+//   renderStudentProfile()   — Profile view and edit form.
+//   updateProfile()          — Saves profile changes.
+//   changePassword()         — Verifies old password via api/change-password.php.
+//
+// RECEPTIONIST DASHBOARD
+//   renderReceptionDashboard() — Stats, recent check-ins/out.
+//   processCheckin/Checkout()  — Records student arrival/departure.
+//   renderVisitors()           — Visitor log with check-in/out controls.
+//   renderAttendance()         — Daily attendance grid.
+//   renderReceptionRooms()     — Room status overview.
+//
+// OWNER / ADMIN DASHBOARD
+//   renderAdminDashboard()  — Analytics with Chart.js charts.
+//   renderAdminRooms()      — Room CRUD (add, edit, delete).
+//   renderAdminStudents()   — Student CRUD and account status toggle.
+//   renderAdminPayments()   — Payment tracking and CSV export.
+//   renderAdminRequests()   — Approve / reject student requests.
+//   renderAdminNotices()    — Post and delete notice board entries.
+//
+// UTILITIES
+//   fmtCurrency(n)   — Formats a number as ₹1,23,456 (Indian locale).
+//   fmtDate(d)       — Formats a date string as DD Mon YYYY.
+//   fmtDateTime(d)   — Formats a datetime string as DD Mon, HH:MM.
+//   today()          — Returns today's date as YYYY-MM-DD.
+//   exportCSV()      — Downloads a data table as a .csv file.
+// ============================================================
+
 // ==========================================
 // HOSTEL MANAGEMENT SYSTEM - CORE SCRIPT
 // ==========================================
@@ -617,20 +673,24 @@ function submitPayment(e) {
   const pending = HMS.where('payments', p => p.studentId === session.userId && p.status === 'pending');
   const txnId = 'TXN' + Date.now();
 
+  const user = HMS.findById('users', session.userId);
+  const studentName = user ? user.name : '';
+  const studentSid  = user ? (user.studentId || '') : '';
+
   if (pending.length) {
     const pendingAmt = Number(pending[0].amount);
     if (amount >= pendingAmt) {
       // Paying full amount or more — mark the pending record as paid with the actual due amount
-      HMS.update('payments', pending[0].id, { amount: pendingAmt, method, status: 'paid', txnId });
+      HMS.update('payments', pending[0].id, { amount: pendingAmt, method, status: 'paid', txnId, studentName, studentSid });
     } else {
       // Partial payment — create a new paid record for the amount entered,
       // and reduce the pending balance by that amount
-      HMS.add('payments', { id: HMS.genPaymentId(), bookingId: pending[0].bookingId, studentId: session.userId, amount, method, date: today(), status: 'paid', type: pending[0].type || 'Monthly Rent', txnId });
+      HMS.add('payments', { id: HMS.genPaymentId(), bookingId: pending[0].bookingId, studentId: session.userId, studentName, studentSid, amount, method, date: today(), status: 'paid', type: pending[0].type || 'Monthly Rent', txnId });
       HMS.update('payments', pending[0].id, { amount: pendingAmt - amount });
     }
   } else {
     // No pending record — just log a new paid payment
-    HMS.add('payments', { id: HMS.genPaymentId(), bookingId: '', studentId: session.userId, amount, method, date: today(), status: 'paid', type: 'Monthly Rent', txnId });
+    HMS.add('payments', { id: HMS.genPaymentId(), bookingId: '', studentId: session.userId, studentName, studentSid, amount, method, date: today(), status: 'paid', type: 'Monthly Rent', txnId });
   }
 
   notify(`Payment of ${fmtCurrency(amount)} made successfully via ${method}!`, 'success');
@@ -1121,11 +1181,11 @@ function addStudent(e) {
       const newOccupied = Math.min(room.occupied + 1, room.beds);
       HMS.update('rooms', roomId, { occupied: newOccupied, status: newOccupied >= room.beds ? 'occupied' : 'partial' });
       const bookingId = HMS.genId();
-      HMS.add('bookings', { id: bookingId, studentId: newStudent.id, roomId, checkIn: today(), checkOut: '', amount: room.rent, status: 'active' });
+      HMS.add('bookings', { id: bookingId, studentId: newStudent.id, studentName: newStudent.name, studentSid: newStudent.studentId, roomId, checkIn: today(), checkOut: '', amount: room.rent, status: 'active' });
       // FIX: Automatically create a pending payment for the current month when a room is assigned.
       // Without this, new students showed ₹0 dues even though they had an active booking.
       const monthStart = today().slice(0, 7) + '-01';
-      HMS.add('payments', { id: HMS.genPaymentId(), bookingId, studentId: newStudent.id, amount: room.rent, method: '', date: monthStart, status: 'pending', type: 'Monthly Rent', txnId: '' });
+      HMS.add('payments', { id: HMS.genPaymentId(), bookingId, studentId: newStudent.id, studentName: newStudent.name, studentSid: newStudent.studentId, amount: room.rent, method: '', date: monthStart, status: 'pending', type: 'Monthly Rent', txnId: '' });
     }
   }
   notify('Student added successfully', 'success');
