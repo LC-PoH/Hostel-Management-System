@@ -16,7 +16,7 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-logo">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <img src="logo.png" alt="AVM Logo" onerror="this.style.display='none'">
       </div>
       <div><div class="sidebar-brand">AVM</div><div class="sidebar-brand-sub">Student Portal</div></div>
     </div>
@@ -211,11 +211,29 @@
         </div>
 
         <div class="card">
-          <div class="card-header"><div class="card-title">Payment History</div></div>
+          <div class="card-header">
+            <div class="card-title">Payment History</div>
+            <div class="filter-bar" style="margin:0;gap:8px;align-items:center">
+              <div class="date-range-wrap">
+                <span class="dr-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></span>
+                <input type="date" id="stuPayDateFrom" title="From date" onchange="applyStudentPaymentDateRange()">
+                <span style="font-size:11px;color:var(--text-3);padding:0 2px">—</span>
+                <input type="date" id="stuPayDateTo" title="To date" onchange="applyStudentPaymentDateRange()">
+                <button class="dr-clear" onclick="clearStudentPaymentDateRange()" title="Clear dates">×</button>
+              </div>
+            </div>
+          </div>
           <div class="card-body" style="padding:0">
             <div class="table-wrapper">
               <table id="paymentHistoryTable">
-                <thead><tr><th>Transaction ID</th><th>Type</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+                <thead><tr>
+                  <th>Transaction ID</th><th>Type</th>
+                  <th class="sortable-th" id="spth-amount" onclick="sortStuPayments('amount')">Amount <span class="sort-icon">↕</span></th>
+                  <th>Method</th>
+                  <th class="sortable-th sort-active" id="spth-date" onclick="sortStuPayments('date')">Date <span class="sort-icon">↓</span></th>
+                  <th class="sortable-th" id="spth-status" onclick="sortStuPayments('status')">Status <span class="sort-icon">↕</span></th>
+                  <th>Action</th>
+                </tr></thead>
                 <tbody id="paymentHistoryBody"></tbody>
               </table>
             </div>
@@ -238,7 +256,12 @@
           <div class="card-body" style="padding:0">
             <div class="table-wrapper">
               <table>
-                <thead><tr><th>ID</th><th>Type</th><th>Description</th><th>Date</th><th>Status</th><th>Response</th></tr></thead>
+                <thead><tr>
+                  <th>ID</th><th>Type</th><th>Description</th>
+                  <th class="sortable-th sort-active" id="srth-date" onclick="sortStuRequests('date')">Date <span class="sort-icon">↓</span></th>
+                  <th class="sortable-th" id="srth-status" onclick="sortStuRequests('status')">Status <span class="sort-icon">↕</span></th>
+                  <th>Response</th>
+                </tr></thead>
                 <tbody id="requestsBody"></tbody>
               </table>
             </div>
@@ -414,6 +437,51 @@
 </div>
 <div class="notifications-container"></div>
 <script src="script.js"></script>
-<script>initStudentDashboard();</script>
+<script>
+  initStudentDashboard();
+  function applyStudentPaymentDateRange() {
+    const session = HMS.getSession();
+    if (session) renderStudentPayments(HMS.findById('users', session.userId));
+  }
+  function clearStudentPaymentDateRange() {
+    const f = document.getElementById('stuPayDateFrom');
+    const t = document.getElementById('stuPayDateTo');
+    if (f) f.value = '';
+    if (t) t.value = '';
+    applyStudentPaymentDateRange();
+  }
+  // ===== SORTING =====
+  function sortStuPayments(col) {
+    const s = stuSortState.payments;
+    s.dir = s.col === col ? (s.dir === 'asc' ? 'desc' : 'asc') : (col === 'date' ? 'desc' : 'asc');
+    s.col = col;
+    applyStudentPaymentDateRange();
+    updateStuSortIcons('payments');
+  }
+  function sortStuRequests(col) {
+    const s = stuSortState.requests;
+    s.dir = s.col === col ? (s.dir === 'asc' ? 'desc' : 'asc') : (col === 'date' ? 'desc' : 'asc');
+    s.col = col;
+    const session = HMS.getSession();
+    if (session) renderStudentRequests(HMS.findById('users', session.userId));
+    updateStuSortIcons('requests');
+  }
+  function updateStuSortIcons(table) {
+    const s = stuSortState[table];
+    const maps = {
+      payments: { amount: 'spth-amount', date: 'spth-date', status: 'spth-status' },
+      requests: { date: 'srth-date', status: 'srth-status' }
+    };
+    const map = maps[table] || {};
+    Object.entries(map).forEach(([col, elId]) => {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      const icon = el.querySelector('.sort-icon');
+      const active = col === s.col;
+      el.classList.toggle('sort-active', active);
+      if (icon) icon.textContent = active ? (s.dir === 'asc' ? '↑' : '↓') : '↕';
+    });
+  }
+</script>
 </body>
 </html>
