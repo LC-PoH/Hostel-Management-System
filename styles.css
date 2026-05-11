@@ -562,7 +562,7 @@ tbody tr:hover{background:var(--surface-2)}
 .btn-sm{padding:5px 10px;font-size:12px}
 .btn-sm svg{width:13px;height:13px}
 .btn-icon{padding:7px}
-.btn-group{display:flex;gap:6px}
+.btn-group{display:flex;align-items:center;flex-wrap:nowrap;gap:6px;white-space:nowrap}
 
 /* ===== FORMS ===== */
 .form-group-d{margin-bottom:16px}
