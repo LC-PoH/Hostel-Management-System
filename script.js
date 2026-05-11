@@ -488,7 +488,7 @@ function togglePassword() {
 function filterTable(searchId, tableId) {
   const term = document.getElementById(searchId).value.toLowerCase();
   document.querySelectorAll(`#${tableId} tbody tr`).forEach(row => {
-    row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+    row.style. display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
   });
 }
 
@@ -942,12 +942,12 @@ function renderAdminStudents() {
       <td>${room ? room.number : '<span class="text-muted">Not assigned</span>'}</td>
       <td>${s.course || '-'}</td>
       <td><span class="badge ${isActive ? 'badge-success' : 'badge-secondary'}">${isActive ? 'Active' : 'Inactive'}</span></td>
-      <td class="btn-group">
+      <td><div class="btn-group">
         <button class="btn btn-sm btn-outline" onclick="viewStudent('${s.id}')">View</button>
         <button class="btn btn-sm btn-secondary" onclick="editStudent('${s.id}')">Edit</button>
         <button class="btn btn-sm ${isActive ? 'btn-warning' : 'btn-success'}" onclick="toggleStudentStatus('${s.id}')" title="${isActive ? 'Set Inactive' : 'Set Active'}">${isActive ? 'Deactivate' : 'Activate'}</button>
         <button class="btn btn-sm btn-danger" onclick="deleteStudent('${s.id}')">Remove</button>
-      </td></tr>`;
+      </div></td></tr>`;
   }).join('') : '<tr><td colspan="7" class="text-center text-muted" style="padding:24px">No students found</td></tr>';
 }
 
@@ -1549,10 +1549,10 @@ function renderStudentsList() {
       <td style="font-size:12px;color:var(--text-2)">${s.course||'-'}</td>
       <td>${pendingPay > 0 ? `<span class="badge badge-danger">${pendingPay} pending</span>` : '<span class="badge badge-success">Clear</span>'}</td>
       <td><span class="badge ${attCls}">${present?'Present':attStatus}</span></td>
-      <td class="btn-group">
+      <td><div class="btn-group">
         <button class="btn btn-sm btn-primary" onclick="viewRecStudent('${s.id}')">View</button>
         ${!present?`<button class="btn btn-sm btn-success" onclick="quickCheckIn('${s.id}')">In</button>`:`<button class="btn btn-sm btn-secondary" onclick="markOut('${s.id}')">Out</button>`}
-      </td></tr>`;
+      </div></td></tr>`;
   }).join('');
 }
 
