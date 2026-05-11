@@ -4,12 +4,7 @@
 h2{color:#4338ca}.ok{color:#10b981}.err{color:#ef4444}pre{background:#f1f5f9;padding:12px;border-radius:8px}</style>
 </head><body>
 <h2>Hostel Management System – Database Seeder</h2>
-<!DOCTYPE html>
-<html><head><title>HMS Setup</title>
-<style>body{font-family:Arial,sans-serif;max-width:700px;margin:40px auto;padding:0 20px}
-h2{color:#4338ca}.ok{color:#10b981}.err{color:#ef4444}pre{background:#f1f5f9;padding:12px;border-radius:8px}</style>
-</head><body>
-<h2>Hostel Management System – Database Seeder</h2>
+
 <?php
 /**
  * setup.php — Sample Data Seeder
